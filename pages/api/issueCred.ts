@@ -14,7 +14,7 @@ const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
     const credRes = await issueCredential(schemaUrl, recipient, subjectData);
     return credRes;
   } catch (error) {
-    console.error("Failed to issue credential:", error);
+    console.error("Failed to issue credential", error);
     return false;
   }
 };
