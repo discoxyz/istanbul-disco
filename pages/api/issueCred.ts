@@ -7,7 +7,10 @@ const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
     "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json";
 
   const subjectData = {
-    eventName: "Eiffel Disco",
+    eventName: "Eiffel in Crypto",
+    eventDescription:
+      "Commemorating the one and only Eiffel Tower on July 18th for an unforgettable evening where we'll discuss Account Abstraction, Smart Accounts, ERC-4337, wallets, and more with cocktails and networking with Safe, Disco.xyz, Request Finance, Monerium, Gnosis Chain, Gateway.fm, and Gelato Network.",
+    eventDate: "2023-07-18",
   };
 
   try {
@@ -20,40 +23,13 @@ const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
 };
 
 const issueCred = async (did: string) => {
-  const discoHeaders = new Headers();
-  discoHeaders.append("Content-Type", "application/json");
-  discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_TOKEN}`);
-
-  const raw = JSON.stringify({
-    schemaUrl:
-      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
-    subjectData: {
-      eventName: "Eiffel in Crypto",
-      eventDescription: "Commemorating the one and only Eiffel Tower on July 18th for an unforgettable evening where we'll discuss Account Abstraction, Smart Accounts, ERC-4337, wallets, and more with cocktails and networking with Safe, Disco.xyz, Request Finance, Monerium, Gnosis Chain, Gateway.fm, and Gelato Network.",
-      eventDate: "18 July 2023"
-    },
-    recipientDID: did,
-  });
-
   try {
     const credRes = await issueEiffelCredential(did);
     return credRes;
   } catch (error) {
     console.error("Failed to issue credential:", error);
   }
-
-  const opts = {
-    method: "POST",
-    headers: discoHeaders,
-    body: raw,
-  };
-
-  return opts;
 };
-
-const discoHeaders = new Headers();
-discoHeaders.append("Content-Type", "application/json");
-discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_TOKEN}`);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { did, address } = JSON.parse(req.body);
