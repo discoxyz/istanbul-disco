@@ -115,7 +115,7 @@ const Home: NextPage = () => {
         });
       }
     }
-  }, [status.did, address, setStatus]);
+  }, [status.did, address, setStatus, drop.dropId]);
 
   ////////
   // AUTO FETCH STATUS UPON WALLET CONNECTION
@@ -158,11 +158,6 @@ const Home: NextPage = () => {
       handle();
     }
   }, [address, did3, did, setStatus, fetched]);
-
-  useEffect(() => {
-    console.log("DROP", drop);
-    console.log("STATUS", status);
-  }, [status, drop]);
 
   const Section = () => {
     if (isDisconnected) {
