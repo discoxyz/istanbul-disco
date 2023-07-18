@@ -6,12 +6,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const exists = await kv.hexists(address, "did");
     if (!exists) {
-      await kv.hset(address, { did: did, claimed: false });
+      await kv.hset(address, { did: did, claimed: [] });
       res.status(200).send({
         success: true,
         message: `${did} added to ${address}`,
         info: {
           did: did,
+          claimed: [],
         },
       });
     } else {

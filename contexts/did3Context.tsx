@@ -3,6 +3,7 @@ import { CeramicClient } from '@ceramicnetwork/http-client'
 import { Address, useAccount, useDisconnect } from "wagmi";
 import { connect3ID } from "./utils/connect3ID";
 import { DID } from "dids";
+import va from "@vercel/analytics"
 // import { WalletActions, useWallet } from "./utils/useWallet";
 
 interface Did3ContextType {
@@ -151,12 +152,15 @@ export const Did3Provider: FC<{
         setDid3(did);
         setDid3Provider(didProvider);
         setCeramicConnection("connected");
+
+      va.track("connectCeramic", { state: 'connected' });
         localStorage.setItem(address, "true");
 
        
         // console.log('streams', await loadMulti(ceramicClient, ['disco-sent']))
 
       } catch (error) {
+        va.track("connectCeramic", { state: 'failure' });
         handleErr("Failed to connect to ceramic", error);
         setCeramicConnection("failed");
       }

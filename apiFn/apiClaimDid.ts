@@ -5,7 +5,7 @@ import { StandardRes } from "./types";
 export const apiClaimDid = async (
   did: string,
   address: string
-): Promise<StandardRes & { info?: { did: string } }> => {
+): Promise<StandardRes & { info?: { did: string; claimed: number[] } }> => {
   try {
     const claim = await fetch(`/api/claimDid`, {
       method: "POST",
@@ -20,6 +20,7 @@ export const apiClaimDid = async (
       message: json.message || "No message",
       info: {
         did: json.info?.did,
+        claimed: json.info?.claimed || []
       },
     };
   } catch (err) {

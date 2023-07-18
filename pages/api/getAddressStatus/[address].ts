@@ -6,7 +6,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { address } = query;
   if (address) {
     try {
-      const result: { did: string; claimed: boolean } | null = await kv.hgetall(
+      const result: { did: string; claimed: number[] } | null = await kv.hgetall(
         address as string
       );
       res.status(200).send({

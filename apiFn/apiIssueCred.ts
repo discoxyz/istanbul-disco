@@ -4,7 +4,8 @@ import { StandardRes } from "./types";
 
 export const apiIssueCred = async (
   did: string,
-  address: string
+  address: string,
+  dropId: number,
 ): Promise<StandardRes> => {
   try {
     const claim = await fetch(`/api/issueCred`, {
@@ -12,6 +13,7 @@ export const apiIssueCred = async (
       body: JSON.stringify({
         did: did,
         address: address,
+        dropId: dropId
       }),
     });
     const json = await claim.json();

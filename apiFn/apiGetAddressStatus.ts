@@ -3,8 +3,8 @@ import { StandardRes } from "./types";
 // /pages/api/issuCred.tsx
 
 export const apiGetAddressStatus = async (
-  address: string
-): Promise<StandardRes & { info?: { did: string; claimed: boolean } }> => {
+  address: string,
+): Promise<StandardRes & { info?: { did: string; claimed: number[] } }> => {
   try {
     const req = await fetch(`/api/getAddressStatus/${address}`);
     const res = await req.json();

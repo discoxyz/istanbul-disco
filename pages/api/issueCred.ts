@@ -1,17 +1,14 @@
 import { kv } from "@vercel/kv";
 import { NextApiRequest, NextApiResponse } from "next";
 import { issueCredential } from "../../apiFn/utils";
+import { drops } from "../../content/drops";
 
-const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
-  const schemaUrl =
-    "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json";
+const issueEiffelCredential = async (recipient: string, dropId: number): Promise<boolean> => {
+  const drop = drops.find(drop => dropId === drop.dropId)
+  if (!drop) throw Error('Invalid drop ID')
 
-  const subjectData = {
-    eventName: "Eiffel in Crypto",
-    eventDescription:
-      "Commemorating the one and only Eiffel Tower on July 18th for an unforgettable evening where we'll discuss Account Abstraction, Smart Accounts, ERC-4337, wallets, and more with cocktails and networking with Safe, Disco.xyz, Request Finance, Monerium, Gnosis Chain, Gateway.fm, and Gelato Network.",
-    eventDate: "2023-07-18",
-  };
+  const schemaUrl = drop.schema
+  const subjectData = drop.credentialSubject
 
   try {
     const credRes = await issueCredential(schemaUrl, recipient, subjectData);
@@ -22,9 +19,9 @@ const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
   }
 };
 
-const issueCred = async (did: string) => {
+const issueCred = async (did: string, dropId: number) => {
   try {
-    const credRes = await issueEiffelCredential(did);
+    const credRes = await issueEiffelCredential(did, dropId);
     return credRes;
   } catch (error) {
     console.error("Failed to issue credential:", error);
@@ -32,15 +29,17 @@ const issueCred = async (did: string) => {
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { did, address } = JSON.parse(req.body);
+  const { did, address, dropId } = JSON.parse(req.body);
   try {
     const fetchedDid = await kv.hget(address, "did");
     if (fetchedDid == did) {
       try {
         try {
-          const success = await issueCred(did);
+          const success = await issueCred(did, dropId);
           if (success) {
-            await kv.hset(address, { did: did, claimed: true });
+            const claims = await kv.hget(address, "claimed") as string[] || []
+            console.log("ADDRESS HAS CLAIMED", claims)
+            await kv.hset(address, { did: did, claimed: [...claims, dropId] });
             res.status(200).send({
               success: true,
               message: `Credential sent to ${did}`,
