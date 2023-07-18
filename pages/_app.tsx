@@ -8,6 +8,7 @@ import {
 } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { Did3Provider } from "../contexts/did3Context";
+import { Analytics } from '@vercel/analytics/react';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet],
@@ -37,6 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           autoDisconnectDid3
         >
           <Component {...pageProps} />
+          <Analytics />
         </Did3Provider>
       </RainbowKitProvider>
     </WagmiConfig>
