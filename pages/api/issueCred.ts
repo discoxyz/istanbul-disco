@@ -11,18 +11,19 @@ const issueEiffelCredential = async (recipient: string): Promise<boolean> => {
   };
 
   try {
+    console.log(`Issuing attendance credential to ${recipient}`);
     const credRes = await issueCredential(schemaUrl, recipient, subjectData);
     return credRes;
   } catch (error) {
-    console.error("Failed to issue credential", error);
+    console.error("Failed to issue credential:", error);
     return false;
   }
 };
 
-const issueCred = async (did: string) => {
+const buildReq = async (did: string) => {
   const discoHeaders = new Headers();
   discoHeaders.append("Content-Type", "application/json");
-  discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_TOKEN}`);
+  discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_KEY}`);
 
   const raw = JSON.stringify({
     schemaUrl:
@@ -56,24 +57,19 @@ discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_TOKEN}`);
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { did, address } = JSON.parse(req.body);
   try {
+    const cred = await fetch(
+      "https://api.disco.xyz/v1/credential/",
+      buildReq(did)
+    );
+    console.log(cred);
     const fetchedDid = await kv.hget(address, "did");
     if (fetchedDid == did) {
       try {
-        try {
-          const success = await issueCred(did);
-          if (success) {
-            await kv.hset(address, { did: did, claimed: true });
-            res.status(200).send({
-              success: true,
-              message: `Credential sent to ${did}`,
-            });
-          } else {
-            throw Error("Failed to issue credential");
-          }
-        } catch (err) {
-          console.log(err);
-          throw err;
-        }
+        await kv.hset(address, { did: did, claimed: true });
+        res.status(200).send({
+          success: true,
+          message: `Credential sent to ${did}`,
+        });
       } catch {
         res.status(500).send({
           success: false,

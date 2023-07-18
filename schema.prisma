@@ -1,0 +1,46 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+model Drop {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  path        String    @unique
+  schema      String
+  subjectData String
+  startTime   DateTime?
+  endTime     DateTime?
+  visible     Boolean?
+  limit       Int?
+  image       String?
+  createdAt   DateTime  @default(now())
+  gated       Boolean?
+  claims      Claim[]
+}
+
+model User {
+  id      Int     @id @default(autoincrement())
+  Address String? @unique
+  Did3    String? @unique
+  name    String?
+  bio     String?
+
+  @@unique([Address, Did3])
+}
+
+model Claim {
+  id          Int     @id @default(autoincrement())
+  drops       Drop    @relation(fields: [dropId], references: [id])
+  dropId      Int
+  claimed     Boolean?
+  address     String
+}
