@@ -28,7 +28,8 @@ const issueCred = async (did: string) => {
     schemaUrl:
       "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
     subjectData: {
-      eventName: "Eiffel Disco",
+      eventName: "Eiffel Crypto",
+      eventDate: "18 July 2023"
     },
     recipientDID: did,
   });

@@ -143,10 +143,6 @@ const Home: NextPage = () => {
     }
   }, [address, did3, did, setStatus, fetched, status.claimed]);
 
-  useEffect(() => {
-    console.log(status);
-  }, [status]);
-
   const Section = () => {
     if (isDisconnected) {
       return (
@@ -179,7 +175,7 @@ const Home: NextPage = () => {
           <p>Claim your credential with your address:</p>
           <pre>{did}</pre>
           <Button fullWidth onClick={issue}>
-            {loading ? "Claiming..." : "Claim Credntial"}
+            {loading ? "Claiming..." : "Claim Credential"}
           </Button>
         </Card>
       );
@@ -215,11 +211,11 @@ const Home: NextPage = () => {
           <Card transparent>
             <h1>Claim attendance credential</h1>
             <StyledCred>
-              <h2>Disco.xyz</h2>
+              <h2>Attendance</h2>
               <div>
-                <StyledMeta title="Event Name" content="Paris" />
-                <StyledMeta title="Description" content="Hello world" />
-                <StyledMeta title="Date" content="06 06 06" />
+                <StyledMeta title="Event Name" content="Eiffel Crypto" />
+                {/* <StyledMeta title="Description" content="Hello world" /> */}
+                <StyledMeta title="Date" content="18 July 2023" />
                 <StyledMeta title="Format" content="VC @ Disco" />
               </div>
             </StyledCred>
