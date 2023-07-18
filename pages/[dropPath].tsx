@@ -115,7 +115,7 @@ const Home: NextPage = () => {
         });
       }
     }
-  }, [status.did, address, setStatus, drop.dropId]);
+  }, [status.did, address, setStatus, drop]);
 
   ////////
   // AUTO FETCH STATUS UPON WALLET CONNECTION
