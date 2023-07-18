@@ -28,7 +28,8 @@ const issueCred = async (did: string) => {
     schemaUrl:
       "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
     subjectData: {
-      eventName: "Eiffel Crypto",
+      eventName: "Eiffel in Crypto",
+      eventDescription: "Commemorating the one and only Eiffel Tower on July 18th for an unforgettable evening where we'll discuss Account Abstraction, Smart Accounts, ERC-4337, wallets, and more with cocktails and networking with Safe, Disco.xyz, Request Finance, Monerium, Gnosis Chain, Gateway.fm, and Gelato Network.",
       eventDate: "18 July 2023"
     },
     recipientDID: did,

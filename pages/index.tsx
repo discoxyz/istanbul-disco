@@ -1,6 +1,4 @@
-import {
-  useConnectModal,
-} from "@rainbow-me/rainbowkit";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import { useAccount, useDisconnect } from "wagmi";
 import { useCallback, useEffect, useState } from "react";
@@ -84,6 +82,7 @@ const Home: NextPage = () => {
       try {
         const res = await apiIssueCred(status.did, address);
         setLoading(false)
+        console.log(res)
         setStatus({
           did: status.did,
           claimed: res.success,
@@ -91,6 +90,7 @@ const Home: NextPage = () => {
           error: !res.success,
         });
       } catch (err) {
+        console.log('ERROR CAUGHT')
         setLoading(false)
         setStatus({
           did: status.did,
@@ -122,13 +122,13 @@ const Home: NextPage = () => {
       };
       handle();
     }
-  }, [address, setStatus, fetched, status]);
+  }, [address, setStatus, fetched]);
 
   ////////
   // AUTO SET STATUS UPON DID3 CONNECTION
   ////////
   useEffect(() => {
-    if (address && did3 && !did && fetched && status) {
+    if (address && did3 && !did && fetched) {
       const handle = async () => {
         setLoading(true)
         const res = await apiClaimDid(did3, address);
@@ -141,7 +141,7 @@ const Home: NextPage = () => {
       };
       handle();
     }
-  }, [address, did3, did, setStatus, fetched, status.claimed]);
+  }, [address, did3, did, setStatus, fetched]);
 
   const Section = () => {
     if (isDisconnected) {
@@ -213,7 +213,7 @@ const Home: NextPage = () => {
             <StyledCred>
               <h2>Attendance</h2>
               <div>
-                <StyledMeta title="Event Name" content="Eiffel Crypto" />
+                <StyledMeta title="Event Name" content="Eiffel in Crypto" />
                 {/* <StyledMeta title="Description" content="Hello world" /> */}
                 <StyledMeta title="Date" content="18 July 2023" />
                 <StyledMeta title="Format" content="VC @ Disco" />
