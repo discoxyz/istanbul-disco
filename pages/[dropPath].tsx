@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import va from "@vercel/analytics";
 
 const StyledCard = styled(Card, {
+  width: '100%',
   maxWidth: 450,
 });
 
@@ -226,9 +227,9 @@ const Home: NextPage = () => {
         {isMounted && (
           <StyledCard as={"header"}>
             <Card transparent>
-              <h1>Claim attendance credential</h1>
+              <h1>Claim your credential</h1>
               <StyledCred>
-                <h2>Attendance</h2>
+                <h2>{drop.dropName}</h2>
                 <div>
                   <StyledMeta
                     title="Event Name"
