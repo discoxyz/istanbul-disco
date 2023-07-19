@@ -50,7 +50,7 @@ export const drops = [
       eventDate: "2023-07-17",
     },
   },{
-    dropId: 4,
+    dropId: 5,
     hidden: false,
     secretLink: false,
     expired: false,
@@ -61,6 +61,19 @@ export const drops = [
       eventName: "Carmen IRL @ ETHCC 2023",
       eventDescription: "You met Carmen IRL at ETHCC 2023",
       eventDate: "2023-07-17",
+    },
+  },{
+    dropId: 6,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "CoOperate",
+    dropPath: "celo_cooperate",
+    schema: "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
+    credentialSubject: {
+      eventName: "CoOperate",
+      eventDescription: "Attended CoOperate Paris Mobile Day",
+      eventDate: "2023-07-19",
     },
   },
 ];
