@@ -238,7 +238,7 @@ const Home: NextPage = () => {
                   {/* <StyledMeta title="Description" content="Hello world" /> */}
                   <StyledMeta
                     title="Date"
-                    content={drop.credentialSubject.eventData}
+                    content={drop.credentialSubject.eventDate}
                   />
                   <StyledMeta title="Format" content="VC @ Disco" />
                 </div>
