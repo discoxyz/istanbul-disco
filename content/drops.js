@@ -1,3 +1,7 @@
+
+const yourDate = new Date();
+const currentDate = yourDate.toISOString().split("T")[0].toString();
+
 export const drops = [
   {
     dropId: 1,
@@ -74,6 +78,18 @@ export const drops = [
       eventName: "CoOperate",
       eventDescription: "Attended CoOperate Paris Mobile Day",
       eventDate: "2023-07-19",
+    },
+  },{
+    dropId: 7,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "LDF IRL",
+    dropPath: "i_met_ldf",
+    schema: "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
+    credentialSubject: {
+      eventName: "LDF IRL",
+      eventDate: currentDate,
     },
   },
 ];
