@@ -91,5 +91,18 @@ export const drops = [
       eventName: "LDF IRL",
       eventDate: currentDate,
     },
+  },{
+    dropId: 8,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "AttestationNation Dinner",
+    dropPath: "attestnation",
+    schema: "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttendanceCredential/1-0-0.json",
+    credentialSubject: {
+      eventName: "AttestationNation Dinner",
+      eventDescription: "Participated in Disco’s Inaugural AttesationNation Dinner in Paris alongside Optimism, EAS, Gitcoin, PolygonID, District Labs, Lit Protocol, and XMTP",
+      eventDate: "2023-07-16",
+    },
   },
 ];
