@@ -192,6 +192,7 @@ const CreateDrop: NextPage = () => {
             ) {
               return (
                 <Input
+                  key={key}
                   label={field.label}
                   type={field.type || "text"}
                   name={field.name}
@@ -207,6 +208,7 @@ const CreateDrop: NextPage = () => {
               );
             } else if (field.type === "textarea") {
               <TextArea
+                key={key}
                 label={field.label}
                 name={field.name}
                 required={field.required}
@@ -220,7 +222,7 @@ const CreateDrop: NextPage = () => {
               />;
             }
             return (
-              <div>
+              <div key={key}>
                 <label>{field.label}</label>
                 <input
                   name={field.name}
@@ -253,7 +255,8 @@ const CreateDrop: NextPage = () => {
             value={
               data.eligible ||
               claims
-                .map((claim) => (!claim.claimed ? claim.address : '')).filter(str => str !== '')
+                .map((claim) => (!claim.claimed ? claim.address : ""))
+                .filter((str) => str !== "")
                 .join(", ") ||
               ""
             }
