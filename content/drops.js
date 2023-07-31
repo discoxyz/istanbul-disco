@@ -132,7 +132,7 @@ export const drops = [
     credentialSubject: {
       issue: '4',
       publication: "Disco Newsletter",
-      link: 'TBD'
+      link: 'https://discoxyz.substack.com/p/experiments-and-ethcc-recap'
     },
   },
 ];
