@@ -233,7 +233,7 @@ const Home: NextPage = () => {
                 <div>
                   {Object.entries(drop.credentialSubject).map(
                     ([key, value]) => {
-                      return <StyledMeta title={key} content={value as string} />;
+                      return <StyledMeta key={key} title={key} content={value as string} />;
                     }
                   )}
                   <StyledMeta title="Format" content="VC @ Disco" />
