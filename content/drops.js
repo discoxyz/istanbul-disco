@@ -120,4 +120,19 @@ export const drops = [
       eventDate: "2023-07-16",
     },
   },
+  {
+    dropId: 9,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "Disco Newsletter #4",
+    dropPath: "disco-newsletter-4",
+    schema:
+      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/BookmarkCredential/latest.json",
+    credentialSubject: {
+      issue: '4',
+      publication: "Disco Newsletter",
+      link: 'TBD'
+    },
+  },
 ];

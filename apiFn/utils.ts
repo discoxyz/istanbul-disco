@@ -27,6 +27,10 @@ export const issueCredential = async (
       throw new Error("Failed to issue credential");
     }
 
+    if (response.status == 504) {
+      throw new Error("Disco API Timeout");
+    }
+
     await response.json();
     return true;
   } catch (error) {

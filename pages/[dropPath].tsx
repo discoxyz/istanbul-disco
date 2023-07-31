@@ -16,7 +16,7 @@ import { useRouter } from "next/router";
 import va from "@vercel/analytics";
 
 const StyledCard = styled(Card, {
-  width: '100%',
+  width: "100%",
   maxWidth: 450,
 });
 
@@ -231,15 +231,11 @@ const Home: NextPage = () => {
               <StyledCred>
                 <h2>{drop.dropName}</h2>
                 <div>
-                  <StyledMeta
-                    title="Event Name"
-                    content={drop.credentialSubject.eventName}
-                  />
-                  {/* <StyledMeta title="Description" content="Hello world" /> */}
-                  <StyledMeta
-                    title="Date"
-                    content={drop.credentialSubject.eventDate}
-                  />
+                  {Object.entries(drop.credentialSubject).map(
+                    ([key, value]) => {
+                      return <StyledMeta title={key} content={value as string} />;
+                    }
+                  )}
                   <StyledMeta title="Format" content="VC @ Disco" />
                 </div>
               </StyledCred>
