@@ -125,13 +125,14 @@ export const drops = [
     hidden: false,
     secretLink: false,
     expired: false,
-    dropName: "Disco Newsletter #4",
-    dropPath: "disco-newsletter-4",
+    dropName: "Disco Beats #4",
+    dropPath: "disco-beats-4",
     schema:
       "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/BookmarkCredential/latest.json",
     credentialSubject: {
+      volume: '1',
       issue: '4',
-      publication: "Disco Newsletter",
+      publication: "Disco Beats",
       link: 'https://discoxyz.substack.com/p/experiments-and-ethcc-recap'
     },
   },
