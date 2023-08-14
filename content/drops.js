@@ -153,5 +153,10 @@ export const drops = [
         "Boys Club Programming Guild Presents: High Pitched. This speaker series invites founders, investors, and leaders in web3 entrepreneurship to share their experiences with Boys Club. This week, we welcome members Blake Finucane from Neptune and Evin McMullen from Disco.xyz to discuss fundraising.",
       eventLink: "https://boysclub.vip",
     },
+    style: {
+      color: '#000000',
+      backgroundColor: '#F4E469',
+      backgroundImage: 'url(/bg_boysclub.png)'
+    }
   },
 ];

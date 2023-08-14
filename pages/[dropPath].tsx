@@ -31,7 +31,7 @@ const StyledCred = styled("div", {
   padding: 16,
   borderRadius: 16,
   color: "#FFF",
-  background: `url(/bg_disco.png)`,
+  backgroundImage: `url(/bg_disco.png)`,
   backgroundSize: "cover",
   aspectRatio: 1.8,
   display: "flex",
@@ -228,7 +228,7 @@ const Home: NextPage = () => {
           <StyledCard as={"header"}>
             <Card transparent>
               <h1>Claim your credential</h1>
-              <StyledCred>
+              <StyledCred css={...drop.style || {}}>
                 <h2>{drop.dropName}</h2>
                 <div>
                   {Object.entries(drop.credentialSubject).map(
