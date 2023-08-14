@@ -154,9 +154,31 @@ export const drops = [
       eventLink: "https://boysclub.vip",
     },
     style: {
-      color: '#000000',
-      backgroundColor: '#F4E469',
-      backgroundImage: 'url(/bg_boysclub.png)'
-    }
+      color: "#000000",
+      backgroundColor: "#F4E469",
+      backgroundImage: "url(/bg_boysclub.png)",
+    },
+  },
+  {
+    dropId: 11,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "Tuesday TED Talk",
+    dropPath: "tuesday-ted-1",
+    schema:
+      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+    credentialSubject: {
+      startDate: "2023-08-15",
+      endDate: "2023-08-15",
+      eventName: "Tuesday TED Talks with Graph Paper Capital",
+      eventDescription: "Discussion with Evin McMullen, cofounder of Disco.xyz.",
+      eventLink: "https://www.graphpapercapital.xyz/#program",
+    },
+    style: {
+      color: "#000000",
+      backgroundColor: "#d6fa7b",
+      backgroundImage: "initial",
+    },
   },
 ];
