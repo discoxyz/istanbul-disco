@@ -130,10 +130,28 @@ export const drops = [
     schema:
       "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/BookmarkCredential/latest.json",
     credentialSubject: {
-      volume: '1',
-      issue: '4',
+      volume: "1",
+      issue: "4",
       publication: "Disco Beats",
-      link: 'https://discoxyz.substack.com/p/experiments-and-ethcc-recap'
+      link: "https://discoxyz.substack.com/p/experiments-and-ethcc-recap",
+    },
+  },
+  {
+    dropId: 10,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "Zero to Zaddy High Pitch Series",
+    dropPath: "zero-to-zaddy",
+    schema:
+      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+    credentialSubject: {
+      startDate: "2023-08-14",
+      endDate: "2023-08-14",
+      eventName: "Zero to Zaddy High Pitch Series",
+      eventDescription:
+        "Boys Club Programming Guild Presents: High Pitched. This speaker series invites founders, investors, and leaders in web3 entrepreneurship to share their experiences with Boys Club. This week, we welcome members Blake Finucane from Neptune and Evin McMullen from Disco.xyz to discuss fundraising.",
+      eventLink: "https://boysclub.vip",
     },
   },
 ];
