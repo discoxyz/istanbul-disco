@@ -164,7 +164,7 @@ export const drops = [
     hidden: false,
     secretLink: false,
     expired: false,
-    dropName: "Tuesday TED Talk",
+    dropName: "GPC Tuesday Tech Talk",
     dropPath: "tuesday-ted-1",
     schema:
       "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
