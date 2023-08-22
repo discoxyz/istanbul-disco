@@ -42,7 +42,7 @@ export default function Page() {
   // Handle redirect if no permission
   useEffect(() => {
     if (drop && address !== drop?.createdByAddress) {
-      return redirect(`/drop/${path}`);
+      return redirect(`/active/${path}`);
     }
   }, [drop, address]);
   return (
