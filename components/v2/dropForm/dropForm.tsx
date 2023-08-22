@@ -13,7 +13,7 @@ import { Button } from "../button";
 import { useAccount, useSignMessage } from "wagmi";
 import { recoverMessageAddress } from "viem";
 import { ToastError, ToastLoading, ToastSuccess } from "../toast";
-import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation'
 
 type DropProps = Prisma.DropGetPayload<{}> & {
   claims: Prisma.ClaimGetPayload<{}>[];
@@ -25,6 +25,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
 }) => {
   // Set fields using drop data, if available
   // This means the form can be re-used for editing and creating
+  const router = useRouter()
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   // const { recoverMessageAddress } = rec
@@ -221,7 +222,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
 
     const json = await res.json();
     if (!_drop?.id) {
-      return redirect(`/active/${newObj.path}?created=true`);
+      router.push(`/active/${newObj.path}?created=true`);
     }
     if (refreshData) {
       await refreshData();

@@ -195,7 +195,7 @@ const Page = () => {
           <ToastSuccess
             text="Drop created"
             onDismiss={() => {
-              router.replace(`/drop/${path}`);
+              router.replace(`/active/${path}`);
               setCreated(false);
             }}
           />
