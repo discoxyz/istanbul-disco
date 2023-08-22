@@ -11,36 +11,45 @@ datasource db {
 }
 
 model Drop {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  path        String    @unique
-  schema      String
-  subjectData String
-  startTime   DateTime?
-  endTime     DateTime?
-  visible     Boolean?
-  limit       Int?
-  image       String?
-  createdAt   DateTime  @default(now())
-  gated       Boolean?
-  claims      Claim[]
+  id               Int       @id @default(autoincrement())
+  // Drop data
+  name             String
+  description      String?
+  path             String    @unique
+  schema           String
+  subjectData      String
+  startTime        DateTime?
+  endTime          DateTime?
+  visible          Boolean?
+  limit            Int?
+  image            String?
+  createdAt        DateTime  @default(now())
+  gated            Boolean?
+  // Metadata
+  // Used to verify + update drop data
+  signature        String
+  createdByAddress String
+  // Relations
+  createdByUser    User      @relation(fields: [createdByAddress], references: [address])
+  claims           Claim[]
 }
 
 model User {
   id      Int     @id @default(autoincrement())
-  Address String? @unique
-  Did3    String? @unique
+  address String  @unique
   name    String?
   bio     String?
-
-  @@unique([Address, Did3])
+  claims  Claim[]
+  drops   Drop[]
 }
 
 model Claim {
-  id          Int     @id @default(autoincrement())
-  drops       Drop    @relation(fields: [dropId], references: [id])
-  dropId      Int
-  claimed     Boolean?
-  address     String
+  id      Int     @id @default(autoincrement())
+  dropId  Int
+  claimed Boolean @default(false)
+  address String
+  drop    Drop    @relation(fields: [dropId], references: [id])
+  user    User    @relation(fields: [address], references: [address])
+
+  @@unique([dropId, address])
 }
