@@ -30,7 +30,8 @@ export default function Page() {
 
   const fetchDrop = async (path: string) => {
     const drops = await getDrops({ path, withClaims: true });
-    setDrop(drops[0]);
+    const drop = drops[0]
+    setDrop(drop);
   };
 
   useEffect(() => {
