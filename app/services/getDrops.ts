@@ -9,7 +9,7 @@ export async function getDrops(args?: {
   createdByAddress?: Address;
 }) {
   const dropFetch = await fetch(
-    `http://localhost:3000/api/v2/drops/getAllWithStatus`,
+    `/api/v2/drops/getAllWithStatus`,
     {
       method: "POST",
       body: JSON.stringify({
