@@ -197,5 +197,10 @@ export const drops = [
       eventDescription: "Boys Club Programming Guild Presents: Summer School. Boys Club Summer School is a guest speaker series where the boys come to learn. Whether you're a vet or a newbie, this series has something for everyone. First lesson? How to Disco! Learn about data sovereignty, setting up your data backpack, and more with the team at Disco. Participants will receive verifiable credentials for their backpacks.",
       eventLink: "https://boysclub.vip/",
     },
+    style: {
+      color: "#000000",
+      backgroundColor: "#F4E469",
+      backgroundImage: "url(/bg_boysclub.png)",
+    },
   },
 ];
