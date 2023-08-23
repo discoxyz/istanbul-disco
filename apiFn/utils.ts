@@ -23,6 +23,8 @@ export const issueCredential = async (
     });
 
     if (!response.ok) {
+      // await response.json()
+      console.log(response)
       console.error("error in response");
       throw new Error("Failed to issue credential");
     }

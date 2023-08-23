@@ -128,7 +128,7 @@ export const drops = [
     dropName: "Disco Beats #4",
     dropPath: "disco-beats-4",
     schema:
-      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/BookmarkCredential/latest.json",
+      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/BookmarkCredential/1-0-0.json",
     credentialSubject: {
       volume: "1",
       issue: "4",
@@ -144,7 +144,7 @@ export const drops = [
     dropName: "Zero to Zaddy High Pitch Series",
     dropPath: "zero-to-zaddy",
     schema:
-      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/ParticipationCredential/1-0-0.json",
     credentialSubject: {
       startDate: "2023-08-14",
       endDate: "2023-08-14",
@@ -167,7 +167,7 @@ export const drops = [
     dropName: "GPC Tuesday Tech Talk",
     dropPath: "tuesday-ted-1",
     schema:
-      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/ParticipationCredential/1-0-0.json",
     credentialSubject: {
       startDate: "2023-08-15",
       endDate: "2023-08-15",
@@ -189,7 +189,7 @@ export const drops = [
     dropName: "BC Summer School: Teach Me How to Disco",
     dropPath: "teach-me-to-disco",
     schema:
-      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+      "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/ParticipationCredential/1-0-0.json",
     credentialSubject: {
       startDate: "2023-08-23",
       endDate: "2023-08-23",
