@@ -181,4 +181,21 @@ export const drops = [
       backgroundImage: "initial",
     },
   },
+  {
+    dropId: 12,
+    hidden: false,
+    secretLink: false,
+    expired: false,
+    dropName: "BC Summer School: Teach Me How to Disco",
+    dropPath: "teach-me-to-disco",
+    schema:
+      "https://github.com/discoxyz/disco-schemas/blob/main/json/ParticipationCredential/1-0-0.json",
+    credentialSubject: {
+      startDate: "2023-08-23",
+      endDate: "2023-08-23",
+      eventName: "BC Summer School: Teach Me How to Disco",
+      eventDescription: "Boys Club Programming Guild Presents: Summer School. Boys Club Summer School is a guest speaker series where the boys come to learn. Whether you're a vet or a newbie, this series has something for everyone. First lesson? How to Disco! Learn about data sovereignty, setting up your data backpack, and more with the team at Disco. Participants will receive verifiable credentials for their backpacks.",
+      eventLink: "https://boysclub.vip/",
+    },
+  },
 ];
