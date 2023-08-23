@@ -1,5 +1,5 @@
 "use client";
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { WalletProvider } from "../contexts/walletProvider";

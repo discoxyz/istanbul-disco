@@ -1,7 +1,6 @@
 "use client";
 
 import Head from "next/head";
-import { Nav } from "../components/v2/nav";
 import { Prisma } from "@prisma/client";
 import { Key, useEffect, useState } from "react";
 import { DropRow } from "../components/v2/dropRow";

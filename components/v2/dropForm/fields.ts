@@ -77,30 +77,19 @@ export const fields: FieldProps = {
       errorMessage: "Drop path is required",
     },
   },
-  schema: {
-    field: {
-      required: true,
-      label: "Path to your schema",
-      placeholder: "https://raw.githubusercontent.com/.....",
-      // Html regex
-      pattern: "^(http(s)?://)+[w-._~:/?#[]@!$&'()*+,;=.]+$",
-      validateAs: "url",
-      type: "text",
-      value: "",
-      errorMessage: "Valid schema URL is required",
-    },
-  },
-  subjectData: {
-    field: {
-      required: true,
-      label: "The subjectdata of your schema",
-      placeholder: '{"foo": "bar"}',
-      validateAs: "json",
-      type: "textarea",
-      value: "",
-      errorMessage: "SubjectData as JSON is required",
-    },
-  },
+  // schema: {
+  //   field: {
+  //     required: true,
+  //     label: "Path to your schema",
+  //     placeholder: "https://raw.githubusercontent.com/.....",
+  //     // Html regex
+  //     pattern: "^(http(s)?://)+[w-._~:/?#[]@!$&'()*+,;=.]+$",
+  //     validateAs: "url",
+  //     type: "text",
+  //     value: "",
+  //     errorMessage: "Valid schema URL is required",
+  //   },
+  // },
   visible: {
     field: {
       required: false,

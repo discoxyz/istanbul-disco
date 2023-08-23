@@ -3,6 +3,7 @@ import {
   ClipboardEvent,
   FC,
   Key,
+  createRef,
   useCallback,
   useEffect,
   useState,
@@ -15,6 +16,9 @@ import { recoverMessageAddress } from "viem";
 import { ToastError, ToastLoading, ToastSuccess } from "../toast";
 import { useRouter } from "next/navigation";
 import { getPathAvailability } from "../../../app/services/getPathAvalability";
+import Form from "@rjsf/core";
+import { schemas } from "../../../lib/schemas";
+import validator from "@rjsf/validator-ajv8";
 
 type DropProps = Prisma.DropGetPayload<{}> & {
   claims: Prisma.ClaimGetPayload<{}>[];
@@ -24,6 +28,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
   drop: _drop,
   refreshData,
 }) => {
+  const formRef = createRef<any>();
   // Set fields using drop data, if available
   // This means the form can be re-used for editing and creating
   const router = useRouter();
@@ -47,10 +52,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
             _drop[key].map((c) => c.address) || value.field.value;
           return;
         }
-
         if (value.field.type === "checkbox") {
-          console.log("MANAGE CHECKBOX");
-          console.log((_drop as any)[key]);
           _fields[key].field.value = (_drop as any)[key];
         } else {
           _fields[key].field.value = (_drop as any)[key] || value.field.value;
@@ -62,7 +64,13 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
       }
 
       setFieldData(_fields);
+      setSubjectData(_drop?.subjectData);
+      setSelectedSchema(
+        schemas.find((s) => s?.schema.$id === _drop?.schema)?.name
+      );
     }
+
+    console.log(schemas[2]?.schema.properties.credentialSubject);
   }, []);
 
   const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
@@ -70,6 +78,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
+      console.log("handle change", value);
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -84,7 +93,6 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
       const invalid = /[^A-Za-z0-9]/.test(value);
 
       if (key === "path" && value) {
-        console.log(value, _drop?.path);
         if (value === _drop?.path) {
           setPathLoading(false);
           setPathAvailable(true);
@@ -174,22 +182,26 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
           ? "toggle"
           : undefined;
       if (!toggleTarget) return null;
-      console.log(toggleTarget, value);
 
       if (toggleTarget === "toggle" && field.toggle) {
         field.toggle.value = value;
-        console.log("TOGGLE", value);
       } else if (toggleTarget === "checkbox") {
         field.field.value = value;
       }
-
-      console.log(field);
 
       const newField = { [`${key}`]: { ...field } };
       setFieldData({ ...fieldData, ...newField });
     },
     [fieldData]
   );
+
+  const [selectedSchema, setSelectedSchema] = useState<undefined | string>();
+  const [cleanSchema, setCleanSchema] = useState<undefined | any>();
+  const [subjectData, setSubjectData] = useState<any>(undefined);
+
+  const handleFormData = (e: any) => {
+    setSubjectData(e.formData);
+  };
 
   const handleSubmit = useCallback(async () => {
     // setSubmitting(true);
@@ -230,14 +242,28 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
       newObj[key as string] = value.field.value;
     });
 
+    newObj.subjectData = JSON.stringify(subjectData);
+
     // Add gated prop
     newObj.gated = data.claims.toggle?.value;
+
+    // Add schema prop
+    newObj.schema = schemas.find((s) => s?.name === selectedSchema)?.schema.$id;
 
     // If has errors, do not submit
     if (Object.entries(data).some(([key, value]) => value.field.error)) {
       setFieldData(data);
       // setSubmitting(false)
       setError("Errors. Not submitting");
+      return;
+    }
+    console.log("subject", subjectData, cleanSchema);
+    if (
+      !formRef?.current?.validateForm() &&
+      Object.keys(cleanSchema?.properties).length &&
+      cleanSchema?.required.length
+    ) {
+      setError("Schema fields are invalid");
       return;
     }
     setSubmitting(true);
@@ -285,7 +311,32 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
     }
     setSubmitting(false);
     setSubmitted(true);
-  }, [fieldData, address, _drop, signMessageAsync]);
+  }, [
+    fieldData,
+    address,
+    _drop,
+    signMessageAsync,
+    selectedSchema,
+    subjectData,
+    formRef,
+  ]);
+
+  useEffect(() => {
+    if (!selectedSchema) {
+      setCleanSchema(undefined);
+      return;
+    }
+
+    let s = schemas.find((s) => s?.name === selectedSchema)?.schema.properties
+      .credentialSubject;
+    delete s?.properties?.id;
+    const i = s?.required?.indexOf("id");
+    if (i !== -1) {
+      s?.required.splice(i, 1);
+    }
+    setCleanSchema(s);
+  }, [selectedSchema]);
+  // usefEffect [schemaObj, setSelectedSchemaOjb]
 
   const Toggle: FC<{
     className?: string;
@@ -339,7 +390,6 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                 value.field.value as string
               )) ||
             value.field.helper;
-          console.log(value.field);
           return (
             <div
               key={key}
@@ -420,7 +470,6 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                       onChange={(e) => handleChange(key, e.target.value)}
                       disabled={submitting || disabled}
                       className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait border rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
-                      // pattern={value.field.pattern}
                     />
                   </>
                 ) : value.field.type === "checkbox" ? (
@@ -488,6 +537,42 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
             </div>
           );
         })}
+        <div className="rounded bg-slate-800 p-4 my-8">
+          <label className="block mb-2">Select a schema</label>
+          <select
+            placeholder="'Select a schema"
+            id="countries"
+            onChange={(e) => setSelectedSchema(e?.target?.value || undefined)}
+            className=" rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option selected disabled>
+              Choose a Schema
+            </option>
+            {schemas.map((s, key) => (
+              <option
+                key={key}
+                value={s?.name}
+                selected={selectedSchema === s?.name}
+              >
+                {s?.name}
+              </option>
+            ))}
+          </select>
+          {selectedSchema && cleanSchema ? (
+            // <ChakraProvider resetCSS={false}>
+            <Form
+              formData={subjectData || {}}
+              ref={formRef}
+              schema={cleanSchema}
+              validator={validator}
+              onChange={handleFormData}
+              // onSubmit={() => console.log("submitted")}
+              // onError={() => console.log("errors")}
+            />
+          ) : // </ChakraProvider>
+          null}
+        </div>
+
         <Button onClick={handleSubmit}>
           {_drop?.id ? "Update Drop" : "Create Drop"}
         </Button>

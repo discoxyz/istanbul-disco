@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css?family=Syne:800");
+
+html,
+body {
+  background: rgb(26, 29, 31);
+  color: #fff;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input[type="text"], input[type='date'], input[type='number'], input[type='url'], textarea, select {
+  @apply disabled:border-gray-700;
+  @apply disabled:bg-gray-800;
+  @apply disabled:text-gray-400;
+  @apply disabled:cursor-wait;
+  @apply border;
+  @apply text-gray-900;
+  @apply rounded-lg;
+  @apply block;
+  @apply w-full;
+  @apply p-2.5;
+  @apply bg-gray-700;
+  @apply border-gray-600;
+  @apply placeholder-gray-400;
+  @apply text-white;
+  @apply focus:ring-blue-500;
+  @apply focus:border-blue-500;
+}
+
+select, input, textarea {
+  @apply mb-6
+}
+
+label {
+  @apply block;
+  @apply mb-2
+}
+
+
+.rjsf button[type='submit'] {
+  display: none
+}
+// label {
+//   @apply mt-6
+// }
+
