@@ -4,16 +4,24 @@ import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { address, dropId }: { address: string,dropId?: number } = JSON.parse(req.body);
-  
+  const {
+    address,
+    dropId,
+    withDrops,
+  }: { address: string; dropId?: number; withDrops?: boolean } = JSON.parse(
+    req.body
+  );
+
   try {
     const drops = await prisma.claim.findMany({
       where: {
         address: address,
-        dropId: dropId
+        claimed: true,
+      },
+      include: {
+        drop: withDrops || false,
       },
     });
-
 
     res.status(200).send({
       message: `${drops.length} claims found`,
@@ -31,4 +39,3 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default handler;
-

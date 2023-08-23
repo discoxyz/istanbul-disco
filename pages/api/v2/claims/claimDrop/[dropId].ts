@@ -83,6 +83,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const drop = await prisma.drop.findFirstOrThrow({
       where: {
         id: dropId,
+        disabled: false
       },
     });
 

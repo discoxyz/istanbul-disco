@@ -10,6 +10,8 @@ import { getDrops } from "../services/getDrops";
 import { useAccount } from "wagmi";
 import { Button } from "../../components/v2/button";
 import { redirect } from "next/navigation";
+import { getClaims } from "../services/getClaims";
+import { Credential } from "../../components/v2/credCard";
 // import { useState } from "react";
 
 // // This gets called on every request
@@ -31,17 +33,23 @@ export default function Page() {
   // const { drops } = props.data.data;
   const { address, isConnected } = useAccount();
   const [drops, setDrops] = useState<any[]>([]);
+  // useEffect(() => {
+  //   setCreated(!!searchParams?.get("created"));
+  // }, [searchParams]);
 
   useEffect(() => {
-    if (!isConnected) {
-      redirect('/')
+    if (!isConnected || !address) {
+      redirect("/");
     }
     const fetchDrops = async () => {
-      const drops = await getDrops({ createdByAddress: address, address, includeHidden: true, includeDisabled: true });
+      console.log("getClaims");
+      const claims = await getClaims({ address: address, withDrops: true });
+      const drops = claims.map((c: any) => c.drop);
+      // const drops = false;
       setDrops(drops || []);
     };
     fetchDrops();
-  }, [address]);
+  }, [address, isConnected]);
 
   return (
     <>
@@ -54,32 +62,42 @@ export default function Page() {
             <li className="opacity-60 mr-5">
               <Link href="/">Active Drops</Link>
             </li>
-            <li className="mr-5">
+            <li className="mr-5 opacity-60">
               <Link href="/my-drops">My Drops</Link>
             </li>
-            <li className="mr-5 opacity-60">
+            <li className="mr-5">
               <Link href="/my-claims">My Claims</Link>
             </li>
-            
-              <li className="ml-auto">
-                <Link href="/my-drops/create">
-                  <Button>Create</Button>
-                </Link>
-              </li>
+
+            <li className="ml-auto">
+              <Link href="/my-drops/create">
+                <Button>Create</Button>
+              </Link>
+            </li>
           </ol>
         </nav>
-        {drops.map(
-          (
-            drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
-            key: Key
-          ) => {
-            return (
-              <Link href={`/my-drops/${drop.path}`} key={key}>
-                <DropRow drop={drop} className="mb-4" />
-              </Link>
-            );
-          }
-        )}
+        <div className="grid grid-cols-3 gap-4">
+          {drops.map(
+            (
+              drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
+              key: Key
+            ) => {
+              return (
+                <Link href={`/my-drops/${drop.path}`} key={key}>
+                  <Credential
+                    image={drop.image || undefined}
+                    title={drop.name}
+                    data={JSON.parse(drop.subjectData)}
+                    className="max-w-sm col-span-2"
+                    createdByAddress={drop.createdByAddress}
+                    // {...rest}
+                  />
+                  {/* <DropRow drop={drop} className="mb-4" /> */}
+                </Link>
+              );
+            }
+          )}
+        </div>
       </main>
     </>
   );

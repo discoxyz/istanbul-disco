@@ -12,6 +12,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     withClaims,
     createdByAddress,
     withClaimsBy,
+    includeHidden,
+    includeDisabled,
   }: {
     claimingAddress?: string;
     dropId?: number;
@@ -19,6 +21,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     withClaims?: boolean;
     createdByAddress?: string;
     withClaimsBy?: string;
+    includeHidden?: boolean;
+    includeDisabled?: boolean;
   } = JSON.parse(req.body);
 
   try {
@@ -27,6 +31,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         path: path,
         id: dropId,
         createdByAddress: createdByAddress,
+        visible: includeHidden ? undefined : true,
+        disabled: includeDisabled ? undefined : false
       },
       ...(withClaims || claimingAddress
         ? {

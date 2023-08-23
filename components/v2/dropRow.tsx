@@ -48,6 +48,12 @@ export const DropRow: FC<
   } else if (!eligible) {
     tags.push({ color: "negative", text: "Not eligible" });
   }
+  if (address === drop.createdByAddress && !drop.visible) {
+    tags.push({ color: "neutral", text: "Hidden from feed" });
+  }
+  if (address === drop.createdByAddress && drop.disabled) {
+    tags.push({ color: "neutral", text: "Claiming disabled" });
+  }
 
   return (
     <div

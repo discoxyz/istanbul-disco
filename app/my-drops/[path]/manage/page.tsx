@@ -29,8 +29,9 @@ export default function Page() {
   // const [claims, setClaims] = useState<any[]>([]);
 
   const fetchDrop = async (path: string) => {
-    const drops = await getDrops({ path, withClaims: true });
+    const drops = await getDrops({ path, withClaims: true, includeHidden: true, includeDisabled: true });
     const drop = drops[0]
+    console.log(drop)
     setDrop(drop);
   };
 

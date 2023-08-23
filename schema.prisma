@@ -20,7 +20,8 @@ model Drop {
   subjectData      String
   startTime        DateTime?
   endTime          DateTime?
-  visible          Boolean?
+  visible          Boolean  @default(true)
+  disabled         Boolean  @default(false)
   limit            Int?
   image            String?
   createdAt        DateTime  @default(now())

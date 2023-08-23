@@ -13,7 +13,8 @@ import { Button } from "../button";
 import { useAccount, useSignMessage } from "wagmi";
 import { recoverMessageAddress } from "viem";
 import { ToastError, ToastLoading, ToastSuccess } from "../toast";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
+import { getPathAvailability } from "../../../app/services/getPathAvalability";
 
 type DropProps = Prisma.DropGetPayload<{}> & {
   claims: Prisma.ClaimGetPayload<{}>[];
@@ -25,7 +26,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
 }) => {
   // Set fields using drop data, if available
   // This means the form can be re-used for editing and creating
-  const router = useRouter()
+  const router = useRouter();
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   // const { recoverMessageAddress } = rec
@@ -47,8 +48,13 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
           return;
         }
 
-        // if (key === 'toggle')
-        _fields[key].field.value = (_drop as any)[key] || value.field.value;
+        if (value.field.type === "checkbox") {
+          console.log("MANAGE CHECKBOX");
+          console.log((_drop as any)[key]);
+          _fields[key].field.value = (_drop as any)[key];
+        } else {
+          _fields[key].field.value = (_drop as any)[key] || value.field.value;
+        }
       });
 
       if (_fields?.claims?.toggle) {
@@ -59,8 +65,11 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
     }
   }, []);
 
+  const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
+  const [pathLoading, setPathLoading] = useState<boolean>(false);
+
   const handleChange = useCallback(
-    (key: string, value: any, arrayKey?: number) => {
+    async (key: string, value: any, arrayKey?: number) => {
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -69,6 +78,36 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
       }
       // Idk why the value has to be spread. Not doing this will fail to update state
       setFieldData({ ..._fieldData });
+
+      if (key === "path") setPathAvailable(undefined);
+
+      const invalid = /[^A-Za-z0-9]/.test(value);
+
+      if (key === "path" && value) {
+        console.log(value, _drop?.path);
+        if (value === _drop?.path) {
+          setPathLoading(false);
+          setPathAvailable(true);
+          return;
+        } else if (invalid) {
+          _fieldData[key].field.error = true;
+          _fieldData[key].field.errorMessage =
+            "No special characters or spaces";
+          setFieldData({ ..._fieldData });
+          setPathLoading(false);
+          setPathAvailable(undefined);
+          return;
+        } else {
+          // Reset err to false and error message
+          _fieldData[key].field.error = false;
+          _fieldData[key].field.errorMessage =
+            fieldData[key].field.errorMessage;
+          setPathLoading(true);
+          const data = await getPathAvailability(value);
+          setPathLoading(false);
+          setPathAvailable(data.available);
+        }
+      }
     },
     [fieldData]
   );
@@ -128,17 +167,32 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
   const handleEnable = useCallback(
     (key: string, value: any) => {
       const field = fieldData[key];
-      if (field.toggle) {
+      const toggleTarget =
+        field.field?.type === "checkbox"
+          ? "checkbox"
+          : field.toggle
+          ? "toggle"
+          : undefined;
+      if (!toggleTarget) return null;
+      console.log(toggleTarget, value);
+
+      if (toggleTarget === "toggle" && field.toggle) {
         field.toggle.value = value;
-        const newField = { [`${key}`]: { ...field } };
-        setFieldData({ ...fieldData, ...newField });
+        console.log("TOGGLE", value);
+      } else if (toggleTarget === "checkbox") {
+        field.field.value = value;
       }
+
+      console.log(field);
+
+      const newField = { [`${key}`]: { ...field } };
+      setFieldData({ ...fieldData, ...newField });
     },
     [fieldData]
   );
 
   const handleSubmit = useCallback(async () => {
-    setSubmitting(true);
+    // setSubmitting(true);
     const data = { ...fieldData };
     const newObj: { [key in any]: any } = {};
     Object.entries(data).map(([key, value]) => {
@@ -182,9 +236,11 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
     // If has errors, do not submit
     if (Object.entries(data).some(([key, value]) => value.field.error)) {
       setFieldData(data);
+      // setSubmitting(false)
       setError("Errors. Not submitting");
       return;
     }
+    setSubmitting(true);
 
     if (_drop && _drop.createdByAddress !== address) {
       console.error("Created by address does not match current address");
@@ -232,29 +288,39 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
   }, [fieldData, address, _drop, signMessageAsync]);
 
   const Toggle: FC<{
-    toggle?: { label: string; value: boolean };
+    className?: string;
+    toggle?: { label: string; value: boolean; helperText?: string };
     fieldKey: keyof typeof fields;
-  }> = ({ toggle, fieldKey }) => {
-    if (!toggle || !fieldData[fieldKey].toggle) return null;
+  }> = ({ toggle, fieldKey, className }) => {
+    let proceed = false;
+    if (toggle || fieldData[fieldKey].toggle) proceed = true;
+    if (fieldData[fieldKey]?.field?.type === "checkbox") proceed = true;
+    if (!proceed) return null;
 
     return (
-      <div className={`block rounded bg-slate-800 p-4 mb-6`}>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <div className="relative">
-            <input
-              type="checkbox"
-              value=""
-              className="sr-only peer"
-              checked={fieldData[fieldKey as string].toggle?.value}
-              onChange={(e) =>
-                handleEnable(fieldKey as string, e.target.checked)
-              }
-            />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          </div>
-          <span className="block ml-4">{toggle.label}</span>
-        </label>
-      </div>
+      <label
+        className={`relative inline-flex items-center cursor-pointer ${className}`}
+      >
+        <div className="relative">
+          <input
+            type="checkbox"
+            value=""
+            className="sr-only peer"
+            checked={
+              fieldData[fieldKey as string].toggle?.value ||
+              fieldData[fieldKey as string].field.value === true
+            }
+            onChange={(e) => handleEnable(fieldKey as string, e.target.checked)}
+          />
+          <div className="w-11 h-6 peer-focus:outline-none peer-focus:ring-4  peer-focus:ring-blue-800 rounded-full peer bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-blue-600"></div>
+        </div>
+        <div className="ml-4">
+          <span className="block ">{toggle?.label}</span>
+          <span className="bloxk text-slate-400 text-m">
+            {toggle?.helperText}
+          </span>
+        </div>
+      </label>
     );
   };
 
@@ -273,20 +339,22 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                 value.field.value as string
               )) ||
             value.field.helper;
-
+          console.log(value.field);
           return (
             <div
               key={key}
               className={`block ${
-                value.toggle && "rounded bg-slate-800 p-4 mb-6"
+                value.toggle && "rounded bg-slate-800 p-4 my-8"
               }`}
             >
-              <Toggle toggle={value.toggle} fieldKey={key} />
+              {value.toggle && (
+                <Toggle toggle={value.toggle} fieldKey={key} className="my-4" />
+              )}
 
               <div className={`block mb-6 ${disabled && "hidden"}`}>
                 {value.field.type === "text-arr" ? (
                   <>
-                    <label className="mb-2 flex">
+                    <label className="my-3 flex">
                       {value.field.label}
                       <span className="ml-auto">Hide Claims</span>
                       {!!_drop?.claims.find((c) => c.claimed === true) ? (
@@ -304,9 +372,9 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                           (c) => c.address === a
                         );
                         return (
-                          <div className="relative mb-3 " key={_key}>
+                          <div className="relative my-3 " key={_key}>
                             <input
-                              className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-900rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                               disabled={
                                 submitting ||
                                 !!_drop?.claims.find(
@@ -351,15 +419,25 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                       value={value.field.value as string}
                       onChange={(e) => handleChange(key, e.target.value)}
                       disabled={submitting || disabled}
-                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait border rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                       // pattern={value.field.pattern}
                     />
                   </>
+                ) : value.field.type === "checkbox" ? (
+                  <Toggle
+                    className="my-4"
+                    toggle={{
+                      label: value.field.label,
+                      value: value.field.value as boolean,
+                      helperText: value.field.helper,
+                    }}
+                    fieldKey={key}
+                  />
                 ) : (
                   <>
                     <label className="block mb-2">{value.field.label}</label>
                     <input
-                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait bg-gray-50 border border-gray-300 text-gray-900rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait  border text-gray-900rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                       disabled={submitting || disabled}
                       required={
                         value.field.required || disabled !== false || undefined
@@ -371,8 +449,38 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
                     />
                   </>
                 )}
-                <p className="text-slate-400">{helperText}</p>
-
+                {value.field.type !== "checkbox" && (
+                  <p className="text-slate-400 flex">
+                    {helperText}{" "}
+                    {key === "path" &&
+                      value.field.value &&
+                      !value.field.error &&
+                      (pathLoading ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6 animate-spin ml-auto"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"
+                          />
+                        </svg>
+                      ) : pathAvailable === true ? (
+                        <span className="text-green-500 ml-auto">Avalable</span>
+                      ) : (
+                        pathAvailable === false && (
+                          <span className="text-red-500 ml-auto">
+                            Not avaliable
+                          </span>
+                        )
+                      ))}
+                  </p>
+                )}
                 <p className="text-red-600">
                   {value.field.error && value.field.errorMessage}
                 </p>
@@ -380,7 +488,7 @@ export const DropForm: FC<{ drop?: DropProps; refreshData?: () => void }> = ({
             </div>
           );
         })}
-        <Button onClick={handleSubmit} >
+        <Button onClick={handleSubmit}>
           {_drop?.id ? "Update Drop" : "Create Drop"}
         </Button>
       </div>

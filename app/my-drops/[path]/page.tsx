@@ -47,6 +47,8 @@ const Page = () => {
           address,
           withClaims: true,
           withClaimsBy: address || undefined,
+          includeHidden: true,
+          includeDisabled: true,
         });
         setDrop(drops[0] || []);
         setLoaded(true);

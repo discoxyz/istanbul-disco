@@ -39,9 +39,14 @@ export default function Page() {
               <Link href="/">Active Drops</Link>
             </li>
             {isConnected && (
-              <li className="opacity-60">
-                <Link href="/my-drops">My Drops</Link>
-              </li>
+              <>
+                <li className="opacity-60">
+                  <Link href="/my-drops">My Drops</Link>
+                </li>
+                <li className="mr-5 opacity-60">
+                  <Link href="/my-claims">My Claims</Link>
+                </li>
+              </>
             )}
           </ol>
         </nav>

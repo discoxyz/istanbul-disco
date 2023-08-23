@@ -22,7 +22,7 @@ export interface FieldProps {
       disabled?: boolean;
       inlineMessage?: string;
       validateAs?: "string" | "url" | "json" | "number" | "path" | "address";
-      value: string | number | boolean | string[];
+      value: string | number | boolean | string[] | boolean;
       helper?: string;
       error?: boolean;
       errorMessage?: string;
@@ -100,6 +100,24 @@ export const fields: FieldProps = {
       value: "",
       errorMessage: "SubjectData as JSON is required",
     },
+  },
+  visible: {
+    field: {
+      required: false,
+      label: 'Show drop in drop feed?',
+      helper: 'If disabled, the drop will be accessible via the path',
+      type: "checkbox",
+      value: true,
+    }
+  },
+  disabled: {
+    field: {
+      required: false,
+      label: 'Disable claims',
+      type: 'checkbox',
+      value: false,
+      helper: 'Visitors will not be able to claim the credential'
+    }
   },
   // limit: {
   //   toggle: {
