@@ -2,19 +2,15 @@
 
 import { Prisma } from "@prisma/client";
 import {
-  CSSProperties,
   FC,
   HTMLProps,
   Key,
   OlHTMLAttributes,
-  PropsWithChildren,
   useEffect,
   useState,
 } from "react";
 import { Credential } from "./credCard";
-import { base } from "@rainbow-me/rainbowkit/dist/css/reset.css";
 import { useAccount } from "wagmi";
-import { Button } from "./button";
 import { parseClaimStatus } from "../../lib/parseClaimStatus";
 
 export const DropRow: FC<
@@ -26,7 +22,6 @@ export const DropRow: FC<
   const [eligible, setEligibile] = useState<boolean | undefined>();
   const [claimed, setClaimed] = useState<boolean | undefined>();
   useEffect(() => {
-    // const claim = drop.claims?.filter((c) => c.address == address)[0];
     const { claimed, eligible } = parseClaimStatus(drop, address);
     setClaimed(claimed);
     setEligibile(eligible);
@@ -57,24 +52,24 @@ export const DropRow: FC<
 
   return (
     <div
-      className={`bg-stone-950 grid grid-cols-5 max-w-full p-6 rounded-2xl group transition-all hover:scale-105 ${className}`}
+      className={`group grid max-w-full grid-cols-5 gap-x-6 rounded-2xl bg-stone-950 p-6 transition-all hover:scale-105 ${className}`}
     >
       <Credential
         image={drop.image || undefined}
         title={drop.name}
         data={JSON.parse(drop.subjectData)}
-        className="max-w-sm col-span-2"
+        className="col-span-5 sm:col-span-3 md:col-span-2"
         createdByAddress={drop.createdByAddress}
         {...rest}
       />
-      <div className="flex-1 ml-6 flex flex-col py-2 relative z-10 col-span-3">
-        <h1 className="text-2xl mb-2 transition-all">
+      <div className="relative z-10 col-span-5 flex flex-1 flex-col py-2 sm:col-span-2 md:col-span-3">
+        <h1 className="mb-05 text-xl mt-4 lg:mt-0 transition-all lg:mb-2 lg:text-2xl">
           {drop.name}
-          {claimed && <img className="inline ml-2" src="/icons/check.svg" />}
-          {!eligible && <img className="inline ml-2" src="/icons/lock.svg" />}
+          {claimed && <img className="ml-2 inline" src="/icons/check.svg" />}
+          {!eligible && <img className="ml-2 inline" src="/icons/lock.svg" />}
         </h1>
-        <p className="text-l opacity-60 mb-auto ">{drop.description}</p>
-        <Tags tags={tags} />
+        <p className="text-l mb-auto opacity-60 ">{drop.description}</p>
+        <Tags tags={tags} className="mt-2" />
       </div>
     </div>
   );

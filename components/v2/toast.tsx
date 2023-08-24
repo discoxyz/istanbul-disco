@@ -7,12 +7,12 @@ export const ToastSuccess: FC<{ text: string; onDismiss?: () => void }> = ({
   return (
     <div
       id="toast-success"
-      className="flex items-center w-full max-w-xs p-4 mb-4 rounded-lg shadow text-gray-400 bg-gray-800 animate-fadeIn"
+      className="mb-4 flex w-full max-w-xs animate-fadeIn items-center rounded-lg bg-gray-800 p-4 text-gray-400 shadow"
       role="alert"
     >
-      <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-green-800 text-green-200">
+      <div className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-green-800 text-green-200">
         <svg
-          className="w-5 h-5"
+          className="h-5 w-5"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -26,14 +26,14 @@ export const ToastSuccess: FC<{ text: string; onDismiss?: () => void }> = ({
       {onDismiss && (
         <button
           type="button"
-          className="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex items-center justify-center h-8 w-8 text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700"
+          className="-mx-1.5 -my-1.5 ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 p-1.5 text-gray-500 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-gray-300"
           data-dismiss-target="#toast-success"
           aria-label="Close"
           onClick={onDismiss}
         >
           <span className="sr-only">Close</span>
           <svg
-            className="w-3 h-3"
+            className="h-3 w-3"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -59,17 +59,17 @@ export const ToastLoading: FC<{ text: string; onDismiss?: () => void }> = ({
 }) => (
   <div
     id="toast-success"
-    className="flex items-center w-full max-w-xs p-4 mb-4  rounded-lg shadow text-gray-400 bg-gray-800 animate-fadeIn"
+    className="mb-4 flex w-full max-w-xs animate-fadeIn items-center  rounded-lg bg-gray-800 p-4 text-gray-400 shadow"
     role="alert"
   >
-    <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8  rounded-lg bg-green-800 text-green-200">
+    <div className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center  rounded-lg bg-green-800 text-green-200">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-6 h-6 animate-spin"
+        className="h-6 w-6 animate-spin"
       >
         <path
           strokeLinecap="round"
@@ -93,14 +93,14 @@ export const ToastLoading: FC<{ text: string; onDismiss?: () => void }> = ({
     {onDismiss && (
       <button
         type="button"
-        className="ml-auto -mx-1.5 -my-1.5  rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5  inline-flex items-center justify-center h-8 w-8 text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700"
+        className="-mx-1.5 -my-1.5 ml-auto  inline-flex h-8 w-8 items-center  justify-center rounded-lg bg-gray-800 p-1.5 text-gray-500 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-gray-300"
         data-dismiss-target="#toast-success"
         aria-label="Close"
         onClick={onDismiss}
       >
         <span className="sr-only">Close</span>
         <svg
-          className="w-3 h-3"
+          className="h-3 w-3"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -125,12 +125,12 @@ export const ToastError: FC<{ text: string; onDismiss?: () => void }> = ({
 }) => (
   <div
     id="toast-danger"
-    className="flex items-center w-full max-w-xs p-4 mb-4  rounded-lg shadow text-gray-400 bg-gray-800 animate-fadeIn"
+    className="mb-4 flex w-full max-w-xs animate-fadeIn items-center  rounded-lg bg-gray-800 p-4 text-gray-400 shadow"
     role="alert"
   >
-    <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8  rounded-lg bg-red-800 text-red-200">
+    <div className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center  rounded-lg bg-red-800 text-red-200">
       <svg
-        className="w-5 h-5"
+        className="h-5 w-5"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="currentColor"
@@ -144,14 +144,14 @@ export const ToastError: FC<{ text: string; onDismiss?: () => void }> = ({
     {onDismiss && (
       <button
         type="button"
-        className="ml-auto -mx-1.5 -my-1.5  rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex items-center justify-center h-8 w-8 text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700"
+        className="-mx-1.5 -my-1.5 ml-auto  inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 p-1.5 text-gray-500 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-gray-300"
         data-dismiss-target="#toast-danger"
         aria-label="Close"
         onClick={onDismiss}
       >
         <span className="sr-only">Close</span>
         <svg
-          className="w-3 h-3"
+          className="h-3 w-3"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

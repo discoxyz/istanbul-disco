@@ -57,7 +57,7 @@ export default function Page() {
       <Head>
         <title>My page title</title>
       </Head>
-      <main className="max-w-4xl w-full mx-auto mb-auto">
+      <main className="max-w-4xl w-full mx-auto mb-auto px-6">
         <NavTabs />
         <div className="grid grid-cols-3 gap-4">
           {drops.map(

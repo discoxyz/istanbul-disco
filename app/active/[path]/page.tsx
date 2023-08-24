@@ -100,7 +100,7 @@ const Page = () => {
     <>
       <h1 className="text-xl">Not Connected</h1>
       <ConnectButton />
-    </>
+    </>,
   );
 
   useEffect(() => {
@@ -109,7 +109,7 @@ const Page = () => {
         <>
           <h1 className="text-xl">Not Connected</h1>
           <ConnectButton />
-        </>
+        </>,
       );
     } else if (claimed) {
       setClaimArea(<h1 className="text-xl">You claimed this</h1>);
@@ -118,33 +118,33 @@ const Page = () => {
         <>
           <h1 className="text-xl">Drop not claimed</h1>
           <Button onClick={claim}>Claim</Button>
-        </>
+        </>,
       );
     } else setClaimArea(<h1 className="text-xl">Not eligible</h1>);
   }, [isConnected, claimed, eligible]);
 
   return (
     <div>
-      <main className="max-w-4xl w-full mx-auto mb-auto">
-        <nav className="flex text-2xl mb-6 px-6 w-full h-16 items-center">
-          <Link href="/">Active Drops</Link>
-          <span className="mx-2 opacity-60">/</span>
-          <span className="opacity-60">{drop?.name}</span>
+      <main className="mx-auto mb-auto w-full max-w-4xl px-6">
+        <nav className="text-base mb-6 flex h-16 w-full items-center px-6 text-white/60 md:text-lg lg:text-2xl">
+          <Link href="/" className="mr-2 lg:mr-5">Active Drops</Link>
+          <span className="mx-2 opacity-60 mr-2 lg:mr-5">/</span>
+          <span className="opacity-60 mr-auto">{drop?.name}</span>
           {drop && isConnected && address === drop?.createdByAddress && (
             <Link
               href={`/my-drops/${path}/manage`}
-              className="opacity-60 ml-auto mr-0 underline"
+              className="ml-auto mr-0 underline opacity-60"
             >
               Manage
             </Link>
           )}
         </nav>
         {drop && loaded && (
-          <DropRow drop={drop} className="mb-4 pointer-events-none" />
+          <DropRow drop={drop} className="pointer-events-none mb-4" />
         )}
-        <div className="bg-stone-950 rounded-3xl p-6">{ClaimArea}</div>
+        <div className="rounded-3xl bg-stone-950 p-6">{ClaimArea}</div>
       </main>
-      <div className="fixed bottom-0 w-full flex items-center flex-col">
+      <div className="fixed bottom-0 flex w-full flex-col items-center">
         {error && (
           <ToastError text={error} onDismiss={() => setError(undefined)} />
         )}

@@ -42,7 +42,7 @@ export const Credential: FC<
 
   return (
     <div
-      className={`flex flex-grow flex-wrap ${className}`}
+      className={`flex flex-grow flex-wrap ${className} w-full`}
       style={
         {
           containerType: "inline-size",
@@ -51,8 +51,8 @@ export const Credential: FC<
       }
     >
       <div
-        className="flex-grow aspect-video relative"
-        style={{ width: 320, containerType: "inline-size" }}
+        className="flex-grow aspect-video relative w-full"
+        style={{ containerType: "inline-size" }}
       >
         <div
           className=" bg-cover w-full h-full bg-pink-50 flex flex-col"
