@@ -24,7 +24,12 @@ a {
   box-sizing: border-box;
 }
 
-input[type="text"], input[type='date'], input[type='number'], input[type='url'], textarea, select {
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="url"],
+textarea,
+select {
   @apply disabled:border-gray-700;
   @apply disabled:bg-gray-800;
   @apply disabled:text-gray-400;
@@ -43,20 +48,24 @@ input[type="text"], input[type='date'], input[type='number'], input[type='url'],
   @apply focus:border-blue-500;
 }
 
-select, input, textarea {
-  @apply mb-6
+select,
+input,
+textarea {
+  // @apply mb-6;
 }
 
 label {
   @apply block;
-  @apply mb-2
+  @apply mb-2;
+  @apply text-white/60;
+}
+* + label, .form-group .field {
+  @apply mt-6;
 }
 
-
-.rjsf button[type='submit'] {
-  display: none
+.rjsf button[type="submit"] {
+  display: none;
 }
 // label {
 //   @apply mt-6
 // }
-

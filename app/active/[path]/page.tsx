@@ -140,45 +140,9 @@ const Page = () => {
           )}
         </nav>
         {drop && loaded && (
-          <DropRow drop={drop} className="mb-4 hover:scale-100" />
+          <DropRow drop={drop} className="mb-4 pointer-events-none" />
         )}
-
-        {/* DROP Claim */}
         <div className="bg-stone-950 rounded-3xl p-6">{ClaimArea}</div>
-
-        {/* DROP SUMMARY FOR SIGNED IN USER */}
-        {/* {drop && isConnected && address === drop?.createdByAddress && (
-          <>
-            <h2 className="text-2xl px-4 mt-12 mb-4 flex">
-              Claims{" "}
-              <span className="opacity-60 ml-2">
-                {drop?.claims?.filter((c: any) => c.claimed).length}
-              </span>
-            </h2>
-            <div className="bg-stone-950 rounded-3xl p-6">
-              <ol>
-                {drop.claims?.length === 0 && (
-                  <>
-                    <h2 className="text-center text-2xl mt-4">
-                      No claims just yet!
-                    </h2>
-                    <p className="text-center text-xl mt-2 opacity-60">
-                      Be sure to share the link to the drop
-                    </p>
-                  </>
-                )}
-                {drop?.claims?.map((claim: any, key: Key) => {
-                  return (
-                    <li className="py-3 border-b border-stone-900 flex justify-between text-stone-400 last:border-b-0">
-                      <p>{claim.address}</p>
-                      <p>{claim.claimed ? "Claimed" : ""}</p>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-          </>
-        )} */}
       </main>
       <div className="fixed bottom-0 w-full flex items-center flex-col">
         {error && (

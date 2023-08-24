@@ -68,12 +68,6 @@ export default function Page() {
             <li className="mr-5">
               <Link href="/my-claims">My Claims</Link>
             </li>
-
-            <li className="ml-auto">
-              <Link href="/my-drops/create">
-                <Button>Create</Button>
-              </Link>
-            </li>
           </ol>
         </nav>
         <div className="grid grid-cols-3 gap-4">

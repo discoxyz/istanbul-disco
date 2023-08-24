@@ -1,21 +1,44 @@
-import { FC, HTMLProps, PropsWithChildren } from "react";
+import { FC, HTMLProps, useEffect, useState } from "react";
 import { Address } from "viem";
 import { truncateAddress } from "../../lib/truncateAddress";
+import { schemas } from "../../lib/schemas";
+import { camelCase, startCase, toLower } from "lodash";
 
 export interface CredentialCardProps {
   data: { [key: string]: any };
   image?: string;
   title: string;
   createdByAddress: string;
+  schema?: string;
 }
 
 export const Credential: FC<
   CredentialCardProps & HTMLProps<HTMLDivElement>
-> = ({ title, data, style, className, image, createdByAddress, ...rest }) => {
+> = ({
+  title,
+  data,
+  style,
+  className,
+  image,
+  createdByAddress,
+  schema,
+  ...rest
+}) => {
   const baseUnit = (4 / 334) * 100 * 4 + "cqw";
 
-  const firstKey = Object.keys(data)[0];
-  const firstVal = data[firstKey];
+  function toReadable(val: string) {
+    return startCase(camelCase(val));
+  }
+
+  const calloutKey = schemas.find((s) => s.name === schema)?.calloutField;
+  const calloutVal = (calloutKey && data[calloutKey]) || "";
+  const meta = calloutVal && `${toReadable(calloutVal)}`;
+
+  const [address, setAddress] = useState<string | undefined>();
+
+  useEffect(() => {
+    setAddress(truncateAddress(createdByAddress as Address) || undefined);
+  }, [createdByAddress]);
 
   return (
     <div
@@ -53,20 +76,18 @@ export const Credential: FC<
           }}
         >
           <h1 style={{ fontSize: "1.8em" }}>{title}</h1>
-          {firstKey && (
-            <p style={{ fontSize: "1.2em" }}>
-              {firstKey}: {firstVal}
-            </p>
+          <p style={{ fontSize: "1.2em" }}>{meta}</p>
+          {address && (
+            <>
+              <h2
+                className="uppercase tracking-wider mt-auto"
+                style={{ fontSize: "0.8em" }}
+              >
+                From
+              </h2>
+              <p style={{ fontSize: "1.2em" }}>{address}a</p>
+            </>
           )}
-          <h2
-            className="uppercase tracking-wider mt-auto"
-            style={{ fontSize: "0.8em" }}
-          >
-            From
-          </h2>
-          <p style={{ fontSize: "1.2em" }}>
-            {truncateAddress(createdByAddress as Address)}
-          </p>
         </div>
       </div>
     </div>
