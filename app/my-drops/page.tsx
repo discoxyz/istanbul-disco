@@ -1,15 +1,14 @@
 "use client";
 
 import Head from "next/head";
-import { Nav } from "../../components/v2/nav";
 import { Prisma } from "@prisma/client";
 import { Key, useEffect, useState } from "react";
 import { DropRow } from "../../components/v2/dropRow";
 import Link from "next/link";
 import { getDrops } from "../services/getDrops";
 import { useAccount } from "wagmi";
-import { Button } from "../../components/v2/button";
 import { redirect } from "next/navigation";
+import { NavTabs } from "../../components/navTabs";
 // import { useState } from "react";
 
 // // This gets called on every request
@@ -49,25 +48,7 @@ export default function Page() {
         <title>My page title</title>
       </Head>
       <main className="max-w-4xl w-full mx-auto mb-auto">
-        <nav>
-          <ol className="flex w-full text-2xl mb-6 px-6 h-16 items-center">
-            <li className="opacity-60 mr-5">
-              <Link href="/">Active Drops</Link>
-            </li>
-            <li className="mr-5">
-              <Link href="/my-drops">My Drops</Link>
-            </li>
-            <li className="mr-5 opacity-60">
-              <Link href="/my-claims">My Claims</Link>
-            </li>
-            
-              <li className="ml-auto">
-                <Link href="/my-drops/create">
-                  <Button>Create</Button>
-                </Link>
-              </li>
-          </ol>
-        </nav>
+        <NavTabs />
         {drops.map(
           (
             drop: Prisma.DropGetPayload<{ include: { claims: true } }>,

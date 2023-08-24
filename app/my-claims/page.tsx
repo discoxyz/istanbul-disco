@@ -12,6 +12,7 @@ import { Button } from "../../components/v2/button";
 import { redirect } from "next/navigation";
 import { getClaims } from "../services/getClaims";
 import { Credential } from "../../components/v2/credCard";
+import { NavTabs } from "../../components/navTabs";
 // import { useState } from "react";
 
 // // This gets called on every request
@@ -57,19 +58,7 @@ export default function Page() {
         <title>My page title</title>
       </Head>
       <main className="max-w-4xl w-full mx-auto mb-auto">
-        <nav>
-          <ol className="flex w-full text-2xl mb-6 px-6 h-16 items-center">
-            <li className="opacity-60 mr-5">
-              <Link href="/">Active Drops</Link>
-            </li>
-            <li className="mr-5 opacity-60">
-              <Link href="/my-drops">My Drops</Link>
-            </li>
-            <li className="mr-5">
-              <Link href="/my-claims">My Claims</Link>
-            </li>
-          </ol>
-        </nav>
+        <NavTabs />
         <div className="grid grid-cols-3 gap-4">
           {drops.map(
             (

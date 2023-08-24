@@ -7,6 +7,7 @@ import { DropRow } from "../components/v2/dropRow";
 import Link from "next/link";
 import { getDrops } from "./services/getDrops";
 import { useAccount } from "wagmi";
+import { NavTabs } from "../components/navTabs";
 
 export default function Page() {
   const { address, isConnected } = useAccount();
@@ -32,23 +33,7 @@ export default function Page() {
         <title>My page title</title>
       </Head>
       <main className="max-w-4xl w-full mx-auto mb-auto">
-        <nav>
-          <ol className="flex space-x-5 text-2xl mb-6 px-6 h-16 items-center">
-            <li>
-              <Link href="/">Active Drops</Link>
-            </li>
-            {isConnected && (
-              <>
-                <li className="opacity-60">
-                  <Link href="/my-drops">My Drops</Link>
-                </li>
-                <li className="mr-5 opacity-60">
-                  <Link href="/my-claims">My Claims</Link>
-                </li>
-              </>
-            )}
-          </ol>
-        </nav>
+        <NavTabs />
         {drops?.map((drop, key: Key) => {
           return (
             <Link href={`/active/${drop.path}`} key={key}>
