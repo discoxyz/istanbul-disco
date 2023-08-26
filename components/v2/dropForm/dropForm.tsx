@@ -19,6 +19,7 @@ import { getPathAvailability } from "../../../app/services/getPathAvalability";
 import Form from "@rjsf/core";
 import { schemas } from "../../../lib/schemas";
 import validator from "@rjsf/validator-ajv8";
+import { Toggle } from "../toggle";
 
 type DropProps = Prisma.DropGetPayload<{}> & {
   claims: Prisma.ClaimGetPayload<{}>[];
@@ -75,7 +76,7 @@ export const DropForm: FC<{
       setSubjectData(_drop?.subjectData);
       setSchemaError(undefined);
       setSelectedSchema(
-        schemas.find((s) => s?.schema.$id === _drop?.schema)?.name
+        schemas.find((s) => s?.schema.$id === _drop?.schema)?.name,
       );
     }
 
@@ -91,6 +92,7 @@ export const DropForm: FC<{
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
+      console.log('Change', key, value)
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -131,7 +133,7 @@ export const DropForm: FC<{
         }
       }
     },
-    [fieldData]
+    [fieldData],
   );
 
   const addArrItem = useCallback(
@@ -140,7 +142,7 @@ export const DropForm: FC<{
       (_fieldData[key].field.value as string[]).push("");
       setFieldData({ ...fieldData });
     },
-    [fieldData]
+    [fieldData],
   );
 
   const handleRemove = useCallback(
@@ -149,14 +151,14 @@ export const DropForm: FC<{
       delete (_fieldData[key].field.value as string[])[arrayKey];
       setFieldData({ ..._fieldData });
     },
-    [fieldData]
+    [fieldData],
   );
 
   const handlePaste = useCallback(
     (
       key: string,
       event: ClipboardEvent<HTMLInputElement>,
-      arrayKey: number
+      arrayKey: number,
     ) => {
       event.stopPropagation(), event.preventDefault();
       const _fieldData = fieldData;
@@ -183,7 +185,7 @@ export const DropForm: FC<{
         (_fieldData[key].field.value as string[])[arrayKey] = string.trim();
       }
     },
-    [fieldData]
+    [fieldData],
   );
 
   const handleEnable = useCallback(
@@ -206,7 +208,7 @@ export const DropForm: FC<{
       const newField = { [`${key}`]: { ...field } };
       setFieldData({ ...fieldData, ...newField });
     },
-    [fieldData]
+    [fieldData],
   );
 
   const [selectedSchema, setSelectedSchema] = useState<undefined | string>();
@@ -224,7 +226,9 @@ export const DropForm: FC<{
     setDrop({
       createdByAddress: address,
       name: (fieldData.name.field.value as string) || "",
-      image: (fieldData.image.field.value as string) || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
+      image:
+        (fieldData.image.field.value as string) ||
+        "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
       subjectData: subjectData,
       schema: selectedSchema,
     });
@@ -373,72 +377,42 @@ export const DropForm: FC<{
 
     setCleanSchema(s);
   }, [selectedSchema]);
-  // usefEffect [schemaObj, setSelectedSchemaOjb]
-
-  const Toggle: FC<{
-    className?: string;
-    toggle?: { label: string; value: boolean; helperText?: string };
-    fieldKey: keyof typeof fields;
-  }> = ({ toggle, fieldKey, className }) => {
-    let proceed = false;
-    if (toggle || fieldData[fieldKey].toggle) proceed = true;
-    if (fieldData[fieldKey]?.field?.type === "checkbox") proceed = true;
-    if (!proceed) return null;
-
-    return (
-      <label
-        className={`relative inline-flex items-center cursor-pointer ${className}`}
-      >
-        <div className="relative">
-          <input
-            type="checkbox"
-            value=""
-            className="sr-only peer"
-            checked={
-              fieldData[fieldKey as string].toggle?.value ||
-              fieldData[fieldKey as string].field.value === true
-            }
-            onChange={(e) => handleEnable(fieldKey as string, e.target.checked)}
-          />
-          <div className="w-11 h-6 peer-focus:outline-none peer-focus:ring-4  peer-focus:ring-blue-800 rounded-full peer bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-gray-600 peer-checked:bg-blue-600"></div>
-        </div>
-        <div className="ml-4">
-          <span className="block ">{toggle?.label}</span>
-          <span className="bloxk text-slate-400 text-m">
-            {toggle?.helperText}
-          </span>
-        </div>
-      </label>
-    );
-  };
 
   return (
-    <div className="max-w-2xl w-full mr-12 text-xl">
-      <h2 className="text-2xl px-4 mt-12 mb-4 flex">
+    <div className="mr-12 w-full max-w-2xl text-xl">
+      <h2 className="mb-4 mt-12 flex px-4 text-2xl">
         {_drop?.id ? "Update Drop" : "Create Drop"}
       </h2>
-      <div className="bg-stone-950 rounded-3xl p-6">
+      <div className="rounded-3xl bg-stone-950 p-6">
         {Object.entries(fieldData).map(([key, value]) => {
           const disabled = value.toggle && !value.toggle.value;
           const helperText =
             (value.field.helper &&
               value.field.helper.replace(
                 /{.*}/,
-                value.field.value as string
+                value.field.value as string,
               )) ||
             value.field.helper;
           return (
             <div
               key={key}
               className={`block ${
-                value.toggle && "rounded-xl border border-white/20 p-4 my-8"
+                value.toggle && "my-8 rounded-xl border border-white/20 p-4"
               }`}
             >
               {value.toggle && (
-                <Toggle toggle={value.toggle} fieldKey={key} className="my-4" />
+                <Toggle
+                  label={value.toggle.label}
+                  checked={value.toggle.value}
+                  value={`${key}-toggle`}
+                  onChange={(e) =>
+                    handleEnable(key as string, e.target.checked)
+                  }
+                  className="my-4"
+                />
               )}
 
-              <div className={`block mb-6 ${disabled && "hidden"}`}>
+              <div className={`mb-6 block ${disabled && "hidden"}`}>
                 {value.field.type === "text-arr" ? (
                   <>
                     <label className="my-3 flex">
@@ -456,16 +430,16 @@ export const DropForm: FC<{
                     {(value.field.value as string[]).map(
                       (a: string, _key: number) => {
                         const claim = _drop?.claims.find(
-                          (c) => c.address === a
+                          (c) => c.address === a,
                         );
                         return (
                           <div className="relative my-3 " key={_key}>
                             <input
-                              className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                              className="block w-full rounded-lg border-gray-600 bg-gray-700  p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400"
                               disabled={
                                 submitting ||
                                 !!_drop?.claims.find(
-                                  (c) => c.address === a && c.claimed
+                                  (c) => c.address === a && c.claimed,
                                 )
                               }
                               required={
@@ -481,7 +455,7 @@ export const DropForm: FC<{
                               }
                             />
 
-                            <span className="absolute top-3 right-4 opacity-60">
+                            <span className="absolute right-4 top-3 opacity-60">
                               {claim && claim.claimed ? (
                                 "Claimed"
                               ) : (
@@ -494,7 +468,7 @@ export const DropForm: FC<{
                             </span>
                           </div>
                         );
-                      }
+                      },
                     )}
 
                     <button onClick={() => addArrItem(key)}>add</button>
@@ -506,37 +480,35 @@ export const DropForm: FC<{
                       value={value.field.value as string}
                       onChange={(e) => handleChange(key, e.target.value)}
                       disabled={submitting || disabled}
-                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait border rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full rounded-lg border border-gray-600 bg-gray-700  p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:cursor-wait disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400"
                     />
                   </>
                 ) : value.field.type === "checkbox" ? (
                   <Toggle
                     className="my-4"
-                    toggle={{
-                      label: value.field.label,
-                      value: value.field.value as boolean,
-                      helperText: value.field.helper,
-                    }}
-                    fieldKey={key}
+                    value={key}
+                    label={value.field.label}
+                    checked={value.field.value as boolean}
+                    onChange={(e) => handleChange(key, e.target.checked)}
+                    helperText={value.field.helper}
                   />
                 ) : (
                   <>
-                    <label className="block mb-2">{value.field.label}</label>
+                    <label className="mb-2 block">{value.field.label}</label>
                     <input
-                      className="disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:cursor-wait  border text-gray-900rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                      className="text-gray-900rounded-lg block w-full border  border-gray-600 bg-gray-700 p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:cursor-wait disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400"
                       disabled={submitting || disabled}
                       required={
                         value.field.required || disabled !== false || undefined
                       }
                       type={value.field.type}
                       value={value.field.value as string | number}
-                      // pattern={value.field.pattern}
                       onChange={(e) => handleChange(key, e.target.value)}
                     />
                   </>
                 )}
                 {value.field.type !== "checkbox" && (
-                  <p className="text-slate-400 flex">
+                  <p className="flex text-slate-400">
                     {helperText}{" "}
                     {key === "path" &&
                       value.field.value &&
@@ -548,7 +520,7 @@ export const DropForm: FC<{
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
                           stroke="currentColor"
-                          className="w-6 h-6 animate-spin ml-auto"
+                          className="ml-auto h-6 w-6 animate-spin"
                         >
                           <path
                             strokeLinecap="round"
@@ -557,10 +529,10 @@ export const DropForm: FC<{
                           />
                         </svg>
                       ) : pathAvailable === true ? (
-                        <span className="text-green-500 ml-auto">Avalable</span>
+                        <span className="ml-auto text-green-500">Avalable</span>
                       ) : (
                         pathAvailable === false && (
-                          <span className="text-red-500 ml-auto">
+                          <span className="ml-auto text-red-500">
                             Not avaliable
                           </span>
                         )
@@ -574,8 +546,8 @@ export const DropForm: FC<{
             </div>
           );
         })}
-        <div className="rounded-xl border border-white/20 p-4 my-8">
-          <label className="block mb-2">Select a schema</label>
+        <div className="my-8 rounded-xl border border-white/20 p-4">
+          <label className="mb-2 block">Select a schema</label>
           <select
             placeholder="'Select a schema"
             id="countries"
@@ -584,7 +556,7 @@ export const DropForm: FC<{
               setSubjectData({});
               setSelectedSchema(e?.target?.value || "undefined");
             }}
-            className=" rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+            className=" block  w-full rounded-lg border-gray-600 bg-gray-700 p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="DEFAULT" disabled={!!selectedSchema}>
               Choose a Schema
@@ -620,12 +592,7 @@ export const DropForm: FC<{
           {_drop?.id ? "Update Drop" : "Create Drop"}
         </Button>
       </div>
-      <div className="fixed bottom-0 w-full flex items-center flex-col">
-        {/* {submitting && <Toast text="Updating" />}
-        {error && <Toast text="Error" onDismiss={() => setError(undefined)} />}
-        {submitted && (
-          <ToastLoading text="Submitted" onDismiss={() => setSubmitted(false)} />
-        )} */}
+      <div className="fixed bottom-0 flex w-full flex-col items-center">
         {submitting && <ToastLoading text="Submitting"></ToastLoading>}
         {error && (
           <ToastError text={error} onDismiss={() => setError(undefined)} />
