@@ -14,7 +14,7 @@ import { Button } from "../button";
 import { useAccount, useSignMessage } from "wagmi";
 import { recoverMessageAddress } from "viem";
 import { ToastError, ToastLoading, ToastSuccess } from "../toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getPathAvailability } from "../../../app/services/getPathAvalability";
 import Form from "@rjsf/core";
 import { schemas } from "../../../lib/schemas";
@@ -36,6 +36,8 @@ export const DropForm: FC<{
     createdByAddress?: string;
   }) => void;
 }> = ({ drop: _drop, setDrop = () => null, refreshData }) => {
+  const params = useParams();
+  const path = params?.path as string;
   const formRef = createRef<any>();
   // Set fields using drop data, if available
   // This means the form can be re-used for editing and creating
@@ -50,6 +52,12 @@ export const DropForm: FC<{
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    setSubmitted(!!searchParams?.get("updated"));
+  }, [searchParams]);
 
   useEffect(() => {
     if (_drop) {
@@ -92,7 +100,7 @@ export const DropForm: FC<{
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
-      console.log('Change', key, value)
+      console.log("Change", key, value);
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -345,10 +353,13 @@ export const DropForm: FC<{
     const json = await res.json();
     if (!_drop?.id) {
       router.push(`/active/${newObj.path}?created=true`);
+    } else if (path && newObj.path !== path) {
+      router.push(`/my-drops/${newObj.path}/manage?updated=true`);
     }
     if (refreshData) {
       await refreshData();
     }
+    // setDrop()
     setSubmitting(false);
     setSubmitted(true);
   }, [
@@ -513,6 +524,7 @@ export const DropForm: FC<{
                     {key === "path" &&
                       value.field.value &&
                       !value.field.error &&
+                      value.field.value !== _drop?.path &&
                       (pathLoading || loadedPath?.path !== value.field.value ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -600,7 +612,10 @@ export const DropForm: FC<{
         {submitted && (
           <ToastSuccess
             text="Submitted"
-            onDismiss={() => setSubmitted(false)}
+            onDismiss={() => {
+              setSubmitted(false);
+              router.replace(`/my-drops/${path}/manage`);
+            }}
           />
         )}
       </div>
