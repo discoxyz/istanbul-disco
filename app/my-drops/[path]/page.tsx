@@ -1,5 +1,10 @@
 "use client";
-import { redirect, useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  redirect,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { Credential } from "../../../components/v2/credCard";
 import { Address, useAccount, useSignMessage } from "wagmi";
 import { sign } from "crypto";
@@ -17,6 +22,7 @@ import {
   ToastLoading,
   ToastSuccess,
 } from "../../../components/v2/toast";
+import { ClaimArea } from "../../../components/v2/claimArea";
 
 // This gets called on every request
 
@@ -37,7 +43,7 @@ const Page = () => {
 
   useEffect(() => {
     if (!isConnected) {
-      redirect(`/active/${path}`)
+      redirect(`/active/${path}`);
     }
     if (path && address) {
       const fetchDrops = async () => {
@@ -58,8 +64,6 @@ const Page = () => {
   }, [path, address]);
 
   useEffect(() => {
-
-
     // const claim = drop.claims?.filter((c) => c.address == address)[0];
     if (drop) {
       const { claimed, eligible } = parseClaimStatus(drop, address);
@@ -103,55 +107,35 @@ const Page = () => {
     setCreated(!!searchParams?.get("created"));
   }, [searchParams]);
 
-  const [ClaimArea, setClaimArea] = useState<JSX.Element>(
-    <>
-      <h1 className="text-xl">Not Connected</h1>
-      <ConnectButton />
-    </>
-  );
-
-  useEffect(() => {
-    if (!isConnected) {
-      setClaimArea(
-        <>
-          <h1 className="text-xl">Not Connected</h1>
-          <ConnectButton />
-        </>
-      );
-    } else if (claimed) {
-      setClaimArea(<h1 className="text-xl">You claimed this</h1>);
-    } else if (eligible) {
-      setClaimArea(
-        <>
-          <h1 className="text-xl">Drop not claimed</h1>
-          <Button onClick={claim}>Claim</Button>
-        </>
-      );
-    } else setClaimArea(<h1 className="text-xl">Not eligible</h1>);
-  }, [isConnected, claimed, eligible]);
-
   return (
-    <div className='w-full mb-auto"'>
-      <main className="max-w-4xl w-full mx-auto">
-        <nav className="flex text-2xl mb-6 px-6 w-full h-16 items-center">
+    <div className='mb-auto" w-full'>
+      <main className="mx-auto w-full max-w-4xl">
+        <nav className="mb-6 flex h-16 w-full items-center px-6 text-2xl">
           <Link href="/my-drops">My Drops</Link>
           <span className="mx-2 opacity-60">/</span>
           <span className="opacity-60">{drop?.name}</span>
           {drop && isConnected && address === drop?.createdByAddress && (
             <Link
               href={`${path}/manage`}
-              className="opacity-60 ml-auto mr-0 underline"
+              className="ml-auto mr-0 underline opacity-60"
             >
               Manage
             </Link>
           )}
         </nav>
         {drop && loaded && (
-          <DropRow drop={drop} className="mb-4 pointer-events-none" />
+          <DropRow drop={drop} className="pointer-events-none mb-4" />
         )}
-        <div className="bg-stone-950 rounded-3xl p-6">{ClaimArea}</div>
+        <ClaimArea
+          className="mb-2 rounded-3xl bg-stone-950 p-6"
+          claimed={!!claimed}
+          eligible={!!eligible}
+          claim={claim}
+          loading={!loaded}
+          claiming={claiming}
+        />
       </main>
-      <div className="fixed bottom-0 w-full flex items-center flex-col">
+      <div className="fixed bottom-0 flex w-full flex-col items-center">
         {error && (
           <ToastError text={error} onDismiss={() => setError(undefined)} />
         )}

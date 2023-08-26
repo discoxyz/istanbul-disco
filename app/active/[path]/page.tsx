@@ -17,6 +17,7 @@ import {
   ToastLoading,
   ToastSuccess,
 } from "../../../components/v2/toast";
+import { ClaimArea } from "../../../components/v2/claimArea";
 
 // This gets called on every request
 
@@ -96,40 +97,15 @@ const Page = () => {
     setCreated(!!searchParams?.get("created"));
   }, [searchParams]);
 
-  const [ClaimArea, setClaimArea] = useState<JSX.Element>(
-    <>
-      <h1 className="text-xl">Not Connected</h1>
-      <ConnectButton />
-    </>,
-  );
-
-  useEffect(() => {
-    if (!isConnected) {
-      setClaimArea(
-        <>
-          <h1 className="text-xl">Not Connected</h1>
-          <ConnectButton />
-        </>,
-      );
-    } else if (claimed) {
-      setClaimArea(<h1 className="text-xl">You claimed this</h1>);
-    } else if (eligible) {
-      setClaimArea(
-        <>
-          <h1 className="text-xl">Drop not claimed</h1>
-          <Button onClick={claim}>Claim</Button>
-        </>,
-      );
-    } else setClaimArea(<h1 className="text-xl">Not eligible</h1>);
-  }, [isConnected, claimed, eligible]);
-
   return (
     <div>
       <main className="mx-auto mb-auto w-full max-w-4xl px-6">
-        <nav className="text-base mb-6 flex h-16 w-full items-center px-6 text-white/60 md:text-lg lg:text-2xl">
-          <Link href="/" className="mr-2 lg:mr-5">Active Drops</Link>
-          <span className="mx-2 opacity-60 mr-2 lg:mr-5">/</span>
-          <span className="opacity-60 mr-auto">{drop?.name}</span>
+        <nav className="mb-6 flex h-16 w-full items-center px-6 text-base text-white/60 md:text-lg lg:text-2xl">
+          <Link href="/" className="mr-2 lg:mr-5">
+            Active Drops
+          </Link>
+          <span className="mx-2 mr-2 opacity-60 lg:mr-5">/</span>
+          <span className="mr-auto opacity-60">{drop?.name}</span>
           {drop && isConnected && address === drop?.createdByAddress && (
             <Link
               href={`/my-drops/${path}/manage`}
@@ -142,7 +118,15 @@ const Page = () => {
         {drop && loaded && (
           <DropRow drop={drop} className="pointer-events-none mb-4" />
         )}
-        <div className="rounded-3xl bg-stone-950 p-6">{ClaimArea}</div>
+        <ClaimArea
+          className="mb-2 rounded-3xl bg-stone-950 p-6"
+          claimed={!!claimed}
+          eligible={!!eligible}
+          claim={claim}
+          loading={!loaded}
+          claiming={claiming}
+        />
+        {/* <div className="rounded-3xl bg-stone-950 p-6">{ClaimArea}</div> */}
       </main>
       <div className="fixed bottom-0 flex w-full flex-col items-center">
         {error && (
