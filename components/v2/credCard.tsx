@@ -18,9 +18,8 @@ export const Credential: FC<
 > = ({
   title,
   data,
-  // style,
   className,
-  image,
+  image = "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
   createdByAddress,
   schema,
   // ...rest
