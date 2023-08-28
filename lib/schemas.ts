@@ -10,6 +10,11 @@ export const schemas = [
     schema: require("disco-schemas/json/BetaUserCredential/latest.json"),
   },
   {
+    name: "Bookmark",
+    calloutField: "publication",
+    schema: require("disco-schemas/json/BookmarkCredential/latest.json"),
+  },
+  {
     name: "Certificate Of Completion",
     calloutField: "nameOfCourse",
     schema: require("disco-schemas/json/CertificateOfCompletionCredential/latest.json"),
