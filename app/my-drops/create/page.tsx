@@ -27,7 +27,7 @@ export default function Page() {
                 drop?.image ||
                 "https://fzt.aqp.mybluehost.me/images/bg_disco.png"
               }
-              textColor={drop.textColor || ""}
+              textColor={drop?.textColor || ""}
               title={drop?.name || ""}
               schema={drop?.schema}
               data={drop?.subjectData || {}}
