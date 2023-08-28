@@ -4,9 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
   // shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
@@ -20,12 +20,14 @@ model Drop {
   subjectData      String
   startTime        DateTime?
   endTime          DateTime?
-  visible          Boolean  @default(true)
-  disabled         Boolean  @default(false)
+  visible          Boolean   @default(true)
+  disabled         Boolean   @default(false)
   limit            Int?
   image            String?
   createdAt        DateTime  @default(now())
   gated            Boolean?
+  // Style
+  textColor        String?
   // Metadata
   // Used to verify + update drop data
   signature        String
@@ -34,7 +36,7 @@ model Drop {
   createdByUser    User      @relation(fields: [createdByAddress], references: [address])
   claims           Claim[]
   linkText         String?
-  linkTextEnabled   Boolean? @default(false)
+  linkTextEnabled  Boolean?  @default(false)
 }
 
 model User {

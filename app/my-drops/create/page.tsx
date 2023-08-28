@@ -1,6 +1,4 @@
 "use client";
-
-import Head from "next/head";
 import { useState } from "react";
 import { Credential } from "../../../components/v2/credCard";
 import { useAccount } from "wagmi";
@@ -14,9 +12,6 @@ export default function Page() {
   const { address } = useAccount();
   return (
     <>
-      <Head>
-        <title>My page title</title>
-      </Head>
       <main className="mx-auto mb-auto flex w-full max-w-7xl items-start p-4">
         <div className="mr-12 w-full max-w-3xl text-xl">
           <DropForm setDrop={setDrop} />
@@ -32,6 +27,7 @@ export default function Page() {
                 drop?.image ||
                 "https://fzt.aqp.mybluehost.me/images/bg_disco.png"
               }
+              textColor={drop.textColor || ""}
               title={drop?.name || ""}
               schema={drop?.schema}
               data={drop?.subjectData || {}}

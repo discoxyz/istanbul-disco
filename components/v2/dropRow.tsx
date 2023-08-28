@@ -57,6 +57,7 @@ export const DropRow: FC<
       <Credential
         image={drop.image || undefined}
         title={drop.name}
+        textColor={drop.textColor || undefined}
         data={JSON.parse(drop.subjectData || "{}")}
         className="col-span-5 sm:col-span-3 md:col-span-2"
         createdByAddress={drop.createdByAddress}
@@ -68,7 +69,9 @@ export const DropRow: FC<
           {claimed && <img className="ml-2 inline" src="/icons/check.svg" />}
           {!eligible && <img className="ml-2 inline" src="/icons/lock.svg" />}
         </h1>
-        <p className="text-l mb-auto opacity-60 line-clamp-3 text-ellipsis ">{drop.description}</p>
+        <p className="text-l mb-auto line-clamp-3 text-ellipsis opacity-60 ">
+          {drop.description}
+        </p>
         <Tags tags={tags} className="mt-2" />
       </div>
     </div>

@@ -63,6 +63,15 @@ export const fields: FieldProps = {
       errorMessage: "Drop description is required",
     },
   },
+  textColor: {
+    field: {
+      required: false,
+      label: "Text color",
+      placeholder: "e.g. #FFFFFF or pink",
+      type: "text",
+      value: "",
+    },
+  },
   path: {
     field: {
       required: true,

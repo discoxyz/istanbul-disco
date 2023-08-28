@@ -36,6 +36,7 @@ export const DropForm: FC<{
     image?: string;
     schema?: string;
     createdByAddress?: string;
+    textColor?: string;
   }) => void;
 }> = ({ drop: _drop, setDrop = () => null, refreshData }) => {
   const params = useParams();
@@ -244,6 +245,7 @@ export const DropForm: FC<{
     setDrop({
       createdByAddress: address,
       name: (fieldData.name.field.value as string) || "",
+      textColor: (fieldData.textColor.field.value as string) || "",
       image:
         (fieldData.image.field.value as string) ||
         "https://fzt.aqp.mybluehost.me/images/bg_disco.png",

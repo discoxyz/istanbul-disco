@@ -8,6 +8,7 @@ import { camelCase, startCase } from "lodash";
 export interface CredentialCardProps {
   data: { [key: string]: any };
   image?: string;
+  textColor?: string;
   title: string;
   createdByAddress: string;
   schema?: string;
@@ -19,6 +20,7 @@ export const Credential: FC<
   title,
   data,
   className,
+  textColor = "#FFFFFF",
   image = "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
   createdByAddress,
   schema,
@@ -45,6 +47,7 @@ export const Credential: FC<
       className={`flex flex-grow flex-wrap ${className} w-full`}
       style={
         {
+          color: textColor,
           containerType: "inline-size",
           "--base-unit": baseUnit,
         } as React.CSSProperties
@@ -55,7 +58,7 @@ export const Credential: FC<
         style={{ containerType: "inline-size" }}
       >
         <div
-          className=" flex h-full w-full flex-col bg-pink-50 bg-cover"
+          className=" flex h-full w-full flex-col bg-cover"
           style={{
             fontSize: "var(--base-unit)",
             padding: "1em",
@@ -85,7 +88,7 @@ export const Credential: FC<
               >
                 From
               </h2>
-              <p style={{ fontSize: "1.2em" }}>{address}a</p>
+              <p style={{ fontSize: "1.2em" }}>{address}</p>
             </>
           )}
         </div>
