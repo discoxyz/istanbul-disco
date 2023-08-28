@@ -7,6 +7,7 @@ import { WalletProvider } from "../contexts/walletProvider";
 import { UserProvider } from "../contexts/userProvider";
 import { Footer } from "../components/v2/footer";
 import { Nav } from "../components/v2/nav";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -26,6 +27,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </WalletProvider>
+        <Analytics />
       </body>
     </html>
   );

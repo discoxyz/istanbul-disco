@@ -15,6 +15,7 @@ import Link from "next/link";
 import { DropRow } from "../components/v2/dropRow";
 import { ClaimArea } from "../components/v2/claimArea";
 import { ToastError, ToastLoading, ToastSuccess } from "../components/v2/toast";
+import va from "@vercel/analytics";
 
 export const DropView = () => {
   const params = useParams();
@@ -62,6 +63,7 @@ export const DropView = () => {
   }, [drop, address]);
 
   const claim = useCallback(async () => {
+    if (!drop?.id || !address) return
     setClaiming(true);
     const message = `I am claiming my credential`;
     const signature = await signMessageAsync({ message: message });
@@ -78,10 +80,12 @@ export const DropView = () => {
 
     const res = await claim.json();
     if (!claim.ok) {
+      va.track("Claim", { success: false, dropId: drop.id, did: address as string });
       setClaiming(false);
       setError(res.message || "Something went wrong when claiming");
       return;
     }
+    va.track("Claim", { success: true, dropId: drop.id, did: address as string });
     setClaiming(false);
     setClaimed(true);
     setJustClaimed(true);

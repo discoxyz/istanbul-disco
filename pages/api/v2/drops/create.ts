@@ -108,9 +108,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    // if (type == "updated" || type == "added") {
-    // }
-
     res.status(200).send({
       message: `❤️ ❤️ ❤️ Drop ${type} ❤️ ❤️ ❤️`,
       data: {

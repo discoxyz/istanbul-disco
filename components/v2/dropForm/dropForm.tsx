@@ -20,6 +20,7 @@ import Form from "@rjsf/core";
 import { schemas } from "../../../lib/schemas";
 import validator from "@rjsf/validator-ajv8";
 import { Toggle } from "../toggle";
+import va from "@vercel/analytics";
 
 type DropProps = Prisma.DropGetPayload<{}> & {
   claims: Prisma.ClaimGetPayload<{}>[];
@@ -366,16 +367,23 @@ export const DropForm: FC<{
     newObj.signature = await signature;
     newObj.id = _drop?.id || undefined;
 
-    await fetch("/api/v2/drops/create", {
+    const res = await fetch("/api/v2/drops/create", {
       method: "POST",
       body: JSON.stringify({ ...newObj }),
     });
+    const result = await res.json();
 
     if (!_drop?.id) {
+      va.track("DropCreated", {
+        did: address as string,
+        id: result.data.drop.id,
+      });
       router.push(`/${newObj.path}?created=true`);
     } else if (path && newObj.path !== path) {
+      va.track("DropUpdated", { did: address as string, id: _drop.id });
       router.push(`/my-drops/${newObj.path}/manage?updated=true`);
     }
+
     if (refreshData) {
       await refreshData();
     }

@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client"
-import { NextApiRequest, NextApiResponse } from "next"
+import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const prisma = new PrismaClient();
 
@@ -7,6 +7,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { address }: { address: string } = JSON.parse(req.body);
   try {
     let user;
+    let existing = true
     user = await prisma.user.findUnique({
       where: {
         address,
@@ -14,6 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     if (!user) {
+      existing = false
       user = await prisma.user.create({
         data: {
           address: address,
@@ -24,6 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).send({
       message: "❤️ ❤️ ❤️ User added ❤️ ❤️ ❤️",
       data: {
+        existing,
         user,
       },
     });

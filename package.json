@@ -19,6 +19,7 @@
     "@rjsf/utils": "^5.12.1",
     "@rjsf/validator-ajv8": "^5.12.1",
     "@stitches/react": "^1.2.8",
+    "@vercel/analytics": "^1.0.2",
     "@vercel/kv": "^0.2.2",
     "@vercel/postgres": "^0.4.0",
     "@vercel/postgres-kysely": "^0.4.0",
