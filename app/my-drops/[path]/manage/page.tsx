@@ -101,12 +101,14 @@ export default function Page() {
           <div className="flex w-full justify-stretch gap-4">
             <button
               onClick={() =>
-                handleCopy(`https://drops.disco.xyz/${drop?.path}`)
+                handleCopy(
+                  `${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop?.path}`,
+                )
               }
               className="group flex flex-1 justify-between rounded-lg border border-white/20 bg-zinc-950/50 px-4 py-3 text-base transition-all hover:border-white/40"
             >
               <span className="cursor-text select-text opacity-60 transition-all hover:opacity-100">
-                https://drops.disco.xyz/{drop?.path}
+                {process.env.NEXT_PUBLIC_VERCEL_URL}/{drop?.path}
               </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
