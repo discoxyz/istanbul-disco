@@ -54,21 +54,21 @@ export const DropRow: FC<
     <div
       className={`group grid max-w-full grid-cols-5 gap-x-6 rounded-2xl bg-stone-950 p-6 transition-all hover:scale-105 ${className}`}
     >
-        <Credential
-          image={drop.image || undefined}
-          title={drop.name}
-          data={JSON.parse(drop.subjectData || "{}")}
-          className="col-span-5 sm:col-span-3 md:col-span-2"
-          createdByAddress={drop.createdByAddress}
-          {...rest}
-        />
+      <Credential
+        image={drop.image || undefined}
+        title={drop.name}
+        data={JSON.parse(drop.subjectData || "{}")}
+        className="col-span-5 sm:col-span-3 md:col-span-2"
+        createdByAddress={drop.createdByAddress}
+        {...rest}
+      />
       <div className="relative z-10 col-span-5 flex flex-1 flex-col py-2 sm:col-span-2 md:col-span-3">
         <h1 className="mb-05 mt-4 text-xl transition-all lg:mb-2 lg:mt-0 lg:text-2xl">
           {drop.name}
           {claimed && <img className="ml-2 inline" src="/icons/check.svg" />}
           {!eligible && <img className="ml-2 inline" src="/icons/lock.svg" />}
         </h1>
-        <p className="text-l mb-auto opacity-60 ">{drop.description}</p>
+        <p className="text-l mb-auto opacity-60 line-clamp-3 text-ellipsis ">{drop.description}</p>
         <Tags tags={tags} className="mt-2" />
       </div>
     </div>
