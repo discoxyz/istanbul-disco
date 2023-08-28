@@ -1,6 +1,11 @@
 "use client";
 import { Prisma } from "@prisma/client";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import {
+  useParams,
+  useSearchParams,
+  useRouter,
+  usePathname,
+} from "next/navigation";
 // import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
@@ -14,6 +19,7 @@ import { ToastError, ToastLoading, ToastSuccess } from "../components/v2/toast";
 export const DropView = () => {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const { signMessageAsync } = useSignMessage();
   const { address, isConnected } = useAccount();
   const path = params?.path as string;
@@ -87,12 +93,21 @@ export const DropView = () => {
     setCreated(!!searchParams?.get("created"));
   }, [searchParams]);
 
+  const [mine, setMine] = useState(false);
+  useEffect(() => {
+    if (pathname?.includes("my-drops")) {
+      setMine(true);
+      return;
+    }
+    setMine(false);
+  }, [pathname]);
+
   return (
     <div>
       <main className="mx-auto mb-auto w-full max-w-4xl px-6">
         <nav className="mb-6 flex h-16 w-full items-center px-6 text-base text-white/60 md:text-lg lg:text-2xl">
-          <Link href="/" className="mr-2 lg:mr-5">
-            Active Drops
+          <Link href={mine ? "/my-drops" : "/"} className="mr-2 lg:mr-5">
+            {mine ? "My Drops" : "Active Drops"}
           </Link>
           <span className="mx-2 mr-2 opacity-60 lg:mr-5">/</span>
           <span className="mr-auto opacity-60">{drop?.name}</span>
