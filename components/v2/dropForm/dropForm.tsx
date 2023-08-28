@@ -113,8 +113,7 @@ export const DropForm: FC<{
       setFieldData({ ..._fieldData });
 
       if (key === "path") setPathAvailable(undefined);
-
-      const invalid = /[^A-Za-z0-9]/.test(value);
+      const invalid = /[^A-Za-z0-9_-]/.test(value);
 
       if (key === "path" && value) {
         if (value === _drop?.path) {
