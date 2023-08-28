@@ -10,7 +10,7 @@ import { useAccount } from "wagmi";
 import { NavTabs } from "../components/navTabs";
 
 export default function Page() {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const [drops, setDrops] = useState<
     Prisma.DropGetPayload<{
       include: {
@@ -32,11 +32,11 @@ export default function Page() {
       <Head>
         <title>My page title</title>
       </Head>
-      <main className="max-w-4xl w-full mx-auto mb-auto px-6">
+      <main className="mx-auto mb-auto w-full max-w-4xl px-6">
         <NavTabs />
         {drops?.map((drop, key: Key) => {
           return (
-            <Link href={`/active/${drop.path}`} key={key}>
+            <Link href={`/${drop.path}`} key={key}>
               <DropRow drop={drop} className="mb-4" />
             </Link>
           );

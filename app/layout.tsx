@@ -1,7 +1,8 @@
 "use client";
+import React from "react";
 import "../styles/globals.scss";
 import "@rainbow-me/rainbowkit/styles.css";
-import { Metadata } from "next";
+// import { Metadata } from "next";
 import { WalletProvider } from "../contexts/walletProvider";
 import { UserProvider } from "../contexts/userProvider";
 import { Footer } from "../components/v2/footer";
@@ -19,7 +20,7 @@ export default function RootLayout({
       <body>
         <WalletProvider>
           <UserProvider />
-          <div className="flex flex-col h-screen justify-between">
+          <div className="flex h-screen flex-col justify-between">
             <Nav />
             {children}
             <Footer />

@@ -12,13 +12,26 @@ export const Button: FC<ButtonProps & { customColorClasses?: string }> = ({
 }) => {
   return (
     <button
-      className={`${className} rounded-lg px-6 py-3 text-xl ${
+      className={`rounded-lg px-6 py-3 text-xl ${className} ${
         customColorClasses ? customColorClasses : "bg-purple-900 text-white"
       }`}
       {...rest}
     />
   );
 };
+
+export const ButtonLink: FC<LinkProps & { customColorClasses?: string }> = ({
+  className,
+  customColorClasses,
+  ...rest
+}) => (
+  <NextLink
+    className={`inline-block rounded-lg px-6 py-3 text-xl ${className} ${
+      customColorClasses ? customColorClasses : "bg-purple-900 text-white"
+    }`}
+    {...rest}
+  />
+);
 
 export const Link: FC<LinkProps> = ({ className, ...rest }) => {
   return <NextLink className={className} {...rest} />;

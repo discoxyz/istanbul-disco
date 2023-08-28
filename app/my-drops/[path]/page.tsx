@@ -5,17 +5,12 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { Credential } from "../../../components/v2/credCard";
-import { Address, useAccount, useSignMessage } from "wagmi";
-import { sign } from "crypto";
-import { Key, useCallback, useEffect, useState } from "react";
+import { useAccount, useSignMessage } from "wagmi";
+import { useCallback, useEffect, useState } from "react";
 import { Prisma } from "@prisma/client";
-import { Nav } from "../../../components/v2/nav";
 import { getDrops } from "../../services/getDrops";
 import { DropRow } from "../../../components/v2/dropRow";
 import Link from "next/link";
-import { Button } from "../../../components/v2/button";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseClaimStatus } from "../../../lib/parseClaimStatus";
 import {
   ToastError,
@@ -43,7 +38,7 @@ const Page = () => {
 
   useEffect(() => {
     if (!isConnected) {
-      redirect(`/active/${path}`);
+      redirect(`/${path}`);
     }
     if (path && address) {
       const fetchDrops = async () => {
@@ -61,7 +56,7 @@ const Page = () => {
       };
       fetchDrops();
     }
-  }, [path, address]);
+  }, [path, address, isConnected]);
 
   useEffect(() => {
     // const claim = drop.claims?.filter((c) => c.address == address)[0];
@@ -126,14 +121,17 @@ const Page = () => {
         {drop && loaded && (
           <DropRow drop={drop} className="pointer-events-none mb-4" />
         )}
-        <ClaimArea
-          className="mb-2 rounded-3xl bg-stone-950 p-6"
-          claimed={!!claimed}
-          eligible={!!eligible}
-          claim={claim}
-          loading={!loaded}
-          claiming={claiming}
-        />
+        {drop && (
+          <ClaimArea
+            className="mb-2 rounded-3xl bg-stone-950 p-6"
+            claimed={!!claimed}
+            eligible={!!eligible}
+            claim={claim}
+            loading={!loaded}
+            claiming={claiming}
+            drop={drop}
+          />
+        )}
       </main>
       <div className="fixed bottom-0 flex w-full flex-col items-center">
         {error && (
@@ -150,7 +148,7 @@ const Page = () => {
           <ToastSuccess
             text="Drop created"
             onDismiss={() => {
-              router.replace(`/active/${path}`);
+              router.replace(`/${path}`);
               setCreated(false);
             }}
           />

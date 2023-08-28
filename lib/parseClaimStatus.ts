@@ -3,7 +3,7 @@ import { Address } from "viem";
 
 export function parseClaimStatus(
   drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
-  address?: Address
+  address?: Address,
 ) {
   if (!address || !drop.claims) {
     return {
@@ -11,8 +11,6 @@ export function parseClaimStatus(
       eligible: undefined,
     };
   }
-  
-
   const claim = drop.claims.find((c) => c.address === address);
 
   return {

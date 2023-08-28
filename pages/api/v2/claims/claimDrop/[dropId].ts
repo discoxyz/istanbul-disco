@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { recoverMessageAddress } from "viem";
 
@@ -18,12 +18,6 @@ const issueCred = async (_did: string, schema: string, subjectData: {}) => {
     recipientDID: did,
   });
 
-  const opts = {
-    method: "POST",
-    headers: discoHeaders,
-    body: raw,
-  };
-
   try {
     const iss = await fetch("https://api.disco.xyz/v1/credential/", {
       method: "POST",
@@ -33,7 +27,7 @@ const issueCred = async (_did: string, schema: string, subjectData: {}) => {
     const res = await iss.json();
     if (res.status === 400) {
       throw Error("Failed to issue, " + res.message);
-      return false;
+      // return false;
     }
     return true;
   } catch (err) {
@@ -83,7 +77,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const drop = await prisma.drop.findFirstOrThrow({
       where: {
         id: dropId,
-        disabled: false
+        disabled: false,
       },
     });
 
@@ -104,7 +98,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const issue = await issueCred(
         claimingAddress,
         drop.schema,
-        JSON.parse(drop.subjectData)
+        JSON.parse(drop.subjectData),
       );
 
       let claim = undefined;

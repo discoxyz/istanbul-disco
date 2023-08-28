@@ -93,20 +93,20 @@ export const fields: FieldProps = {
   visible: {
     field: {
       required: false,
-      label: 'Show drop in drop feed?',
-      helper: 'If disabled, the drop will be accessible via the path',
+      label: "Show drop in drop feed?",
+      helper: "If disabled, the drop will be accessible via the path",
       type: "checkbox",
       value: true,
-    }
+    },
   },
   disabled: {
     field: {
       required: false,
-      label: 'Disable claims',
-      type: 'checkbox',
+      label: "Disable claims",
+      type: "checkbox",
       value: false,
-      helper: 'Visitors will not be able to claim the credential'
-    }
+      helper: "Visitors will not be able to claim the credential",
+    },
   },
   // limit: {
   //   toggle: {

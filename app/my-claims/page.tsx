@@ -1,14 +1,10 @@
 "use client";
 
 import Head from "next/head";
-import { Nav } from "../../components/v2/nav";
 import { Prisma } from "@prisma/client";
 import { Key, useEffect, useState } from "react";
-import { DropRow } from "../../components/v2/dropRow";
 import Link from "next/link";
-import { getDrops } from "../services/getDrops";
 import { useAccount } from "wagmi";
-import { Button } from "../../components/v2/button";
 import { redirect } from "next/navigation";
 import { getClaims } from "../services/getClaims";
 import { Credential } from "../../components/v2/credCard";
@@ -57,13 +53,13 @@ export default function Page() {
       <Head>
         <title>My page title</title>
       </Head>
-      <main className="max-w-4xl w-full mx-auto mb-auto px-6">
+      <main className="mx-auto mb-auto w-full max-w-4xl px-6">
         <NavTabs />
         <div className="grid grid-cols-3 gap-4">
           {drops.map(
             (
               drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
-              key: Key
+              key: Key,
             ) => {
               return (
                 <Link href={`/my-drops/${drop.path}`} key={key}>
@@ -71,14 +67,14 @@ export default function Page() {
                     image={drop.image || undefined}
                     title={drop.name}
                     data={JSON.parse(drop.subjectData)}
-                    className="max-w-sm col-span-2"
+                    className="col-span-2 max-w-sm"
                     createdByAddress={drop.createdByAddress}
                     // {...rest}
                   />
                   {/* <DropRow drop={drop} className="mb-4" /> */}
                 </Link>
               );
-            }
+            },
           )}
         </div>
       </main>

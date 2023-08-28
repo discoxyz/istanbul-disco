@@ -33,33 +33,38 @@ export default function Page() {
 
   useEffect(() => {
     if (!isConnected) {
-      redirect('/')
+      redirect("/");
     }
     const fetchDrops = async () => {
-      const drops = await getDrops({ createdByAddress: address, address, includeHidden: true, includeDisabled: true });
+      const drops = await getDrops({
+        createdByAddress: address,
+        address,
+        includeHidden: true,
+        includeDisabled: true,
+      });
       setDrops(drops || []);
     };
     fetchDrops();
-  }, [address]);
+  }, [address, isConnected]);
 
   return (
     <>
       <Head>
         <title>My page title</title>
       </Head>
-      <main className="max-w-4xl w-full mx-auto mb-auto">
+      <main className="mx-auto mb-auto w-full max-w-4xl">
         <NavTabs />
         {drops.map(
           (
             drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
-            key: Key
+            key: Key,
           ) => {
             return (
               <Link href={`/my-drops/${drop.path}`} key={key}>
                 <DropRow drop={drop} className="mb-4" />
               </Link>
             );
-          }
+          },
         )}
       </main>
     </>

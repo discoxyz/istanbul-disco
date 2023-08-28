@@ -1,6 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Address, recoverMessageAddress } from "viem";
+import { recoverMessageAddress } from "viem";
 
 const prisma = new PrismaClient();
 
@@ -23,7 +23,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   let _existingClaims: Prisma.ClaimGetPayload<{}>[] = [];
   let existingClaims: string[] = [];
   if (id) {
-
     _existingClaims = await prisma.claim.findMany({
       where: {
         dropId: id,
@@ -109,8 +108,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    if (type == "updated" || type == "added") {
-    }
+    // if (type == "updated" || type == "added") {
+    // }
 
     res.status(200).send({
       message: `❤️ ❤️ ❤️ Drop ${type} ❤️ ❤️ ❤️`,

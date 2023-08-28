@@ -1,6 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Address } from "viem";
 
 const prisma = new PrismaClient();
 
@@ -32,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         id: dropId,
         createdByAddress: createdByAddress,
         visible: includeHidden ? undefined : true,
-        disabled: includeDisabled ? undefined : false
+        disabled: includeDisabled ? undefined : false,
       },
       ...(withClaims || claimingAddress
         ? {
@@ -54,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       (
         drop: Prisma.DropGetPayload<{}> & {
           claims?: Prisma.ClaimGetPayload<{}>[];
-        }
+        },
       ) => {
         let status = {
           eligible: !drop.gated,
@@ -63,14 +62,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (claimingAddress && drop.gated) {
           status.eligible = drop.claims?.find(
-            (c: Prisma.ClaimGetPayload<{}>) => c.address == claimingAddress
+            (c: Prisma.ClaimGetPayload<{}>) => c.address == claimingAddress,
           )
             ? true
             : false;
         }
         status.claimed = drop.claims?.find(
           (c: Prisma.ClaimGetPayload<{}>) =>
-            c.address == claimingAddress && c.claimed
+            c.address == claimingAddress && c.claimed,
         )
           ? true
           : false;
@@ -79,7 +78,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           ...drop,
           ...(claimingAddress && { status }),
         };
-      }
+      },
     );
 
     res.status(200).send({

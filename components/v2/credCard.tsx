@@ -1,8 +1,9 @@
+import React from "react";
 import { FC, HTMLProps, useEffect, useState } from "react";
 import { Address } from "viem";
 import { truncateAddress } from "../../lib/truncateAddress";
 import { schemas } from "../../lib/schemas";
-import { camelCase, startCase, toLower } from "lodash";
+import { camelCase, startCase } from "lodash";
 
 export interface CredentialCardProps {
   data: { [key: string]: any };
@@ -17,12 +18,12 @@ export const Credential: FC<
 > = ({
   title,
   data,
-  style,
+  // style,
   className,
   image,
   createdByAddress,
   schema,
-  ...rest
+  // ...rest
 }) => {
   const baseUnit = (4 / 334) * 100 * 4 + "cqw";
 
@@ -51,11 +52,11 @@ export const Credential: FC<
       }
     >
       <div
-        className="flex-grow aspect-video relative w-full"
+        className="relative aspect-video w-full flex-grow"
         style={{ containerType: "inline-size" }}
       >
         <div
-          className=" bg-cover w-full h-full bg-pink-50 flex flex-col"
+          className=" flex h-full w-full flex-col bg-pink-50 bg-cover"
           style={{
             fontSize: "var(--base-unit)",
             padding: "1em",
@@ -80,7 +81,7 @@ export const Credential: FC<
           {address && (
             <>
               <h2
-                className="uppercase tracking-wider mt-auto"
+                className="mt-auto uppercase tracking-wider"
                 style={{ fontSize: "0.8em" }}
               >
                 From

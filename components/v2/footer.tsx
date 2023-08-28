@@ -3,9 +3,15 @@ import { FC } from "react";
 
 export const Footer: FC = () => {
   return (
-    <div className="w-full py-8 px-6 mt-auto">
+    <div className="mt-auto w-full px-6 py-8">
       <p className="text-white/60">
-        Made with ❤️ at <Link className='hover:text-white/100 underline' href="https://app.disco.xyz">Disco</Link>
+        Made with ❤️ at{" "}
+        <Link
+          className="underline hover:text-white/100"
+          href="https://app.disco.xyz"
+        >
+          Disco
+        </Link>
       </p>
     </div>
   );

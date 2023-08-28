@@ -11,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     createdByAddress,
     ..._dropData
   }: Prisma.DropGetPayload<{}> & { recipients: Address[] } = JSON.parse(
-    req.body
+    req.body,
   );
   // Verify that the data matches the provided signature
 
@@ -21,7 +21,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   const { recipients, ...dropData } = _dropData;
-
 
   if (createdByAddress !== recoveredAddress) {
     res.status(400).send({
@@ -36,14 +35,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-
   if (previousDrop.createdByAddress !== createdByAddress) {
     res.status(400).send({
       message: `The address that created this drop does not match the one that you are attempting to update it with.`,
     });
     return;
   }
-
 
   // ❤️ ❤️ ❤️
   // YASS LES SGO
@@ -61,7 +58,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-
     // Update recipients
     let baseRecipients = recipients || [];
     let addedRecipients = undefined;
@@ -78,12 +74,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       claimed.filter((el) => !el.claimed).map((el) => el.address) || [];
     const toDelete =
       unclaimedAddresses.filter(
-        (el) => !baseRecipients.includes(el as Address)
+        (el) => !baseRecipients.includes(el as Address),
       ) || [];
     const toAdd =
       unclaimedAddresses.filter((el) => recipients.includes(el as Address)) ||
       [];
-
 
     // Remove unclaimed recipients NOT in the recipient list
     removedRecipients = await prisma.claim.deleteMany({

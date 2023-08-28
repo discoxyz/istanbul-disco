@@ -35,7 +35,7 @@ export const NavTabs: FC = () => {
 
   return (
     <nav>
-      <ol className="text-base mb-6 flex h-16 items-center space-x-5 px-6 text-white/60 md:text-lg lg:text-2xl">
+      <ol className="mb-6 flex h-16 items-center space-x-5 px-6 text-base text-white/60 md:text-lg lg:text-2xl">
         {links.map((l, key) => {
           if (l.requiresConnection && !isConnected) return null;
           return (

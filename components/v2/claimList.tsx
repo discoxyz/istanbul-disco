@@ -13,22 +13,22 @@ export const ClaimList: FC<{
     return "Account does not have permission to see claims";
   }
   return (
-    <div className='flex-1'>
-      <h2 className="text-2xl px-4 mt-12 mb-4 flex">
+    <div className="flex-1">
+      <h2 className="mb-4 mt-12 flex px-4 text-2xl">
         Claims{" "}
-        <span className="opacity-60 ml-2">
+        <span className="ml-2 opacity-60">
           {
             drop?.claims.filter((c: Prisma.ClaimGetPayload<{}>) => c.claimed)
               .length
           }
         </span>
       </h2>
-      <div className="bg-stone-950 rounded-3xl p-6">
+      <div className="rounded-3xl bg-stone-950 p-6">
         <ol>
           {drop.claims.length === 0 && (
             <>
-              <h2 className="text-center text-2xl mt-4">No claims just yet!</h2>
-              <p className="text-center text-xl mt-2 opacity-60">
+              <h2 className="mt-4 text-center text-2xl">No claims just yet!</h2>
+              <p className="mt-2 text-center text-xl opacity-60">
                 Be sure to share the link to the drop
               </p>
             </>
@@ -39,7 +39,7 @@ export const ClaimList: FC<{
               return (
                 <li
                   key={key}
-                  className="py-3 border-b border-stone-900 flex justify-between text-stone-400 last:border-b-0"
+                  className="flex justify-between border-b border-stone-900 py-3 text-stone-400 last:border-b-0"
                 >
                   <p>{truncateAddress(claim.address as Address)}</p>
                   <p>{claim.claimed ? "Claimed" : ""}</p>

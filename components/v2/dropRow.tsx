@@ -63,7 +63,7 @@ export const DropRow: FC<
         {...rest}
       />
       <div className="relative z-10 col-span-5 flex flex-1 flex-col py-2 sm:col-span-2 md:col-span-3">
-        <h1 className="mb-05 text-xl mt-4 lg:mt-0 transition-all lg:mb-2 lg:text-2xl">
+        <h1 className="mb-05 mt-4 text-xl transition-all lg:mb-2 lg:mt-0 lg:text-2xl">
           {drop.name}
           {claimed && <img className="ml-2 inline" src="/icons/check.svg" />}
           {!eligible && <img className="ml-2 inline" src="/icons/lock.svg" />}

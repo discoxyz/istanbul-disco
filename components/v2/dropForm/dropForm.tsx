@@ -28,6 +28,7 @@ type DropProps = Prisma.DropGetPayload<{}> & {
 export const DropForm: FC<{
   drop?: DropProps;
   refreshData?: () => void;
+  // eslint-disable-next-line
   setDrop?: (args: {
     name?: string;
     subjectData?: { [key: Key]: any };
@@ -174,8 +175,8 @@ export const DropForm: FC<{
       const arr = string.split(",");
       if (arr) {
         let i = arrayKey;
-        arr.map((value, _key) => {
-          const f = _fieldData[key].field.value as string[];
+        arr.map((value) => {
+          // const f = _fieldData[key].field.value as string[];
           function setVals() {
             if ((_fieldData[key].field.value as string[])[i] === "") {
               (_fieldData[key].field.value as string[])[i] = value;
@@ -245,6 +246,8 @@ export const DropForm: FC<{
   const handleSubmit = useCallback(async () => {
     // setSubmitting(true);
     const data = { ...fieldData };
+
+  // eslint-disable-next-line
     const newObj: { [key in any]: any } = {};
     Object.entries(data).map(([key, value]) => {
       // If field enables other field, remove from result
@@ -252,7 +255,7 @@ export const DropForm: FC<{
       // if ( value.toggle && !value.toggle.value) return;
 
       // Validate/clean-up field contents
-      const { validateAs, error, value: _value } = data[key].field;
+      const { validateAs, value: _value } = data[key].field;
 
       // If no field value, set error
       if (!value.field.value && value.field.required) {
@@ -296,7 +299,7 @@ export const DropForm: FC<{
     newObj.schema = schemas.find((s) => s?.name === selectedSchema)?.schema.$id;
 
     // If has errors, do not submit
-    if (Object.entries(data).some(([key, value]) => value.field.error)) {
+    if (Object.entries(data).some((e) => e[1].field.error)) {
       setFieldData(data);
       // setSubmitting(false)
       setError("Errors. Not submitting");
@@ -345,14 +348,13 @@ export const DropForm: FC<{
     newObj.signature = await signature;
     newObj.id = _drop?.id || undefined;
 
-    const res = await fetch("/api/v2/drops/create", {
+    await fetch("/api/v2/drops/create", {
       method: "POST",
       body: JSON.stringify({ ...newObj }),
     });
-
-    const json = await res.json();
+    
     if (!_drop?.id) {
-      router.push(`/active/${newObj.path}?created=true`);
+      router.push(`/${newObj.path}?created=true`);
     } else if (path && newObj.path !== path) {
       router.push(`/my-drops/${newObj.path}/manage?updated=true`);
     }
@@ -429,7 +431,7 @@ export const DropForm: FC<{
                     <label className="my-3 flex">
                       {value.field.label}
                       <span className="ml-auto">Hide Claims</span>
-                      {!!_drop?.claims.find((c) => c.claimed === true) ? (
+                      {_drop?.claims.find((c) => c.claimed === true) ? (
                         <input
                           className="disabled:cursor-wait"
                           disabled={submitting}

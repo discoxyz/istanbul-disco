@@ -1,4 +1,4 @@
-export const handleChange = () => {}
+export const handleChange = () => {};
 
 export const handleCreate = () => {};
 

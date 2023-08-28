@@ -2,27 +2,26 @@
 
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount } from "wagmi";
 import { getDrops } from "../../../services/getDrops";
-import { redirect, useParams, useSearchParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { ClaimList } from "../../../../components/v2/claimList";
 import { DropForm } from "../../../../components/v2/dropForm";
 import { Credential } from "../../../../components/v2/credCard";
 import { ToastSuccess } from "../../../../components/v2/toast";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 // import { recoverMessageAddress } from "viem";
 
 // const prisma = new PrismaClient();
 
 export default function Page() {
   const params = useParams();
-  const router = useRouter();
   // const { signMessageAsync } = useSignMessage();
   // const { address, isConnected } = useAccount();
   const path = params?.path as string;
-  const { data, error, isLoading, signMessageAsync, variables } =
-    useSignMessage();
-  const { address, isConnected } = useAccount();
+  // const { data, error, isLoading, signMessageAsync, variables } =
+  //   useSignMessage();
+  const { address } = useAccount();
 
   // const [fieldData, setFieldData] = useState(fields);
   // const [_drop, _setDrop] = useState<any>();
@@ -48,10 +47,10 @@ export default function Page() {
 
   // Handle redirect if no permission
   useEffect(() => {
-    if (drop && address !== drop?.createdByAddress) {
-      return redirect(`/active/${path}`);
+    if (path && drop && address !== drop?.createdByAddress) {
+      return redirect(`/${path}`);
     }
-  }, [drop, address]);
+  }, [drop, address, path]);
 
   const setDropFn = useCallback(
     (newData: any) => {

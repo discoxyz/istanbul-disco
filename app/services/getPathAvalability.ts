@@ -1,7 +1,7 @@
-import { SetStateAction } from "react";
 export async function getPathAvailability(
   path: string,
-  setLoadedPath: (args: any) => void
+  // eslint-disable-next-line
+  setLoadedPath: (args: any) => void,
 ) {
   const dropFetch = await fetch(`/api/v2/drops/pathAvailable/${path}`, {
     method: "GET",

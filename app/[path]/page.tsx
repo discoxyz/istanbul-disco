@@ -1,23 +1,19 @@
 "use client";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Credential } from "../../../components/v2/credCard";
-import { Address, useAccount, useSignMessage } from "wagmi";
-import { sign } from "crypto";
-import { Key, useCallback, useEffect, useState } from "react";
+import { useAccount, useSignMessage } from "wagmi";
+import { useCallback, useEffect, useState } from "react";
 import { Prisma } from "@prisma/client";
-import { Nav } from "../../../components/v2/nav";
-import { getDrops } from "../../services/getDrops";
-import { DropRow } from "../../../components/v2/dropRow";
+import { getDrops } from "../services/getDrops";
+import { DropRow } from "../../components/v2/dropRow";
 import Link from "next/link";
-import { Button } from "../../../components/v2/button";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { parseClaimStatus } from "../../../lib/parseClaimStatus";
+import { parseClaimStatus } from "../../lib/parseClaimStatus";
 import {
   ToastError,
   ToastLoading,
   ToastSuccess,
-} from "../../../components/v2/toast";
-import { ClaimArea } from "../../../components/v2/claimArea";
+} from "../../components/v2/toast";
+import { ClaimArea } from "../../components/v2/claimArea";
+import Head from "next/head";
 
 // This gets called on every request
 
@@ -99,6 +95,20 @@ const Page = () => {
 
   return (
     <div>
+      <Head>
+        <meta name="twitter:card" content="summary_large_image" />
+        {/* <meta name="twitter:site" content="@nytimes" />
+<meta name="twitter:creator" content="@SarahMaslinNir" /> */}
+        <meta
+          name="twitter:title"
+          content="Parade of Fans for Houston’s Funeral"
+        />
+        <meta
+          name="twitter:description"
+          content="NEWARK - The guest list and parade of limousines with celebrities emerging from them seemed more suited to a red carpet event in Hollywood or New York than than a gritty stretch of Sussex Avenue near the former site of the James M. Baxter Terrace public housing project here."
+        />
+        <meta name="twitter:image" content="https://unsplash.it/800" />
+      </Head>
       <main className="mx-auto mb-auto w-full max-w-4xl px-6">
         <nav className="mb-6 flex h-16 w-full items-center px-6 text-base text-white/60 md:text-lg lg:text-2xl">
           <Link href="/" className="mr-2 lg:mr-5">
@@ -118,14 +128,17 @@ const Page = () => {
         {drop && loaded && (
           <DropRow drop={drop} className="pointer-events-none mb-4" />
         )}
-        <ClaimArea
-          className="mb-2 rounded-3xl bg-stone-950 p-6"
-          claimed={!!claimed}
-          eligible={!!eligible}
-          claim={claim}
-          loading={!loaded}
-          claiming={claiming}
-        />
+        {drop && (
+          <ClaimArea
+            className="mb-2 rounded-3xl bg-stone-950 p-6"
+            claimed={!!claimed}
+            eligible={!!eligible}
+            claim={claim}
+            loading={!loaded}
+            claiming={claiming}
+            drop={drop}
+          />
+        )}
         {/* <div className="rounded-3xl bg-stone-950 p-6">{ClaimArea}</div> */}
       </main>
       <div className="fixed bottom-0 flex w-full flex-col items-center">
@@ -143,7 +156,7 @@ const Page = () => {
           <ToastSuccess
             text="Drop created"
             onDismiss={() => {
-              router.replace(`/active/${path}`);
+              router.replace(`/${path}`);
               setCreated(false);
             }}
           />

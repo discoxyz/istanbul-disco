@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const prisma = new PrismaClient();
@@ -6,10 +6,9 @@ const prisma = new PrismaClient();
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     address,
-    dropId,
     withDrops,
   }: { address: string; dropId?: number; withDrops?: boolean } = JSON.parse(
-    req.body
+    req.body,
   );
 
   try {
