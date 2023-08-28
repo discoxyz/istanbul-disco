@@ -23,8 +23,12 @@ export async function generateMetadata(
   return {
     title: drop?.name ? `🪩 ${drop.name}` : "🪩 Disco Drops",
     other: {
+      "twitter:card": "summary_large_image",
       "twitter:title": `Disco Drops: ${drop?.name}`,
+      "twitter:site": "@discoxyz",
       "twitter:description": `Check your eligibility &amp; claim your credential now`,
+      // REPLACE WITH SSR CRED IMAGE
+      "twitter:image": "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
     },
   };
 }
