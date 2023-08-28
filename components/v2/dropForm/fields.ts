@@ -77,6 +77,23 @@ export const fields: FieldProps = {
       errorMessage: "Drop path is required",
     },
   },
+  linkText: {
+    toggle: {
+      label: "Enable custom Tweet text",
+      type: 'checkbox',
+      value: false,
+    },
+    field: {
+      required: false,
+      label: "Custom tweet text",
+      placeholder: "Claim your credential now: {link}",
+      // Disable spaces regex
+      helper: `Must include {link}`,
+      type: "textarea",
+      value: "",
+      // errorMessage: "Drop path is required",
+    },
+  },
   // schema: {
   //   field: {
   //     required: true,

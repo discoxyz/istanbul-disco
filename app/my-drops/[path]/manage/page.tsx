@@ -14,6 +14,7 @@ export default function Page() {
   const path = params?.path as string;
   const { address } = useAccount();
   const [drop, setDrop] = useState<any>();
+  const [linkText, setLinkText] = useState<string>("");
 
   const fetchDrop = async (path: string) => {
     const drops = await getDrops({
@@ -42,6 +43,19 @@ export default function Page() {
   const setDropFn = useCallback(
     (newData: any) => {
       setDrop({ ...drop, ...newData });
+      let linkText =
+        drop?.linkTextEnabled &&
+        drop.linkText &&
+        drop?.linkText.replace(
+          /{link}/,
+          `${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`,
+        );
+
+      if (!linkText) {
+        linkText = `I just claimed my ${name} credential at Disco 🪩
+${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
+      }
+      setLinkText(linkText);
     },
     [drop],
   );
@@ -111,10 +125,7 @@ export default function Page() {
             </button>
             <Link
               className="group flex h-12 w-12 items-center rounded-full bg-[#1DA1F2] p-3"
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                `Claim your ${name} credential at Disco 🪩
-${process.env.NEXT_PUBLIC_VERCEL_URL}/${path}`,
-              )}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(linkText)}`}
               target="_blank"
               rel="noopener noreferrer"
             >

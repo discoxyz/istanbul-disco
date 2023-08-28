@@ -31,14 +31,18 @@ const UnClaimed: FC<{
 const Claimed: FC<{
   name: string;
   path: string;
-}> = ({ name, path }) => (
+  linkText?: string | null;
+  linkTextEnabled?: boolean | null;
+}> = ({ name, path, linkText, linkTextEnabled }) => (
   <>
     <h1 className="mb-2 text-2xl">Drop claimed!</h1>
     <p className=" mb-3 text-xl text-white/60">Spread the good news:</p>
     <ButtonLink
       customColorClasses="bg-[#1DA1F2]"
       href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        `I just claimed my ${name} credential at Disco 🪩
+        linkText && linkTextEnabled
+          ? linkText
+          : `I just claimed my ${name} credential at Disco 🪩
 ${process.env.NEXT_PUBLIC_VERCEL_URL}/${path}`,
       )}`}
       target="_blank"
@@ -67,6 +71,8 @@ export const ClaimArea: FC<{
   drop: {
     name: string;
     path: string;
+    linkText?: string | null;
+    linkTextEnabled?: boolean | null;
   };
   claim?: () => void;
   className?: string;
@@ -80,6 +86,18 @@ export const ClaimArea: FC<{
   className,
 }) => {
   const { isConnected } = useAccount();
+  let linkText =
+    drop?.linkTextEnabled &&
+    drop.linkText &&
+    drop?.linkText.replace(
+      /{link}/,
+      `${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`,
+    );
+
+  if (!linkText) {
+    linkText = `I just claimed my ${name} credential at Disco 🪩
+    ${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
+  }
   return (
     <div className={`${className}`}>
       {!isConnected ? (
@@ -87,7 +105,7 @@ export const ClaimArea: FC<{
       ) : loading ? (
         <Loading />
       ) : claimed ? (
-        <Claimed {...drop} />
+        <Claimed {...drop} linkText={linkText} />
       ) : !eligible ? (
         <NotEligible />
       ) : (

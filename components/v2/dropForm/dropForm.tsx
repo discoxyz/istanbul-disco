@@ -79,6 +79,9 @@ export const DropForm: FC<{
       if (_fields?.claims?.toggle) {
         _fields.claims.toggle.value = _drop.gated || false;
       }
+      if (_fields?.linkText?.toggle) {
+        _fields.linkText.toggle.value = _drop.linkTextEnabled || false;
+      }
 
       setFieldData(_fields);
       setSubjectData(_drop?.subjectData);
@@ -87,7 +90,6 @@ export const DropForm: FC<{
         schemas.find((s) => s?.schema.$id === _drop?.schema)?.name,
       );
     }
-
   }, []);
 
   const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
@@ -99,6 +101,7 @@ export const DropForm: FC<{
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
+      console.log(key);
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -136,6 +139,18 @@ export const DropForm: FC<{
             setPathLoading(false);
             setPathAvailable(data.available);
           }
+        }
+      }
+
+      if (key === "linkText" && value) {
+        console.log("linkText yooo", value);
+        if (!value.includes("{link}")) {
+          _fieldData[key].field.error = true;
+          _fieldData[key].field.errorMessage = "Must include {link}";
+        } else {
+          _fieldData[key].field.error = false;
+          _fieldData[key].field.errorMessage =
+            fieldData[key].field.errorMessage;
         }
       }
     },
@@ -284,10 +299,20 @@ export const DropForm: FC<{
       return;
     }
 
+    // if (newObj.linkText) {
+    //   if (!newObj.linkText.includes("{link}")) {
+    //     data.linkText.field.error = true;
+    //     setError("Invalid custom link text. Must include {link}");
+    //   }
+    // }
+
     newObj.subjectData = JSON.stringify(subjectData);
 
     // Add gated prop
     newObj.gated = data.claims.toggle?.value;
+
+    // Add custom share text prop
+    newObj.linkTextEnabled = data.linkText.toggle?.value;
 
     // Add schema prop
     newObj.schema = schemas.find((s) => s?.name === selectedSchema)?.schema.$id;
@@ -382,7 +407,7 @@ export const DropForm: FC<{
     }
 
     setCleanSchema(s);
-  }, [selectedSchema]);
+  }, [selectedSchema, signMessageAsync]);
 
   return (
     <div className="mr-12 w-full max-w-2xl text-xl">
@@ -392,13 +417,13 @@ export const DropForm: FC<{
       <div className="rounded-3xl bg-stone-950 p-6">
         {Object.entries(fieldData).map(([key, value]) => {
           const disabled = value.toggle && !value.toggle.value;
-          const helperText =
-            (value.field.helper &&
-              value.field.helper.replace(
-                /{.*}/,
-                value.field.value as string,
-              )) ||
-            value.field.helper;
+          // const helperText =
+          //   (value.field.helper &&
+          //     value.field.helper.replace(
+          //       /{.*}/,
+          //       value.field.value as string,
+          //     )) ||
+          //   value.field.helper;
           return (
             <div
               key={key}
@@ -483,6 +508,7 @@ export const DropForm: FC<{
                   <>
                     <label className="block">{value.field.label}</label>
                     <textarea
+                      placeholder={(value.field.placeholder as string) || ""}
                       value={value.field.value as string}
                       onChange={(e) => handleChange(key, e.target.value)}
                       disabled={submitting || disabled}
@@ -514,8 +540,17 @@ export const DropForm: FC<{
                   </>
                 )}
                 {value.field.type !== "checkbox" && (
+                  // (value.field.helper &&
+                  //   value.field.helper.replace(
+                  //     /{.*}/,
+                  //     value.field.value as string,
+                  //   )) ||
+                  // value.field.helper;
                   <p className="flex text-slate-400">
-                    {helperText}{" "}
+                    {value.field.helper?.replace(
+                      /{value}/,
+                      value.field.value as string,
+                    )}{" "}
                     {key === "path" &&
                       value.field.value &&
                       !value.field.error &&
