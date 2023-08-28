@@ -1,6 +1,5 @@
 "use client";
 
-import Head from "next/head";
 import { Prisma } from "@prisma/client";
 import { Key, useEffect, useState } from "react";
 import { DropRow } from "../components/v2/dropRow";
@@ -29,9 +28,6 @@ export default function Page() {
 
   return (
     <>
-      <Head>
-        <title>My page title</title>
-      </Head>
       <main className="mx-auto mb-auto w-full max-w-4xl px-6">
         <NavTabs />
         {drops?.map((drop, key: Key) => {
