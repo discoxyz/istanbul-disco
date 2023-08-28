@@ -97,7 +97,7 @@ export const fields: FieldProps = {
       label: "Custom tweet text",
       placeholder: "Claim your credential now: {link}",
       // Disable spaces regex
-      helper: `Must include {link}`,
+      helper: `Be sure to include the link to the drop`,
       type: "textarea",
       value: "",
       // errorMessage: "Drop path is required",

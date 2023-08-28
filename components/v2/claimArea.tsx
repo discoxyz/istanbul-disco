@@ -97,16 +97,9 @@ export const ClaimArea: FC<{
   className,
 }) => {
   const { isConnected } = useAccount();
-  let linkText =
-    drop?.linkTextEnabled &&
-    drop.linkText &&
-    drop?.linkText.replace(
-      /{link}/,
-      `${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`,
-    );
-
+  let linkText = drop?.linkTextEnabled && drop.linkText;
   if (!linkText) {
-    linkText = `I just claimed my ${name} credential at Disco 🪩
+    linkText = `I just claimed my ${drop.name} credential at Disco 🪩
     ${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
   }
   return (

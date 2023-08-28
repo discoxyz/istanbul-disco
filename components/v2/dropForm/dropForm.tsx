@@ -143,17 +143,17 @@ export const DropForm: FC<{
         }
       }
 
-      if (key === "linkText" && value) {
-        console.log("linkText yooo", value);
-        if (!value.includes("{link}")) {
-          _fieldData[key].field.error = true;
-          _fieldData[key].field.errorMessage = "Must include {link}";
-        } else {
-          _fieldData[key].field.error = false;
-          _fieldData[key].field.errorMessage =
-            fieldData[key].field.errorMessage;
-        }
-      }
+      // if (key === "linkText" && value) {
+      //   console.log("linkText yooo", value);
+      //   if (!value.includes("{link}")) {
+      //     _fieldData[key].field.error = true;
+      //     _fieldData[key].field.errorMessage = "Must include {link}";
+      //   } else {
+      //     _fieldData[key].field.error = false;
+      //     _fieldData[key].field.errorMessage =
+      //       fieldData[key].field.errorMessage;
+      //   }
+      // }
     },
     [fieldData],
   );

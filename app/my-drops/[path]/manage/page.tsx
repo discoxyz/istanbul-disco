@@ -43,18 +43,9 @@ export default function Page() {
   const setDropFn = useCallback(
     (newData: any) => {
       setDrop({ ...drop, ...newData });
-      let linkText =
-        drop?.linkTextEnabled &&
-        drop.linkText &&
-        drop?.linkText.replace(
-          /{link}/,
-          `${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`,
-        );
 
-      if (!linkText) {
-        linkText = `I just claimed my ${name} credential at Disco 🪩
-${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
-      }
+      let linkText = drop?.linkTextEnabled && drop.linkText;
+      if (!linkText) linkText = `I just claimed my ${drop.name} credential at Disco 🪩 ${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
       setLinkText(linkText);
     },
     [drop],
@@ -125,7 +116,9 @@ ${process.env.NEXT_PUBLIC_VERCEL_URL}/${drop.path}`;
             </button>
             <Link
               className="group flex h-12 w-12 items-center rounded-full bg-[#1DA1F2] p-3"
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(linkText)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                linkText,
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
             >
