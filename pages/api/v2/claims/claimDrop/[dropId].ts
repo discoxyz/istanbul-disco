@@ -10,7 +10,7 @@ const issueCred = async (_did: string, schema: string, subjectData: {}) => {
   discoHeaders.append("Authorization", `Bearer ${process.env.DISCO_API_KEY}`);
   let did = _did;
 
-  if (did.startsWith("0x")) did = `did:pkh:eip155:1:${did}`;
+  if (did.startsWith("0x")) did = `did:ethr:${did}`;
 
   const raw = JSON.stringify({
     schemaUrl: schema,
