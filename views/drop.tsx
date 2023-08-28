@@ -42,6 +42,8 @@ export const DropView = () => {
           address: address || undefined,
           withClaims: !!address || undefined,
           withClaimsBy: address || undefined,
+          includeDisabled: true,
+          includeHidden: true,
         });
         setDrop(drops[0] || []);
         setLoaded(true);
@@ -53,6 +55,7 @@ export const DropView = () => {
   useEffect(() => {
     // const claim = drop.claims?.filter((c) => c.address == address)[0];
     if (drop) {
+      console.log('hellooo', drop)
       const { claimed, eligible } = parseClaimStatus(drop, address);
       setClaimed(claimed);
       setEligible(eligible);
@@ -135,6 +138,7 @@ export const DropView = () => {
             claim={claim}
             loading={!loaded}
             claiming={claiming}
+            disabled={drop.disabled}
             drop={drop}
           />
         )}

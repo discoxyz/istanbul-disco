@@ -16,6 +16,15 @@ const NotConnected: FC = () => (
   </>
 );
 
+const Disbled: FC = () => (
+  <>
+    <h1 className="mb-2 text-2xl">Drop expired</h1>
+    <p className="mb-4 text-xl text-white/60">
+      View other credentials to see what is available.
+    </p>
+  </>
+);
+
 const UnClaimed: FC<{
   claim: () => void;
   error?: boolean;
@@ -68,6 +77,7 @@ export const ClaimArea: FC<{
   claiming: boolean;
   loading: boolean;
   eligible: boolean;
+  disabled?: boolean;
   drop: {
     name: string;
     path: string;
@@ -81,6 +91,7 @@ export const ClaimArea: FC<{
   claiming,
   loading,
   eligible,
+  disabled,
   drop,
   claim = () => null,
   className,
@@ -100,7 +111,9 @@ export const ClaimArea: FC<{
   }
   return (
     <div className={`${className}`}>
-      {!isConnected ? (
+      {disabled ? (
+        <Disbled />
+      ) : !isConnected ? (
         <NotConnected />
       ) : loading ? (
         <Loading />
