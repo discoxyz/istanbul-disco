@@ -27,8 +27,13 @@ export async function generateMetadata(
       "twitter:title": `Disco Drops: ${drop?.name}`,
       "twitter:site": "@discoxyz",
       "twitter:description": `Check your eligibility &amp; claim your credential now`,
+      "og:description": `Check your eligibility &amp; claim your credential now`,
+      "og:title": `Disco Drops: ${drop?.name}`,
       // REPLACE WITH SSR CRED IMAGE
-      "twitter:image": "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
+      "twitter:image":
+        drop?.image || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
+        "og:image":
+          drop?.image || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
     },
   };
 }
