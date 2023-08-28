@@ -39,7 +39,7 @@ const Claimed: FC<{
       customColorClasses="bg-[#1DA1F2]"
       href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
         `I just claimed my ${name} credential at Disco 🪩
-https://claims.disco.xyz/${path}`,
+${process.env.NEXT_PUBLIC_VERCEL_URL}/${path}`,
       )}`}
       target="_blank"
       rel="noopener noreferrer"

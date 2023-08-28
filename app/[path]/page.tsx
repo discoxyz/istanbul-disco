@@ -32,8 +32,8 @@ export async function generateMetadata(
       // REPLACE WITH SSR CRED IMAGE
       "twitter:image":
         drop?.image || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
-        "og:image":
-          drop?.image || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
+      "og:image":
+        drop?.image || "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
     },
   };
 }

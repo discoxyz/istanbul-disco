@@ -81,7 +81,6 @@ export const DropForm: FC<{
       }
 
       setFieldData(_fields);
-      console.log("INIT DATA", _drop?.subjectData);
       setSubjectData(_drop?.subjectData);
       setSchemaError(undefined);
       setSelectedSchema(
@@ -89,7 +88,6 @@ export const DropForm: FC<{
       );
     }
 
-    console.log(schemas[2]?.schema.properties.credentialSubject);
   }, []);
 
   const [pathAvailable, setPathAvailable] = useState<undefined | boolean>();
@@ -101,7 +99,6 @@ export const DropForm: FC<{
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
-      console.log("Change", key, value);
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -226,12 +223,9 @@ export const DropForm: FC<{
   const [schemaError, setSchemaError] = useState<string | undefined>();
 
   const handleFormData = (e: any) => {
-    console.log("FORMMMMM", e);
     setSubjectData(e.formData);
   };
   useEffect(() => {
-    // console.log('setDrop', fieldData.image.field.value)
-    console.log("FROM DATA", subjectData);
     setDrop({
       createdByAddress: address,
       name: (fieldData.name.field.value as string) || "",
@@ -247,7 +241,7 @@ export const DropForm: FC<{
     // setSubmitting(true);
     const data = { ...fieldData };
 
-  // eslint-disable-next-line
+    // eslint-disable-next-line
     const newObj: { [key in any]: any } = {};
     Object.entries(data).map(([key, value]) => {
       // If field enables other field, remove from result
@@ -305,7 +299,6 @@ export const DropForm: FC<{
       setError("Errors. Not submitting");
       return;
     }
-    console.log("SUBJECT", subjectData);
     if (
       !formRef?.current?.validateForm() &&
       Object.keys(cleanSchema?.properties).length &&
@@ -352,7 +345,7 @@ export const DropForm: FC<{
       method: "POST",
       body: JSON.stringify({ ...newObj }),
     });
-    
+
     if (!_drop?.id) {
       router.push(`/${newObj.path}?created=true`);
     } else if (path && newObj.path !== path) {
