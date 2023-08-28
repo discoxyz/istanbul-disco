@@ -50,7 +50,7 @@ export const NavTabs: FC = () => {
             </li>
           );
         })}
-        {!! links.find(l => l.requiresConnection) && <li className="ml-auto"><ButtonLink href='/my-drops/create'>Create drop</ButtonLink></li>}
+        {isConnected && <li className="ml-auto"><ButtonLink href='/my-drops/create'>Create drop</ButtonLink></li>}
       </ol>
     </nav>
   );
