@@ -71,7 +71,7 @@ export const fields: FieldProps = {
       // Disable spaces regex
       validateAs: "path",
       pattern: "^S+$",
-      helper: "https://claim.disco.xyz/{value}",
+      helper: `${process.env.NEXT_PUBLIC_VERCEL_URL}/{value}`,
       type: "text",
       value: "",
       errorMessage: "Drop path is required",
