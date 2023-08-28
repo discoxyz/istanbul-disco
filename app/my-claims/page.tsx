@@ -66,7 +66,7 @@ export default function Page() {
                   <Credential
                     image={drop.image || undefined}
                     title={drop.name}
-                    data={JSON.parse(drop.subjectData)}
+                    data={JSON.parse(drop.subjectData || "{}")}
                     className="col-span-2 max-w-sm"
                     createdByAddress={drop.createdByAddress}
                     // {...rest}
