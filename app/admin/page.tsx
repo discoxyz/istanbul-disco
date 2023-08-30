@@ -60,8 +60,13 @@ export default function Page() {
         signature: sig,
       }),
     });
-    const auth = await fetchAuth.json();
-    return auth;
+    if (fetchAuth.ok) {
+      const auth = await fetchAuth.json();
+      return auth;
+    } else {
+      console.error(fetchAuth);
+      return { deleted: false };
+    }
   };
   const [deleteState, setDeleteState] = useState<
     "delete" | "deleting" | "deleted" | "error"
@@ -74,7 +79,6 @@ export default function Page() {
         message: `Delete drop ID ${value}`,
       });
       const del = await fetchDelete(sig, value);
-      console.log(del);
       setDeleteState(del.deleted ? "deleted" : "error");
     }
   }, [signMessageAsync, value]);
