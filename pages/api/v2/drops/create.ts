@@ -12,6 +12,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     ..._dropData
   }: Prisma.DropGetPayload<{}> & { claims: string[] } = JSON.parse(req.body);
 
+  const invalid = /[^A-Za-z0-9_-]/.test(_dropData.path);
+  if (invalid || _dropData.path == 'my-claims' || _dropData.path === 'my-drops' || _dropData.path === 'admin') {
+    res.status(400).send({
+      message: "Path is invalid",
+    });
+    return
+  }
+
   // Verify that the data matches the provided signature
   const recoveredAddress = await recoverMessageAddress({
     message: JSON.stringify(_dropData),

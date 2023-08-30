@@ -114,7 +114,7 @@ export const DropForm: FC<{
       setFieldData({ ..._fieldData });
 
       if (key === "path") setPathAvailable(undefined);
-      const invalid = /[^A-Za-z0-9_-]/.test(value);
+      const invalid = /[^A-Za-z0-9_-]/.test(value) || path == 'my-drops' || path == 'admin' || path == 'my-claims';
 
       if (key === "path" && value) {
         if (value === _drop?.path) {
@@ -372,6 +372,7 @@ export const DropForm: FC<{
       method: "POST",
       body: JSON.stringify({ ...newObj }),
     });
+
     const result = await res.json();
 
     if (!_drop?.id) {
