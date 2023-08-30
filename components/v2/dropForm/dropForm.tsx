@@ -581,11 +581,11 @@ export const DropForm: FC<{
                           />
                         </svg>
                       ) : pathAvailable === true ? (
-                        <span className="ml-auto text-green-500">Avalable</span>
+                        <span className="ml-auto text-green-500">Available</span>
                       ) : (
                         pathAvailable === false && (
                           <span className="ml-auto text-red-500">
-                            Not avaliable
+                            Not available
                           </span>
                         )
                       ))}
