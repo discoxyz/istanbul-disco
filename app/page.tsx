@@ -14,6 +14,11 @@ export default function Page() {
     Prisma.DropGetPayload<{
       include: {
         claims?: true;
+        _count: {
+          select: {
+            claims: true;
+          };
+        };
       };
     }>[]
   >();
@@ -21,7 +26,11 @@ export default function Page() {
   useEffect(() => {
     const fetchDrops = async () => {
       const drops = await getDrops({ address });
-      setDrops(drops || []);
+      setDrops(
+        drops.sort((a: any, b: any) =>
+          a._count.claims > b._count.claims ? 1 : -1,
+        ) || [],
+      );
     };
     fetchDrops();
   }, [address]);

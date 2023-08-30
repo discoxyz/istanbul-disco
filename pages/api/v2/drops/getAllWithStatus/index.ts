@@ -33,21 +33,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         visible: includeHidden ? undefined : true,
         disabled: includeDisabled ? undefined : false,
       },
-      ...(withClaims || claimingAddress
-        ? {
+
             include: {
               // claims: true,
-              claims: !withClaimsBy
+              _count: {
+                select: {
+                  claims: true
+                }
+              },
+              ...(withClaims || claimingAddress ? { claims: !withClaimsBy
                 ? true
                 : {
                     where: {
                       address: withClaimsBy,
                     },
                   },
-            },
-          }
-        : {}),
-    });
+            } : {})
+            }
+           });
 
     const _drops = drops.map(
       (

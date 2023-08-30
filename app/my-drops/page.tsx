@@ -1,6 +1,5 @@
 "use client";
 
-import Head from "next/head";
 import { Prisma } from "@prisma/client";
 import { Key, useEffect, useState } from "react";
 import { DropRow } from "../../components/v2/dropRow";
@@ -42,21 +41,31 @@ export default function Page() {
         includeHidden: true,
         includeDisabled: true,
       });
-      setDrops(drops || []);
+      setDrops(
+        drops.sort((a: any, b: any) =>
+          a._count.claims > b._count.claims ? 1 : -1,
+        ) || [],
+      );
     };
     fetchDrops();
   }, [address, isConnected]);
 
   return (
     <>
-      <Head>
-        <title>My page title</title>
-      </Head>
       <main className="mx-auto mb-auto w-full max-w-4xl">
         <NavTabs />
         {drops.map(
           (
-            drop: Prisma.DropGetPayload<{ include: { claims: true } }>,
+            drop: Prisma.DropGetPayload<{
+              include: {
+                claims: true;
+                _count: {
+                  select: {
+                    claims: true;
+                  };
+                };
+              };
+            }>,
             key: Key,
           ) => {
             return (
