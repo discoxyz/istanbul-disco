@@ -43,7 +43,7 @@ export default function Page() {
       });
       setDrops(
         drops.sort((a: any, b: any) =>
-          a._count.claims > b._count.claims ? 1 : -1,
+          a._count.claims < b._count.claims ? 1 : -1,
         ) || [],
       );
     };
