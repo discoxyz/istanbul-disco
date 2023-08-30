@@ -52,15 +52,28 @@ export default function Page() {
     setIsAuthentated(res.authenticated || false);
   }, [signMessageAsync]);
 
-  const fetchDelete = async (sig: string, dropId: number) => {
+  const fetchDelete = async (sig: `0x${string}`, dropId: number) => {
+    if (!dropId) {
+      console.error("No drop ID");
+    }
+    if (!sig) {
+      console.error("No signature");
+    }
+
+    if (!sig || !dropId) return;
+
+    const data = {
+      dropId: dropId,
+      signature: sig,
+    };
+
     const fetchAuth = await fetch("/api/v2/admin/delete-drop", {
       method: "POST",
-      body: JSON.stringify({
-        dropId: dropId,
-        signature: sig,
-      }),
+      body: JSON.stringify(data),
     });
+
     if (fetchAuth.ok) {
+      console.log("auth ok");
       const auth = await fetchAuth.json();
       return auth;
     } else {

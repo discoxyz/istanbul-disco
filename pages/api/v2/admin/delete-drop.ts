@@ -22,15 +22,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
+
+    await prisma.claim.deleteMany({
+      where: {
+        dropId: dropId,
+      },
+    });
+
     await prisma.drop.delete({
       where: {
         id: dropId,
       },
     });
+    
   } catch {
     res.status(500).send({
       message: "Error occurred. The drop my not have been deleted",
-      deleted: false
+      deleted: false,
     });
   }
 
