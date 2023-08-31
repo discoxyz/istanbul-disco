@@ -8,13 +8,18 @@ import {
   useEffect,
   useState,
 } from "react";
-import { fields } from "./fields";
+import { FieldProps, fields } from "./fields";
 import { Prisma } from "@prisma/client";
 import { Button } from "../button";
 import { useAccount, useSignMessage } from "wagmi";
 import { recoverMessageAddress } from "viem";
 import { ToastError, ToastLoading, ToastSuccess } from "../toast";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  useRouter,
+  useSearchParams,
+  usePathname
+} from "next/navigation";
 import { getPathAvailability } from "../../../app/services/getPathAvalability";
 import Form from "@rjsf/core";
 import { schemas } from "../../../lib/schemas";
@@ -42,14 +47,17 @@ export const DropForm: FC<{
   const params = useParams();
   const path = params?.path as string;
   const formRef = createRef<any>();
+  // Force form clearing
+  const pathname = usePathname()
   // Set fields using drop data, if available
   // This means the form can be re-used for editing and creating
   const router = useRouter();
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  // const { recoverMessageAddress } = rec
 
-  const [fieldData, setFieldData] = useState(fields);
+  const [fieldData, setFieldData] = useState<FieldProps>(
+    JSON.parse(JSON.stringify(fields)),
+  );
   const [hideClaims, setHideClaims] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
@@ -58,13 +66,23 @@ export const DropForm: FC<{
 
   const searchParams = useSearchParams();
 
+  const resetForm = () => {
+    setFieldData(JSON.parse(JSON.stringify(fields)));
+  };
+
   useEffect(() => {
     setSubmitted(!!searchParams?.get("updated"));
   }, [searchParams]);
 
   useEffect(() => {
+    resetForm()
+  }, [pathname])
+
+  useEffect(() => {
+    resetForm();
     if (_drop) {
-      const _fields = fields;
+      // Create a deep copy of fields
+      const _fields: FieldProps = JSON.parse(JSON.stringify(fields));
       Object.entries(_fields).map(([key, value]) => {
         if (key === "claims") {
           _fields[key].field.value =
@@ -103,7 +121,6 @@ export const DropForm: FC<{
 
   const handleChange = useCallback(
     async (key: string, value: any, arrayKey?: number) => {
-      console.log(key);
       const _fieldData = fieldData;
       if (arrayKey !== undefined) {
         (_fieldData[key].field.value as string[])[arrayKey] = value;
@@ -114,7 +131,11 @@ export const DropForm: FC<{
       setFieldData({ ..._fieldData });
 
       if (key === "path") setPathAvailable(undefined);
-      const invalid = /[^A-Za-z0-9_-]/.test(value) || path == 'my-drops' || path == 'admin' || path == 'my-claims';
+      const invalid =
+        /[^A-Za-z0-9_-]/.test(value) ||
+        path == "my-drops" ||
+        path == "admin" ||
+        path == "my-claims";
 
       if (key === "path" && value) {
         if (value === _drop?.path) {
@@ -142,18 +163,6 @@ export const DropForm: FC<{
           }
         }
       }
-
-      // if (key === "linkText" && value) {
-      //   console.log("linkText yooo", value);
-      //   if (!value.includes("{link}")) {
-      //     _fieldData[key].field.error = true;
-      //     _fieldData[key].field.errorMessage = "Must include {link}";
-      //   } else {
-      //     _fieldData[key].field.error = false;
-      //     _fieldData[key].field.errorMessage =
-      //       fieldData[key].field.errorMessage;
-      //   }
-      // }
     },
     [fieldData],
   );
@@ -376,6 +385,7 @@ export const DropForm: FC<{
     const result = await res.json();
 
     if (!_drop?.id) {
+      resetForm();
       va.track("DropCreated", {
         did: address as string,
         id: result.data.drop.id,
@@ -427,13 +437,6 @@ export const DropForm: FC<{
       <div className="rounded-3xl bg-stone-950 p-6">
         {Object.entries(fieldData).map(([key, value]) => {
           const disabled = value.toggle && !value.toggle.value;
-          // const helperText =
-          //   (value.field.helper &&
-          //     value.field.helper.replace(
-          //       /{.*}/,
-          //       value.field.value as string,
-          //     )) ||
-          //   value.field.helper;
           return (
             <div
               key={key}
@@ -459,7 +462,7 @@ export const DropForm: FC<{
                     <label className="my-3 flex">
                       {value.field.label}
                       <span className="ml-auto">Hide Claims</span>
-                      {_drop?.claims.find((c) => c.claimed === true) ? (
+                      {_drop?.claims?.find((c) => c.claimed === true) ? (
                         <input
                           className="disabled:cursor-wait"
                           disabled={submitting}
@@ -470,7 +473,7 @@ export const DropForm: FC<{
                     </label>
                     {(value.field.value as string[]).map(
                       (a: string, _key: number) => {
-                        const claim = _drop?.claims.find(
+                        const claim = _drop?.claims?.find(
                           (c) => c.address === a,
                         );
                         return (
@@ -479,7 +482,7 @@ export const DropForm: FC<{
                               className="block w-full rounded-lg border-gray-600 bg-gray-700  p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:cursor-not-allowed disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400"
                               disabled={
                                 submitting ||
-                                !!_drop?.claims.find(
+                                !!_drop?.claims?.find(
                                   (c) => c.address === a && c.claimed,
                                 )
                               }
@@ -550,12 +553,6 @@ export const DropForm: FC<{
                   </>
                 )}
                 {value.field.type !== "checkbox" && (
-                  // (value.field.helper &&
-                  //   value.field.helper.replace(
-                  //     /{.*}/,
-                  //     value.field.value as string,
-                  //   )) ||
-                  // value.field.helper;
                   <p className="flex text-slate-400">
                     {value.field.helper?.replace(
                       /{value}/,
@@ -581,7 +578,9 @@ export const DropForm: FC<{
                           />
                         </svg>
                       ) : pathAvailable === true ? (
-                        <span className="ml-auto text-green-500">Available</span>
+                        <span className="ml-auto text-green-500">
+                          Available
+                        </span>
                       ) : (
                         pathAvailable === false && (
                           <span className="ml-auto text-red-500">

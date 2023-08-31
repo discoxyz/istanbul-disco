@@ -1,11 +1,8 @@
-"use client";
+"use client"
 import { useState } from "react";
 import { Credential } from "../../../components/v2/credCard";
 import { useAccount } from "wagmi";
 import { DropForm } from "../../../components/v2/dropForm";
-// import { recoverMessageAddress } from "viem";
-
-// const prisma = new PrismaClient();
 
 export default function Page() {
   const [drop, setDrop] = useState<any>();
