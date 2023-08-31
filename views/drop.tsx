@@ -120,7 +120,7 @@ export const DropView = () => {
           <span className="mr-auto opacity-60">{drop?.name}</span>
           {drop && isConnected && address === drop?.createdByAddress && (
             <Link
-              href={`/my-drops/${path}/manage`}
+              href={`/my-drops/${path}`}
               className="ml-auto mr-0 underline opacity-60"
             >
               Manage

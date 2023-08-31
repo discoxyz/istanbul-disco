@@ -393,7 +393,7 @@ export const DropForm: FC<{
       router.push(`/${newObj.path}?created=true`);
     } else if (path && newObj.path !== path) {
       va.track("DropUpdated", { did: address as string, id: _drop.id });
-      router.push(`/my-drops/${newObj.path}/manage?updated=true`);
+      router.push(`/my-drops/${newObj.path}?updated=true`);
     }
 
     if (refreshData) {
@@ -653,7 +653,7 @@ export const DropForm: FC<{
             text="Submitted"
             onDismiss={() => {
               setSubmitted(false);
-              router.replace(`/my-drops/${path}/manage`);
+              router.replace(`/my-drops/${path}`);
             }}
           />
         )}
