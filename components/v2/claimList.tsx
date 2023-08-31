@@ -1,27 +1,48 @@
 "use client";
 
 import { Prisma } from "@prisma/client";
-import { FC, Key } from "react";
+import { FC, Key, useEffect, useState } from "react";
 import { Address, useAccount } from "wagmi";
 import { truncateAddress } from "../../lib/truncateAddress";
+import { CSVLink } from "react-csv";
 
 export const ClaimList: FC<{
   drop: Prisma.DropGetPayload<{}> & { claims: Prisma.ClaimGetPayload<{}>[] };
 }> = ({ drop }) => {
   const { isConnected, address } = useAccount();
+
+  const [donwloadCsv, setDownloadCsv] = useState([["address"]]);
+  const [claims, setClaims] = useState<string[]>([]);
+
+  useEffect(() => {
+    const csv = [["address"]];
+    const claimArr =
+      drop?.claims?.filter((c) => c.claimed).map((c) => c.address) || [];
+    setClaims(claimArr);
+    claimArr.map((c) => {
+      csv.push([c]);
+    });
+    setDownloadCsv(csv);
+  }, [drop]);
+
   if (!drop || !isConnected || !address || address !== drop?.createdByAddress) {
     return "Account does not have permission to see claims";
   }
+
   return (
     <div className="flex-1">
       <h2 className="mb-4 mt-12 flex px-4 text-2xl">
-        Claims{" "}
-        <span className="ml-2 opacity-60">
-          {
-            drop?.claims.filter((c: Prisma.ClaimGetPayload<{}>) => c.claimed)
-              .length
-          }
-        </span>
+        Claims <span className="ml-2 opacity-60">{claims.length}</span>
+        {claims.length ? (
+          <span className="ml-auto pl-2 opacity-60 hover:opacity-100">
+            <CSVLink
+              data={donwloadCsv}
+              filename={`disco-claims-${drop.path}.csv`}
+            >
+              Export
+            </CSVLink>
+          </span>
+        ) : ''}
       </h2>
       <div className="rounded-3xl bg-stone-950 p-6">
         <ol>
