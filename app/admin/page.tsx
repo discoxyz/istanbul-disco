@@ -48,7 +48,6 @@ export default function Page() {
   const signIn = useCallback(async () => {
     const sig = await signMessageAsync({ message: "I am authenticating" });
     const res = await fetchAuth(sig);
-    console.log("AUTH", res.authenticated);
     setIsAuthentated(res.authenticated || false);
   }, [signMessageAsync]);
 
@@ -96,19 +95,50 @@ export default function Page() {
     }
   }, [signMessageAsync, value]);
 
-  // const signIn =
+  const [dropData, setDropData] = useState({ drops: 0, claims: 0, users: 0 });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const counts = await fetch("/api/v2/admin/get-counts");
+      const res = await counts.json();
+      console.log(res);
+      setDropData(res.data || { drops: 0, claims: 0, users: 0 });
+    };
+    fetchData();
+    const interval = setInterval(() => {
+      if (isConnected) {
+        fetchData();
+      }
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
       <main className="mx-auto mb-auto w-full max-w-4xl">
-        <h1>Admin</h1>
+        <h1 className="text-3xl mb-10">Admin</h1>
         {!isAuthenticated ? (
           <Button onClick={signIn}>Sign in</Button>
         ) : (
           <>
+            <div className="flex w-full justify-stretch space-x-5 mb-20">
+              <div className="flex-1 rounded-md border border-white/10 p-5">
+                <h2 className="opacity-60">Drops</h2>
+                <p className="text-mono text-3xl">{dropData.drops}</p>
+              </div>
+              <div className="flex-1 rounded-md border border-white/10 p-5">
+                <h2 className="opacity-60">Claims</h2>
+                <p className="text-mono text-3xl">{dropData.drops}</p>
+              </div>
+              <div className="flex-1 rounded-md border border-white/10 p-5">
+                <h2 className="opacity-60">Connected Addresses</h2>
+                <p className="text-mono text-3xl">{dropData.drops}</p>
+              </div>
+            </div>
             <label>Enter a drop ID to delete</label>
 
-            <div className="flex">
+            <div className="flex mb-20">
               <input
                 disabled={deleteState === "deleting"}
                 className="mr-4"
