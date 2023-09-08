@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const drops = await prisma.drop.count();
-    const users = await prisma.drop.count();
-    const claims = await prisma.drop.count();
+    const users = await prisma.user.count();
+    const claims = await prisma.claim.count();
 
     res.status(200).send({
       message: "Counts fetched",
