@@ -129,11 +129,11 @@ export default function Page() {
               </div>
               <div className="flex-1 rounded-md border border-white/10 p-5">
                 <h2 className="opacity-60">Claims</h2>
-                <p className="text-mono text-3xl">{dropData.drops}</p>
+                <p className="text-mono text-3xl">{dropData.claims}</p>
               </div>
               <div className="flex-1 rounded-md border border-white/10 p-5">
                 <h2 className="opacity-60">Connected Addresses</h2>
-                <p className="text-mono text-3xl">{dropData.drops}</p>
+                <p className="text-mono text-3xl">{dropData.users}</p>
               </div>
             </div>
             <label>Enter a drop ID to delete</label>
