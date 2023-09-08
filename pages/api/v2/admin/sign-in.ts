@@ -9,9 +9,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     message: "I am authenticating",
     signature: signature as `0x${string}`,
   });
-  console.log(recoveredAddress)
 
-  if (recoveredAddress != process.env.ADMIN_ADDRESS) {
+
+  const admin = process.env.ADMIN_ADDRESS?.split(',')
+
+  if (!admin?.includes(recoveredAddress)) {
     res.status(400).send({
       message: "Not authenticated",
       authenticated: false,

@@ -13,7 +13,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     signature: signature as `0x${string}`,
   });
 
-  if (recoveredAddress != process.env.ADMIN_ADDRESS) {
+  const admin = process.env.ADMIN_ADDRESS?.split(',')
+
+  if (!admin?.includes(recoveredAddress)) {
     res.status(400).send({
       message: "Not authenticated",
       deleted: false,
