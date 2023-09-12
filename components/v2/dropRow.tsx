@@ -59,6 +59,7 @@ export const DropRow: FC<
         title={drop.name}
         textColor={drop.textColor || undefined}
         data={JSON.parse(drop.subjectData || "{}")}
+        schema={drop.schema}
         className="col-span-5 sm:col-span-3 md:col-span-2"
         createdByAddress={drop.createdByAddress}
         {...rest}

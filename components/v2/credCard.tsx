@@ -27,14 +27,16 @@ export const Credential: FC<
   // ...rest
 }) => {
   const baseUnit = (4 / 334) * 100 * 4 + "cqw";
-
+  
   function toReadable(val: string) {
     return startCase(camelCase(val));
   }
 
-  const calloutKey = schemas.find((s) => s.name === schema)?.calloutField;
-  const calloutVal = (calloutKey && data[calloutKey]) || "";
-  const meta = calloutVal && `${toReadable(calloutVal)}`;
+    const calloutKey = schemas.find(
+      (s) => s.name === schema || s.schema.$id === schema,
+    )?.calloutField;
+    const calloutVal = (calloutKey && data[calloutKey]) || "";
+    const meta = calloutVal && `${toReadable(calloutVal)}`;
 
   const [address, setAddress] = useState<string | undefined>();
 

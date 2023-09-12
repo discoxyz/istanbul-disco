@@ -105,7 +105,7 @@ export default function Page() {
                 image={drop.image || undefined}
                 title={drop.name}
                 schema={drop.schema}
-                data={drop?.subjectData}
+                data={drop.subjectData}
                 {...drop}
               />
             </>
