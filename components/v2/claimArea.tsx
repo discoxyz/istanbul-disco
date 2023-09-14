@@ -33,7 +33,7 @@ const UnClaimed: FC<{
   <>
     <h1 className="mb-2 text-2xl">Drop not claimed</h1>
     <p className="mb-4 text-xl text-white/60">Claim your credential now!</p>
-    <Button onClick={claim}>Claim</Button>
+    {process.env.NEXT_PUBLIC_API_DOWNTIME ? <p>Claiming has been temporarily disabled</p> : <Button onClick={claim}>Claim</Button>}
   </>
 );
 
