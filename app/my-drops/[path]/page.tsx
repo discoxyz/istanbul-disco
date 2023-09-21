@@ -7,6 +7,7 @@ import { ClaimList } from "../../../components/v2/claimList";
 import { DropForm } from "../../../components/v2/dropForm";
 import { Credential } from "../../../components/v2/credCard";
 import { ToastSuccess } from "../../../components/v2/toast";
+import { getStatus } from "../../services/getPaymentStatus";
 import Link from "next/link";
 
 export default function Page() {
@@ -16,8 +17,9 @@ export default function Page() {
   const [drop, setDrop] = useState<any>();
   const [linkText, setLinkText] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [payment, setPayment] = useState<any>({});
 
-  const fetchDrop = async (path: string) => {
+  const fetchDrop = async (path: string, address: string) => {
     setIsLoading(true);
     const drops = await getDrops({
       path,
@@ -26,13 +28,20 @@ export default function Page() {
       includeDisabled: true,
     });
     const drop = drops[0];
-    setIsLoading(false);
-    setDrop({ ...drop, subjectData: JSON.parse(drop?.subjectData || "{}") });
+    console.log(drop);
+    if (drop.id) {
+      console.log('get status', drop.id)
+      const status = await getStatus(drop.id, path, address);
+      console.log('status', status)
+      setPayment(status.payment);
+      setIsLoading(false);
+      setDrop({ ...drop, subjectData: JSON.parse(drop?.subjectData || "{}") });
+    }
   };
 
   useEffect(() => {
-    if (path) {
-      fetchDrop(path);
+    if (path && address) {
+      fetchDrop(path, address);
     }
   }, [path, address]);
 
@@ -64,21 +73,22 @@ export default function Page() {
 
   if (isLoading) {
     return (
-      <div className='w-full flex justify-center'>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="h-6 w-6 animate-spin stroke-white"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"
-        />
-      </svg></div>
+      <div className="flex w-full justify-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="h-6 w-6 animate-spin stroke-white"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"
+          />
+        </svg>
+      </div>
     );
   }
 
@@ -90,7 +100,7 @@ export default function Page() {
             <DropForm
               drop={drop}
               setDrop={setDropFn}
-              refreshData={() => fetchDrop(path)}
+              refreshData={() => address && fetchDrop(path, address)}
             />
           )}
         </div>
@@ -159,7 +169,7 @@ export default function Page() {
               </svg>
             </Link>
           </div>
-          <ClaimList drop={drop} />
+          <ClaimList drop={drop} payment={payment} />
         </div>
         {copied && (
           <div className="fixed bottom-0 left-0 right-0 flex justify-center">

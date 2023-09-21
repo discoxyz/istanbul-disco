@@ -37,15 +37,17 @@ model Drop {
   claims           Claim[]
   linkText         String?
   linkTextEnabled  Boolean?  @default(false)
+  purchase         Purchase?
 }
 
 model User {
-  id      Int     @id @default(autoincrement())
-  address String  @unique
-  name    String?
-  bio     String?
-  claims  Claim[]
-  drops   Drop[]
+  id        Int        @id @default(autoincrement())
+  address   String     @unique
+  name      String?
+  bio       String?
+  claims    Claim[]
+  drops     Drop[]
+  purchases Purchase[]
 }
 
 model Claim {
@@ -57,4 +59,15 @@ model Claim {
   user    User    @relation(fields: [address], references: [address])
 
   @@unique([dropId, address])
+}
+
+model Purchase {
+  id          Int    @id @default(autoincrement())
+  stripeId    String @unique
+  dropId      Int    @unique
+  paid        Boolean @default(false)
+  link        String?
+  userAddress String
+  drop        Drop   @relation(fields: [dropId], references: [id])
+  user        User   @relation(fields: [userAddress], references: [address])
 }

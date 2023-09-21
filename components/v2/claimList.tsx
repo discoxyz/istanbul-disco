@@ -5,10 +5,15 @@ import { FC, Key, useEffect, useState } from "react";
 import { Address, useAccount } from "wagmi";
 import { truncateAddress } from "../../lib/truncateAddress";
 import { CSVLink } from "react-csv";
+import { ButtonLink } from "./button";
 
 export const ClaimList: FC<{
   drop: Prisma.DropGetPayload<{}> & { claims: Prisma.ClaimGetPayload<{}>[] };
-}> = ({ drop }) => {
+  payment: {
+    paid: boolean;
+    link: string;
+  };
+}> = ({ drop, payment }) => {
   const { isConnected, address } = useAccount();
 
   const [donwloadCsv, setDownloadCsv] = useState([["address"]]);
@@ -35,26 +40,38 @@ export const ClaimList: FC<{
         Claims <span className="ml-2 opacity-60">{claims.length}</span>
         {claims.length ? (
           <span className="ml-auto pl-2 opacity-60 hover:opacity-100">
-            <CSVLink
-              data={donwloadCsv}
-              filename={`disco-claims-${drop.path}.csv`}
-            >
-              Export
-            </CSVLink>
+            {payment?.paid && (
+              <CSVLink
+                data={donwloadCsv}
+                filename={`disco-claims-${drop.path}.csv`}
+              >
+                Export
+              </CSVLink>
+            )}
           </span>
-        ) : ''}
+        ) : (
+          ""
+        )}
       </h2>
       <div className="rounded-3xl bg-stone-950 p-6">
         <ol>
-          {drop.claims.length === 0 && (
-            <>
-              <h2 className="mt-4 text-center text-2xl">No claims just yet!</h2>
-              <p className="mt-2 text-center text-xl opacity-60">
-                Be sure to share the link to the drop
-              </p>
-            </>
+          {!payment?.paid && payment?.link ? (
+            <ButtonLink href={payment.link} className='w-full text-center'>
+              Purchase claimed address list
+            </ButtonLink>
+          ) : (
+            drop.claims.length === 0 && (
+              <>
+                <h2 className="mt-4 text-center text-2xl">
+                  No claims just yet!
+                </h2>
+                <p className="mt-2 text-center text-xl opacity-60">
+                  Be sure to share the link to the drop
+                </p>
+              </>
+            )
           )}
-          {drop?.claims
+          {payment?.paid && drop?.claims
             .filter((c) => c.claimed)
             .map((claim: Prisma.ClaimGetPayload<{}>, key: Key) => {
               return (
