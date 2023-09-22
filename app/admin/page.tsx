@@ -109,16 +109,19 @@ export default function Page() {
     return;
   };
 
-  const deleteDrop = useCallback(async (dropId: number) => {
-    if (dropId) {
-      setDeleteState("deleting");
-      const sig = await signMessageAsync({
-        message: `Delete drop ID ${dropId}`,
-      });
-      const del = await fetchDelete(sig, dropId);
-      setDeleteState(del.deleted ? "deleted" : "error");
-    }
-  }, [signMessageAsync]);
+  const deleteDrop = useCallback(
+    async (dropId: number) => {
+      if (dropId) {
+        setDeleteState("deleting");
+        const sig = await signMessageAsync({
+          message: `Delete drop ID ${dropId}`,
+        });
+        const del = await fetchDelete(sig, dropId);
+        setDeleteState(del.deleted ? "deleted" : "error");
+      }
+    },
+    [signMessageAsync],
+  );
 
   interface DropData {
     drops: number;
@@ -184,13 +187,13 @@ export default function Page() {
   useEffect(() => {
     setDropPage({
       ...dropPage,
-      pages: Math.ceil((dropData.dropList.length) / 15),
+      pages: Math.ceil(dropData.dropList.length / 15),
     });
     setCreatorPage({
       ...creatorPage,
-      pages: Math.ceil((Object.keys(dropData.dropCreators).length) / 15),
+      pages: Math.ceil(Object.keys(dropData.dropCreators).length / 15),
     });
-  }, [dropData, creatorPage]);
+  }, [dropData, dropPage, creatorPage]);
 
   const handlePage = useCallback(
     (page: number) => {
@@ -243,8 +246,8 @@ export default function Page() {
                   <th>Total Claims on Created Drops</th>
                 </tr>
                 {Object.keys(dropData.dropCreators).map((k, i) => {
-                  if (i < dropPage.currentPage * 15) return
-                  if (i > (dropPage.currentPage + 1) * 15) return
+                  if (i < dropPage.currentPage * 15) return;
+                  if (i > (dropPage.currentPage + 1) * 15) return;
                   return (
                     <tr key={i} className="p-2">
                       <td>{k}</td>
@@ -253,13 +256,13 @@ export default function Page() {
                   );
                 })}
               </table>
-              <div className='my-4 flex w-full justify-center'>
+              <div className="my-4 flex w-full justify-center">
                 {[...Array(creatorPage.pages)].map((e, i) => (
                   <a
-                  key={i}
-                    className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
+                    key={i}
+                    className={`mx-2 cursor-pointer rounded-md bg-white/10 px-3 py-2  transition-all hover:bg-white/20 hover:text-white ${
                       creatorPage.currentPage === i
-                        ? "text-white bg-white/20"
+                        ? "bg-white/20 text-white"
                         : "text-white/60"
                     }`}
                     onClick={() => handleCreatorPage(i)}
@@ -270,7 +273,7 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="w-full rounded-md border border-white/10 p-5 mb-20">
+            <div className="mb-20 w-full rounded-md border border-white/10 p-5">
               <h2 className="opacity-60">All drops</h2>
               <table className="text-md w-full border-separate border-spacing-2">
                 <tr className="text-left">
@@ -282,8 +285,8 @@ export default function Page() {
                   <th>Link</th>
                 </tr>
                 {dropData.dropList.map((d, i) => {
-                  if (i < dropPage.currentPage * 15) return
-                  if (i > (dropPage.currentPage + 1) * 15) return
+                  if (i < dropPage.currentPage * 15) return;
+                  if (i > (dropPage.currentPage + 1) * 15) return;
                   return (
                     <tr
                       key={i}
@@ -295,7 +298,9 @@ export default function Page() {
                       <td>{d.name}</td>
                       <td>{d.id}</td>
                       <td>{d._count.claims}</td>
-                      <td><button onClick={() => deleteDrop(d.id)}>Delete</button></td>
+                      <td>
+                        <button onClick={() => deleteDrop(d.id)}>Delete</button>
+                      </td>
                       <td>
                         <a
                           href={`/${d.path}`}
@@ -308,13 +313,13 @@ export default function Page() {
                   );
                 })}
               </table>
-              <div className='my-4 flex w-full justify-center'>
+              <div className="my-4 flex w-full justify-center">
                 {[...Array(dropPage.pages)].map((e, i) => (
                   <a
-                  key={i}
-                    className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
+                    key={i}
+                    className={`mx-2 cursor-pointer rounded-md bg-white/10 px-3 py-2  transition-all hover:bg-white/20 hover:text-white ${
                       dropPage.currentPage === i
-                        ? "text-white bg-white/20"
+                        ? "bg-white/20 text-white"
                         : "text-white/60"
                     }`}
                     onClick={() => handlePage(i)}
