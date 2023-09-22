@@ -19,6 +19,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       select: {
         createdByAddress: true,
         id: true,
+        name: true,
+        path: true,
         _count: {
           select: {
             claims: true,

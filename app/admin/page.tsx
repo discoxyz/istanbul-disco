@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useAccount, useSignMessage } from "wagmi";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import { Address, useAccount, useSignMessage } from "wagmi";
 import { redirect } from "next/navigation";
 import { Button } from "../../components/v2/button";
 import {
@@ -9,6 +9,7 @@ import {
   ToastLoading,
   ToastSuccess,
 } from "../../components/v2/toast";
+import { truncateAddress } from "../../lib/truncateAddress";
 // import { useState } from "react";
 
 // // This gets called on every request
@@ -27,7 +28,7 @@ export default function Page() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const [isAuthenticated, setIsAuthentated] = useState(false);
-  const [value, setValue] = useState<number | undefined>();
+  // const [value, setValue] = useState<number | undefined>();
   useEffect(() => {
     if (!isConnected) {
       redirect("/");
@@ -108,16 +109,16 @@ export default function Page() {
     return;
   };
 
-  const deleteDrop = useCallback(async () => {
-    if (value) {
+  const deleteDrop = useCallback(async (dropId: number) => {
+    if (dropId) {
       setDeleteState("deleting");
       const sig = await signMessageAsync({
-        message: `Delete drop ID ${value}`,
+        message: `Delete drop ID ${dropId}`,
       });
-      const del = await fetchDelete(sig, value);
+      const del = await fetchDelete(sig, dropId);
       setDeleteState(del.deleted ? "deleted" : "error");
     }
-  }, [signMessageAsync, value]);
+  }, [signMessageAsync]);
 
   interface DropData {
     drops: number;
@@ -126,13 +127,15 @@ export default function Page() {
     dropList: {
       createdByAddress: string;
       id: number;
+      name: string;
+      path: string;
       _count: {
         claims: number;
       };
     }[];
     dropCreators: {
-      [key: string]: number
-    }
+      [key: string]: number;
+    };
   }
 
   const [dropData, setDropData] = useState<DropData>({
@@ -143,11 +146,30 @@ export default function Page() {
     dropCreators: {},
   });
 
+  const [dropPage, setDropPage] = useState({
+    pages: 1,
+    currentPage: 0,
+  });
+
+  const [creatorPage, setCreatorPage] = useState({
+    pages: 1,
+    currentPage: 0,
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       const counts = await fetch("/api/v2/admin/get-counts");
       const res = await counts.json();
-      setDropData(res.data || { drops: 0, claims: 0, users: 0, dropList: [], dropCreators: {} });
+      setDropData(
+        res.data || {
+          drops: 0,
+          claims: 0,
+          users: 0,
+          dropList: [],
+          dropCreators: {},
+        },
+      );
+      setDropData(res.data);
     };
     fetchData();
     const interval = setInterval(() => {
@@ -158,6 +180,37 @@ export default function Page() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setDropPage({
+      ...dropPage,
+      pages: Math.ceil((dropData.dropList.length) / 15),
+    });
+    setCreatorPage({
+      ...creatorPage,
+      pages: Math.ceil((Object.keys(dropData.dropCreators).length) / 15),
+    });
+  }, [dropData]);
+
+  const handlePage = useCallback(
+    (page: number) => {
+      setDropPage({
+        ...dropPage,
+        currentPage: page,
+      });
+    },
+    [dropPage],
+  );
+
+  const handleCreatorPage = useCallback(
+    (page: number) => {
+      setCreatorPage({
+        ...creatorPage,
+        currentPage: page,
+      });
+    },
+    [creatorPage],
+  );
 
   return (
     <>
@@ -182,66 +235,97 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="w-full rounded-md border border-white/10 p-5 mb-20">
-              <h2 className="opacity-60 mb-2">Top Creators</h2>
-              <table className="w-full text-md border-separate border-spacing-2 opacity-60">
+            <div className="mb-20 w-full rounded-md border border-white/10 p-5">
+              <h2 className="mb-2 opacity-60">Top Creators</h2>
+              <table className="text-md w-full border-separate border-spacing-2 opacity-60">
                 <tr className="text-left">
-                  <th >Address</th>
+                  <th>Address</th>
                   <th>Total Claims on Created Drops</th>
                 </tr>
                 {Object.keys(dropData.dropCreators).map((k, i) => {
+                  if (i < dropPage.currentPage * 15) return
+                  if (i > (dropPage.currentPage + 1) * 15) return
                   return (
                     <tr key={i} className="p-2">
-                      <td >{k}</td>
+                      <td>{k}</td>
                       <td>{dropData.dropCreators[k]}</td>
                     </tr>
                   );
                 })}
-                <div></div>
               </table>
+              <div className='my-4 flex w-full justify-center'>
+                {[...Array(creatorPage.pages)].map((e, i) => (
+                  <a
+                    className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
+                      creatorPage.currentPage === i
+                        ? "text-white bg-white/20"
+                        : "text-white/60"
+                    }`}
+                    onClick={() => handleCreatorPage(i)}
+                  >
+                    {i + 1}
+                  </a>
+                ))}
+              </div>
             </div>
 
             <div className="w-full rounded-md border border-white/10 p-5 mb-20">
-              <h2 className="opacity-60">Download:</h2>
-              <Button onClick={downloadClaims}>All completed claims</Button>
-            </div>
-
-           
-
-            {/* <div className="w-full rounded-md border border-white/10 p-5">
-              <h2 className="opacity-60">Top creators</h2>
-              <table className="w-full">
+              <h2 className="opacity-60">All drops</h2>
+              <table className="text-md w-full border-separate border-spacing-2">
                 <tr className="text-left">
-                  <th >Created by</th>
+                  <th>Created by</th>
+                  <th>Drop Name</th>
                   <th className="text-left">Drop ID</th>
                   <th>Claims</th>
+                  <th>Manage</th>
+                  <th>Link</th>
                 </tr>
                 {dropData.dropList.map((d, i) => {
+                  if (i < dropPage.currentPage * 15) return
+                  if (i > (dropPage.currentPage + 1) * 15) return
                   return (
-                    <tr key={i}>
-                      <td >{d.createdByAddress}</td>
+                    <tr
+                      key={i}
+                      className="group text-white/60 hover:text-white/80"
+                    >
+                      <td className=" py-2">
+                        {truncateAddress(d.createdByAddress as Address)}
+                      </td>
+                      <td>{d.name}</td>
                       <td>{d.id}</td>
                       <td>{d._count.claims}</td>
+                      <td><button onClick={() => deleteDrop(d.id)}>Delete</button></td>
+                      <td>
+                        <a
+                          href={`/${d.path}`}
+                          className="rounded px-4 py-2 underline hover:bg-white/10 hover:text-white"
+                        >
+                          View
+                        </a>
+                      </td>
                     </tr>
                   );
                 })}
-                <div></div>
               </table>
-            </div> */}
+              <div className='my-4 flex w-full justify-center'>
+                {[...Array(dropPage.pages)].map((e, i) => (
+                  <a
+                    className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
+                      dropPage.currentPage === i
+                        ? "text-white bg-white/20"
+                        : "text-white/60"
+                    }`}
+                    onClick={() => handlePage(i)}
+                  >
+                    {i + 1}
+                  </a>
+                ))}
+              </div>
+            </div>
 
-            <div className="mb-20 flex">
-              <input
-                disabled={deleteState === "deleting"}
-                className="mr-4"
-                type="number"
-                value={value || ""}
-                onChange={(e) =>
-                  setValue(parseInt(e.target.value) || undefined)
-                }
-              />
-              <Button onClick={deleteDrop} disabled={deleteState == "deleting"}>
-                {deleteState}
-              </Button>
+            <div className="mb-20 w-full rounded-md border border-white/10 p-5">
+              <h2 className="opacity-60">Download:</h2>
+              <Button onClick={downloadClaims}>All completed claims</Button>
             </div>
           </>
         )}
@@ -251,7 +335,6 @@ export default function Page() {
               text="Drop deleted"
               onDismiss={() => {
                 setDeleteState("delete");
-                setValue(undefined);
               }}
             />
           ) : deleteState == "deleting" ? (
@@ -262,7 +345,6 @@ export default function Page() {
                 text="Error deleting drop"
                 onDismiss={() => {
                   setDeleteState("delete");
-                  setValue(undefined);
                 }}
               />
             )

@@ -6,15 +6,12 @@ const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { signature }: { signature: string } = JSON.parse(req.body);
-
-  console.log('fetching claims api')
   const recoveredAddress = await recoverMessageAddress({
     message: `Get all claims from disco`,
     signature: signature as `0x${string}`,
   });
 
   const admin = process.env.ADMIN_ADDRESS?.split(',')
-  console.log('admin', admin)
   if (!admin?.includes(recoveredAddress)) {
     res.status(400).send({
       message: "Not authenticated",
