@@ -100,12 +100,12 @@ export default function Page() {
         signature,
       }),
     });
-    
-    const blob = await res.blob()
-    const url = await URL.createObjectURL(blob)
-    window.open(url, '_blank');
+
+    const blob = await res.blob();
+    const url = await URL.createObjectURL(blob);
+    window.open(url, "_blank");
     URL.revokeObjectURL(url);
-    return
+    return;
   };
 
   const deleteDrop = useCallback(async () => {
@@ -119,13 +119,35 @@ export default function Page() {
     }
   }, [signMessageAsync, value]);
 
-  const [dropData, setDropData] = useState({ drops: 0, claims: 0, users: 0 });
+  interface DropData {
+    drops: number;
+    claims: number;
+    users: number;
+    dropList: {
+      createdByAddress: string;
+      id: number;
+      _count: {
+        claims: number;
+      };
+    }[];
+    dropCreators: {
+      [key: string]: number
+    }
+  }
+
+  const [dropData, setDropData] = useState<DropData>({
+    drops: 0,
+    claims: 0,
+    users: 0,
+    dropList: [],
+    dropCreators: {},
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       const counts = await fetch("/api/v2/admin/get-counts");
       const res = await counts.json();
-      setDropData(res.data || { drops: 0, claims: 0, users: 0 });
+      setDropData(res.data || { drops: 0, claims: 0, users: 0, dropList: [], dropCreators: {} });
     };
     fetchData();
     const interval = setInterval(() => {
@@ -159,11 +181,53 @@ export default function Page() {
                 <p className="text-mono text-3xl">{dropData.users}</p>
               </div>
             </div>
-            <div className="w-full rounded-md border border-white/10 p-5">
+
+            <div className="w-full rounded-md border border-white/10 p-5 mb-20">
+              <h2 className="opacity-60 mb-2">Top Creators</h2>
+              <table className="w-full text-md border-separate border-spacing-2 opacity-60">
+                <tr className="text-left">
+                  <th >Address</th>
+                  <th>Total Claims on Created Drops</th>
+                </tr>
+                {Object.keys(dropData.dropCreators).map((k, i) => {
+                  return (
+                    <tr key={i} className="p-2">
+                      <td >{k}</td>
+                      <td>{dropData.dropCreators[k]}</td>
+                    </tr>
+                  );
+                })}
+                <div></div>
+              </table>
+            </div>
+
+            <div className="w-full rounded-md border border-white/10 p-5 mb-20">
               <h2 className="opacity-60">Download:</h2>
               <Button onClick={downloadClaims}>All completed claims</Button>
             </div>
-            <label>Enter a drop ID to delete</label>
+
+           
+
+            {/* <div className="w-full rounded-md border border-white/10 p-5">
+              <h2 className="opacity-60">Top creators</h2>
+              <table className="w-full">
+                <tr className="text-left">
+                  <th >Created by</th>
+                  <th className="text-left">Drop ID</th>
+                  <th>Claims</th>
+                </tr>
+                {dropData.dropList.map((d, i) => {
+                  return (
+                    <tr key={i}>
+                      <td >{d.createdByAddress}</td>
+                      <td>{d.id}</td>
+                      <td>{d._count.claims}</td>
+                    </tr>
+                  );
+                })}
+                <div></div>
+              </table>
+            </div> */}
 
             <div className="mb-20 flex">
               <input

@@ -4,12 +4,10 @@ import { recoverMessageAddress } from "viem";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { signature }: { signature: string } = JSON.parse(req.body);
 
-  console.log(signature)
   const recoveredAddress = await recoverMessageAddress({
     message: "I am authenticating",
     signature: signature as `0x${string}`,
   });
-
 
   const admin = process.env.ADMIN_ADDRESS?.split(',')
 

@@ -9,12 +9,39 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const users = await prisma.user.count();
     const claims = await prisma.claim.count();
 
+    const dropList = await prisma.drop.findMany({
+      orderBy: {
+        claims: {
+          _count: "desc",
+        },
+      },
+      where: {},
+      select: {
+        createdByAddress: true,
+        id: true,
+        _count: {
+          select: {
+            claims: true,
+          },
+        },
+      },
+    });
+
+    const dropCreators: {[key: string]: number} = {};
+
+    dropList.map((d) => {
+      const v = dropCreators[d.createdByAddress] || 0
+      dropCreators[d.createdByAddress] = v + d._count.claims
+    });
+
     res.status(200).send({
       message: "Counts fetched",
       data: {
         drops,
         users,
         claims,
+        dropList,
+        dropCreators,
       },
     });
   } catch {
