@@ -246,8 +246,8 @@ export default function Page() {
                   <th>Total Claims on Created Drops</th>
                 </tr>
                 {Object.keys(dropData.dropCreators).map((k, i) => {
-                  if (i < dropPage.currentPage * 15) return;
-                  if (i > (dropPage.currentPage + 1) * 15) return;
+                  if (i < creatorPage.currentPage * 15) return;
+                  if (i > (creatorPage.currentPage + 1) * 15) return;
                   return (
                     <tr key={i} className="p-2">
                       <td>{k}</td>
