@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Address, useAccount, useSignMessage } from "wagmi";
 import { redirect } from "next/navigation";
 import { Button } from "../../components/v2/button";
@@ -179,7 +179,7 @@ export default function Page() {
     }, 6000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isConnected]);
 
   useEffect(() => {
     setDropPage({
@@ -190,7 +190,7 @@ export default function Page() {
       ...creatorPage,
       pages: Math.ceil((Object.keys(dropData.dropCreators).length) / 15),
     });
-  }, [dropData]);
+  }, [dropData, creatorPage]);
 
   const handlePage = useCallback(
     (page: number) => {
@@ -256,6 +256,7 @@ export default function Page() {
               <div className='my-4 flex w-full justify-center'>
                 {[...Array(creatorPage.pages)].map((e, i) => (
                   <a
+                  key={i}
                     className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
                       creatorPage.currentPage === i
                         ? "text-white bg-white/20"
@@ -310,6 +311,7 @@ export default function Page() {
               <div className='my-4 flex w-full justify-center'>
                 {[...Array(dropPage.pages)].map((e, i) => (
                   <a
+                  key={i}
                     className={`px-3 py-2 cursor-pointer bg-white/10 rounded-md mx-2  hover:bg-white/20 hover:text-white transition-all ${
                       dropPage.currentPage === i
                         ? "text-white bg-white/20"
