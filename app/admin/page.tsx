@@ -131,6 +131,7 @@ export default function Page() {
       createdByAddress: string;
       id: number;
       name: string;
+      visible: boolean;
       path: string;
       _count: {
         claims: number;
@@ -280,6 +281,7 @@ export default function Page() {
                   <th>Created by</th>
                   <th>Drop Name</th>
                   <th className="text-left">Drop ID</th>
+                  <th className="text-left">Visible</th>
                   <th>Claims</th>
                   <th>Manage</th>
                   <th>Link</th>
@@ -297,6 +299,7 @@ export default function Page() {
                       </td>
                       <td>{d.name}</td>
                       <td>{d.id}</td>
+                      <td>{d.visible ? 'visible' : 'hidden'}</td>
                       <td>{d._count.claims}</td>
                       <td>
                         <button onClick={() => deleteDrop(d.id)}>Delete</button>

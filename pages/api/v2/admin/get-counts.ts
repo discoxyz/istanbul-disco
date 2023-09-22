@@ -21,6 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         id: true,
         name: true,
         path: true,
+        visible: true,
         _count: {
           select: {
             claims: true,
