@@ -72,7 +72,6 @@ export default function Page() {
     });
 
     if (fetchAuth.ok) {
-      console.log("auth ok");
       const auth = await fetchAuth.json();
       return auth;
     } else {
@@ -83,6 +82,31 @@ export default function Page() {
   const [deleteState, setDeleteState] = useState<
     "delete" | "deleting" | "deleted" | "error"
   >("delete");
+
+  const downloadClaims = useCallback(async () => {
+    const sig = await signMessageAsync({
+      message: `Get all claims from disco`,
+    });
+    await fetchClaims(sig);
+  }, [signMessageAsync]);
+
+  const fetchClaims = async (signature: `0x${string}`) => {
+    if (!signature) {
+      console.error("No signature");
+    }
+    const res = await fetch("/api/v2/admin/get-claims", {
+      method: "POST",
+      body: JSON.stringify({
+        signature,
+      }),
+    });
+    
+    const blob = await res.blob()
+    const url = await URL.createObjectURL(blob)
+    window.open(url, '_blank');
+    URL.revokeObjectURL(url);
+    return
+  };
 
   const deleteDrop = useCallback(async () => {
     if (value) {
@@ -101,7 +125,6 @@ export default function Page() {
     const fetchData = async () => {
       const counts = await fetch("/api/v2/admin/get-counts");
       const res = await counts.json();
-      console.log(res);
       setDropData(res.data || { drops: 0, claims: 0, users: 0 });
     };
     fetchData();
@@ -117,12 +140,12 @@ export default function Page() {
   return (
     <>
       <main className="mx-auto mb-auto w-full max-w-4xl">
-        <h1 className="text-3xl mb-10">Admin</h1>
+        <h1 className="mb-10 text-3xl">Admin</h1>
         {!isAuthenticated ? (
           <Button onClick={signIn}>Sign in</Button>
         ) : (
           <>
-            <div className="flex w-full justify-stretch space-x-5 mb-20">
+            <div className="mb-20 flex w-full justify-stretch space-x-5">
               <div className="flex-1 rounded-md border border-white/10 p-5">
                 <h2 className="opacity-60">Drops</h2>
                 <p className="text-mono text-3xl">{dropData.drops}</p>
@@ -136,9 +159,13 @@ export default function Page() {
                 <p className="text-mono text-3xl">{dropData.users}</p>
               </div>
             </div>
+            <div className="w-full rounded-md border border-white/10 p-5">
+              <h2 className="opacity-60">Download:</h2>
+              <Button onClick={downloadClaims}>All completed claims</Button>
+            </div>
             <label>Enter a drop ID to delete</label>
 
-            <div className="flex mb-20">
+            <div className="mb-20 flex">
               <input
                 disabled={deleteState === "deleting"}
                 className="mr-4"
