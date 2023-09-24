@@ -7,7 +7,7 @@ import { ClaimList } from "../../../components/v2/claimList";
 import { DropForm } from "../../../components/v2/dropForm";
 import { Credential } from "../../../components/v2/credCard";
 import { ToastSuccess } from "../../../components/v2/toast";
-import { getStatus } from "../../services/getPaymentStatus";
+// import { getStatus } from "../../services/getPaymentStatus";
 import Link from "next/link";
 
 export default function Page() {
@@ -17,7 +17,7 @@ export default function Page() {
   const [drop, setDrop] = useState<any>();
   const [linkText, setLinkText] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [payment, setPayment] = useState<any>({});
+  // const [payment, setPayment] = useState<any>({});
 
   const fetchDrop = async (path: string, address: string) => {
     setIsLoading(true);
@@ -28,12 +28,9 @@ export default function Page() {
       includeDisabled: true,
     });
     const drop = drops[0];
-    console.log(drop);
     if (drop.id) {
-      console.log('get status', drop.id)
-      const status = await getStatus(drop.id, path, address);
-      console.log('status', status)
-      setPayment(status.payment);
+      // const status = await getStatus(drop.id, path, address);
+      // setPayment(status.payment);
       setIsLoading(false);
       setDrop({ ...drop, subjectData: JSON.parse(drop?.subjectData || "{}") });
     }
@@ -169,7 +166,7 @@ export default function Page() {
               </svg>
             </Link>
           </div>
-          <ClaimList drop={drop} payment={payment} />
+          <ClaimList drop={drop} />
         </div>
         {copied && (
           <div className="fixed bottom-0 left-0 right-0 flex justify-center">
