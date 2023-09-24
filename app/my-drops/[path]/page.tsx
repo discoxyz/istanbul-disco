@@ -95,7 +95,7 @@ export default function Page() {
             <DropForm
               drop={drop}
               setDrop={setDropFn}
-              refreshData={() => address && fetchDrop(path, address)}
+              refreshData={() => fetchDrop(path)}
             />
           )}
         </div>
