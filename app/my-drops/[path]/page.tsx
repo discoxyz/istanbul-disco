@@ -19,7 +19,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   // const [payment, setPayment] = useState<any>({});
 
-  const fetchDrop = async (path: string, address: string) => {
+  const fetchDrop = async (path: string) => {
     setIsLoading(true);
     const drops = await getDrops({
       path,
@@ -29,18 +29,16 @@ export default function Page() {
     });
     const drop = drops[0];
     if (drop.id) {
-      // const status = await getStatus(drop.id, path, address);
-      // setPayment(status.payment);
       setIsLoading(false);
       setDrop({ ...drop, subjectData: JSON.parse(drop?.subjectData || "{}") });
     }
   };
 
   useEffect(() => {
-    if (path && address) {
-      fetchDrop(path, address);
+    if (path) {
+      fetchDrop(path);
     }
-  }, [path, address]);
+  }, [path]);
 
   // Handle redirect if no permission
   useEffect(() => {
