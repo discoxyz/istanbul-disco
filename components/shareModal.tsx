@@ -19,7 +19,7 @@ export const ShareModal: FC = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const hostname = window.location.hostname;
+      const hostname = window.location.host;
       const shareData = {
         title: "Met IRL",
         text: "Claim that you met IRL",
@@ -73,7 +73,7 @@ export const ShareModal: FC = () => {
             <QRCode
               size={256}
               style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-              value={`/${address}`}
+              value={shareData.url}
               bgColor="transparent"
               className="dark:invert"
               viewBox={`0 0 256 256`}

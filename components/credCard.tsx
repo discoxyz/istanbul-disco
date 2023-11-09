@@ -1,14 +1,12 @@
 import React from "react";
-import { FC, HTMLProps, useEffect, useState } from "react";
-import { Address } from "viem";
-import { truncateAddress } from "../lib/truncateAddress";
+import { FC, HTMLProps } from "react";
 
 export interface CredentialCardProps {
   data: { [key: string]: any };
   image?: string;
   textColor?: string;
   title: string;
-  createdByAddress: string;
+  createdByAddress?: string;
   schema?: string;
 }
 
@@ -23,12 +21,6 @@ export const Credential: FC<
   // ...rest
 }) => {
   const baseUnit = (4 / 334) * 100 * 4 + "cqw";
-
-  const [address, setAddress] = useState<string | undefined>();
-
-  useEffect(() => {
-    setAddress(truncateAddress(createdByAddress as Address) || undefined);
-  }, [createdByAddress]);
 
   return (
     <div
@@ -67,7 +59,7 @@ export const Credential: FC<
           }}
         >
           <h1 style={{ fontSize: "1.8em" }}>{title}</h1>
-          {address && (
+          {createdByAddress && (
             <>
               <h2
                 className="mt-auto uppercase tracking-wider"
@@ -75,7 +67,7 @@ export const Credential: FC<
               >
                 From
               </h2>
-              <p style={{ fontSize: "1.2em" }}>{address}</p>
+              <p style={{ fontSize: "1.2em" }}>{createdByAddress}</p>
             </>
           )}
         </div>

@@ -58,7 +58,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       page: (page || 1) * 10 + 1,
     }),
   });
-  const hasNextPage = !!(await nextPage.json()).length;
+  const nextP = await nextPage.json()
+  //@ts-ignore
+  const hasNextPage = !!nextP.length;
   const credentials = await response.json();
   const addresses = credentials.map((vcDoc: any) => ({
     address:

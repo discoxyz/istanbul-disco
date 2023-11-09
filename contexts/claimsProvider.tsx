@@ -7,6 +7,8 @@ import {
 } from "react";
 import { ShareModal } from "../components/shareModal";
 import { useAuth } from "./authProvider";
+import { Address, fetchEnsName } from "@wagmi/core";
+import { truncateAddress } from "../lib/truncateAddress";
 
 interface ClaimsContextInterface {
   getMyClaims: (page?: number) => void;
@@ -14,9 +16,10 @@ interface ClaimsContextInterface {
   loading: boolean;
   hasNextPage?: boolean;
   hasPrevPage?: boolean;
-  page?: number
+  page?: number;
   data?: {
     address: String;
+    name: string;
     time: string;
   }[];
 }
@@ -37,9 +40,10 @@ export const ClaimsProvider: FC<PropsWithChildren> = ({
     loading: boolean;
     hasNextPage?: boolean;
     hasPrevPage?: boolean;
-    page?: number
+    page?: number;
     data?: {
       address: String;
+      name: string;
       time: string;
     }[];
   }>({
@@ -62,9 +66,23 @@ export const ClaimsProvider: FC<PropsWithChildren> = ({
       }),
     });
     const result = await claimed.json();
+    const data = await Promise.all(
+      result.data.map(
+        async ({ address, time }: { address: string; time: string }) => {
+          const name = await fetchEnsName({ address: address as Address });
+          return {
+            address,
+            time,
+            name: name || truncateAddress(address as Address),
+          };
+        },
+      ),
+    );
     setClaims({
       loading: false,
       ...result,
+      page: page,
+      data,
     });
   };
 

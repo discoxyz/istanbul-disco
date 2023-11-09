@@ -1,8 +1,8 @@
 "use client";
-import { useParams, useRouter, usePathname } from "next/navigation";
+import { useParams, useRouter, usePathname, redirect } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Address, useAccount } from "wagmi";
+import { Address, useAccount, usePublicClient } from "wagmi";
 import { useAuth } from "../contexts/authProvider";
 import { Button2 } from "../components/button";
 import { Card } from "../components/card";
@@ -11,19 +11,70 @@ import { useShareModal } from "../contexts/modalProvider";
 import { truncateAddress } from "../lib/truncateAddress";
 import { compare } from "../lib/compare";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { getEnsAddress, getEnsName } from "viem/ens";
 
 export const DropView = () => {
   const { isConnected } = useAccount();
+  const router = useRouter();
+  const publicClient = usePublicClient();
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { authenticated, authenticate, address, loading, awaitingAuth } =
     useAuth();
   const { open } = useShareModal();
   const pathname = usePathname();
-  if (!pathname) throw new Error("Page must have a pathname");
-  const parsedPath = (
-    typeof pathname === "string" ? pathname : pathname[0]
-  ).replaceAll("/", "");
+
+  const ethAddressRegex = new RegExp(/^0x[A-Fa-f0-9]{40}$/);
+  const ensRegex = new RegExp(
+    /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/,
+  );
+
+  // if (!_ethAddr && !ensAddr) {
+  //   router.push("/");
+  //   return;
+  // }
+  const [profile, setProfile] = useState<{
+    loading: boolean;
+    name?: string;
+    address?: string;
+  }>({
+    loading: true,
+  });
+
+  useEffect(() => {
+    const handler = async () => {
+      if (!publicClient) return;
+      if (!pathname) throw new Error("Page must have a pathname");
+      const parsedPath = (
+        typeof pathname === "string" ? pathname : pathname[0]
+      ).replaceAll("/", "");
+
+      const _ethAddr = ethAddressRegex.exec(parsedPath);
+      const ensAddr = ensRegex.exec(parsedPath);
+      if (_ethAddr) {
+        setProfile({
+          loading: false,
+          name: truncateAddress(_ethAddr[0] as Address) as string,
+          address: _ethAddr[0],
+        });
+        return;
+      }
+
+      if (ensAddr) {
+        const ens = await getEnsAddress(publicClient, { name: ensAddr[0] });
+        if (ens) {
+          setProfile({
+            loading: false,
+            name: ensAddr[0],
+            address: ens,
+          });
+          return;
+        }
+      }
+      // router.push("/");
+    };
+    handler();
+  }, [publicClient, pathname]);
 
   const [hasClaimed, setHasClaimed] = useState({
     claiming: false,
@@ -33,7 +84,7 @@ export const DropView = () => {
 
   useEffect(() => {
     const handler = async () => {
-      if (!address || !parsedPath) {
+      if (!profile.address || !address) {
         setHasClaimed({
           claiming: false,
           claimed: false,
@@ -53,7 +104,7 @@ export const DropView = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          owner: parsedPath,
+          owner: profile.address,
           claimant: address,
         }),
       });
@@ -65,13 +116,13 @@ export const DropView = () => {
       });
     };
     handler();
-  }, [parsedPath, address]);
+  }, [profile.address, address]);
 
   const claim = useCallback(
     async (args?: { address: string }) => {
       const handler = async () => {
         const claimant = args?.address || address;
-        if (!claimant || !parsedPath) return;
+        if (!claimant || !profile.address) return;
         setHasClaimed({
           claimed: false,
           claiming: true,
@@ -83,7 +134,7 @@ export const DropView = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            owner: parsedPath,
+            owner: profile.address,
             claimant,
           }),
         });
@@ -95,7 +146,7 @@ export const DropView = () => {
       };
       handler();
     },
-    [parsedPath, address],
+    [profile, address],
   );
 
   const handleSignInClaim = useCallback(() => {
@@ -119,9 +170,9 @@ export const DropView = () => {
           textColor={undefined}
           data={JSON.parse("{}")}
           className="col-span-5 mb-6 sm:col-span-3 md:col-span-2"
-          createdByAddress={parsedPath}
+          createdByAddress={profile.name || undefined}
         />
-        {address && compare(address, parsedPath) ? (
+        {address && profile.address && compare(address, profile.address) ? (
           <Card className="mb-2 grid grid-cols-1 gap-4">
             <h1 className="text-xl font-medium text-black dark:text-white">
               Share your link
@@ -202,7 +253,7 @@ export const DropView = () => {
         ) : (
           <Card className="mb-2 grid grid-cols-1 gap-4">
             <h1 className="text-xl font-medium text-black dark:text-white">
-              You met {truncateAddress(parsedPath as Address)}
+              You met {profile.name}
             </h1>
             <p className="text-xl text-black dark:text-white/80">
               Invite them and others to claim that they met you using your link:

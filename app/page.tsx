@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import { FC, useCallback, useEffect } from "react";
 import { useAuth } from "../contexts/authProvider";
 import { Card } from "../components/card";
@@ -12,7 +12,6 @@ import { Tabs } from "../components/tabs";
 import Image from "next/image";
 import { useShareModal } from "../contexts/modalProvider";
 import Link from "next/link";
-import { truncateAddress } from "../lib/truncateAddress";
 import { Spinner } from "../components/spinner";
 import { ClaimsProvider, useClaims } from "../contexts/claimsProvider";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
@@ -29,6 +28,7 @@ const ResultsTab: FC<{
     getClaimedMine,
     loading,
     data,
+    page,
     hasNextPage,
     hasPrevPage,
   } = useClaims();
@@ -84,9 +84,7 @@ const ResultsTab: FC<{
               className="borde table-row border-b border-b-slate-200 last-of-type:border-none dark:border-white/10"
             >
               <td className="table-cell  py-4">
-                <Link href={`/${data.address}`}>
-                  {truncateAddress(data.address as Address)}
-                </Link>
+                <Link href={`/${data.address}`}>{data.name}</Link>
               </td>
               <td className="table-cell  py-4 text-right">
                 {timeAgo.format(new Date(data.time))}
@@ -98,7 +96,7 @@ const ResultsTab: FC<{
       <div className="flex">
         {hasPrevPage && (
           <Button2
-            onClick={() => getPage(1)}
+            onClick={() => getPage((page || 1) - 1)}
             className="mr-auto"
             variant="secondary"
             size="small"
@@ -108,7 +106,7 @@ const ResultsTab: FC<{
         )}
         {hasNextPage && (
           <Button2
-            onClick={() => getPage(2)}
+            onClick={() => getPage((page || 0) + 1)}
             className="ml-auto"
             variant="secondary"
             size="small"
