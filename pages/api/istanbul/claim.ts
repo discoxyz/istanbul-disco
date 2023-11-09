@@ -20,8 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             authorization: `Bearer ${process.env.DISCO_KEY}`,
           },
           body: JSON.stringify({
-            issuer:
-              "did:3:kjzl6cwe1jw147cufw5z2394c9k4bkelz3inze0mpddrk6x4hdyxtkfyfmde8qp",
+            issuer: process.env.ISSUER_DID,
             schemaUrl:
               "https://raw.githubusercontent.com/discoxyz/disco-schemas/main/json/AttestedMetIrlCredential/1-0-0.json",
             recipientDID: did,
