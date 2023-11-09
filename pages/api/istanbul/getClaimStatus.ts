@@ -1,8 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import crypto from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
-
-const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { owner, claimant }: { owner: string; claimant: string } = req.body;

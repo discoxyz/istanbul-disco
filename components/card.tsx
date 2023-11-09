@@ -1,4 +1,4 @@
-import { FC, HTMLProps, PropsWithChildren } from "react";
+import { FC, HTMLProps } from "react";
 
 export const Card: FC<HTMLProps<HTMLDivElement>> = ({
   className,

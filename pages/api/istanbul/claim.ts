@@ -1,9 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import crypto from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Address, Signature, isAddress, verifyMessage } from "viem";
-
-// const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
@@ -34,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               person1: `${owner}`,
               person2: `${claimant}`,
             },
-            expirationDate: ""
+            expirationDate: "",
           }),
         });
         const parsed = await result.json();

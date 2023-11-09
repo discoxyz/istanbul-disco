@@ -2,8 +2,6 @@ import React from "react";
 import { FC, HTMLProps, useEffect, useState } from "react";
 import { Address } from "viem";
 import { truncateAddress } from "../lib/truncateAddress";
-import { schemas } from "../lib/schemas";
-import { camelCase, startCase } from "lodash";
 
 export interface CredentialCardProps {
   data: { [key: string]: any };
@@ -18,25 +16,13 @@ export const Credential: FC<
   CredentialCardProps & HTMLProps<HTMLDivElement>
 > = ({
   title,
-  data,
   className,
   textColor = "#FFFFFF",
   image = "https://fzt.aqp.mybluehost.me/images/bg_disco.png",
   createdByAddress,
-  schema,
   // ...rest
 }) => {
   const baseUnit = (4 / 334) * 100 * 4 + "cqw";
-  
-  function toReadable(val: string) {
-    return startCase(camelCase(val));
-  }
-
-    const calloutKey = schemas.find(
-      (s) => s.name === schema || s.schema.$id === schema,
-    )?.calloutField;
-    const calloutVal = (calloutKey && data[calloutKey]) || "";
-    const meta = calloutVal && `${toReadable(calloutVal)}`;
 
   const [address, setAddress] = useState<string | undefined>();
 
@@ -81,7 +67,6 @@ export const Credential: FC<
           }}
         >
           <h1 style={{ fontSize: "1.8em" }}>{title}</h1>
-          <p style={{ fontSize: "1.2em" }}>{meta}</p>
           {address && (
             <>
               <h2

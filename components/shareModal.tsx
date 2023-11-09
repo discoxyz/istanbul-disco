@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { Card } from "./card";
-import { useAccount, useEnsName } from "wagmi";
 import QRCode from "react-qr-code";
 import { Button2 } from "./button";
 import { useAuth } from "../contexts/authProvider";
@@ -9,7 +8,6 @@ import { useShareModal } from "../contexts/modalProvider";
 
 export const ShareModal: FC = () => {
   const { address, name } = useAuth();
-  const { isLoading, data } = useEnsName();
   const [canShare, setCanShare] = useState(false);
   const [copied, setHasCopied] = useState(false);
   const { isOpen, isOpening, isClosing, close } = useShareModal();
@@ -32,7 +30,7 @@ export const ShareModal: FC = () => {
       if (navigator.canShare && navigator.canShare(shareData))
         setCanShare(true);
     }
-  }, [navigator, window, address]);
+  }, [address]);
 
   const share = () => {
     navigator.share(shareData);

@@ -17,7 +17,7 @@ export const Button2: FC<
   active,
   loading,
   disabled,
-  type: _, // Discard because of typeerror
+  type: _, // eslint-disable-line no-unused-vars
   children,
   ...rest
 }) => {
@@ -36,7 +36,7 @@ export const Button2: FC<
   const base =
     "rounded-2xl font-medium flex items-center justify-center relative";
 
-  const classes2: { [key in Variant]?: any } = {
+  const classes2: { [key in Variant]?: any } = { // eslint-disable-line no-unused-vars
     secondary:
       "bg-transparent text-black border border-black dark:bg-transparent dark:text-white dark:border-white",
     primary:
@@ -44,7 +44,7 @@ export const Button2: FC<
     tab: "px-3 aria-current:bg-black/10 aria-current:text-black aria-current:dark:bg-white/10 aria-current:dark:text-white text-black/80 hover:bg-black/10 dark:text-white/80 dark:hover:bg-white/10",
   };
 
-  const sizeClasses: { [key in Size]?: any } = {
+  const sizeClasses: { [key in Size]?: any } = { // eslint-disable-line no-unused-vars
     small: "px-3 py-2 text-lg",
     default: "px-6 py-3 text-xl",
   };

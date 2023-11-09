@@ -7,15 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "ngrok": "npx ngrok http -bind-tls=true localhost:3000"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@3id/connect": "^0.4.1",
     "@ceramicnetwork/3id-did-resolver": "^2.22.0",
     "@ceramicnetwork/http-client": "^2.26.0",
     "@heroicons/react": "^2.0.18",
-    "@prisma/client": "^5.1.1",
     "@rainbow-me/rainbowkit": "^1.0.6",
     "@rjsf/core": "^5.12.1",
     "@rjsf/utils": "^5.12.1",

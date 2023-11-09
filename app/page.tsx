@@ -39,7 +39,7 @@ const ResultsTab: FC<{
     } else {
       getClaimedMine();
     }
-  }, [type]);
+  }, [type, getMyClaims, getClaimedMine]);
 
   function getPage(page: number) {
     if (type === "myClaims") {
@@ -113,15 +113,13 @@ const ResultsTab: FC<{
   );
 };
 
-export function Profile() {
+function Profile() {
   const { open } = useShareModal();
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const {
-    address: authAddress,
     authenticated,
     authenticate,
     loading,
-    logout,
   } = useAuth();
 
   if (loading) {

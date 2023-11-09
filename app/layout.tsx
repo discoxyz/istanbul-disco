@@ -2,13 +2,11 @@
 import React from "react";
 import "../styles/globals.scss";
 import "@rainbow-me/rainbowkit/styles.css";
-// import { Metadata } from "next";
 import { WalletProvider } from "../contexts/walletProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "../contexts/authProvider";
 import { Footer } from "../components/footer";
 import { Nav } from "../components/nav";
-import { ShareModal } from "../components/shareModal";
 import { ModalProvider } from "../contexts/modalProvider";
 import { EnsoPopover } from "../components/ensoPopover";
 

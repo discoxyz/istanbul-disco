@@ -1,5 +1,4 @@
 import { FC, ReactNode, useState } from "react";
-import { Card } from "./card";
 import { Button2 } from "./button";
 
 export interface TabProps {

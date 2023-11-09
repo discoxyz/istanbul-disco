@@ -1,8 +1,5 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import crypto from "crypto";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const prisma = new PrismaClient();
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
@@ -76,7 +73,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   res.status(200).send({
     data: addresses, // trim last from array
-    page: page ||1,
+    page: page || 1,
     hasNextPage: hasNextPage,
     hasPrevPage: (page || 1) > 1,
   });
