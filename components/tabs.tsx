@@ -10,8 +10,6 @@ export interface TabProps {
 
 export const Tabs: FC<{ tabs: TabProps[] }> = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState<TabProps>(tabs[0]);
-  console.log(activeTab);
-  // const Content = activeTab.content;
   return (
     <>
       <nav className="mb-4 flex">

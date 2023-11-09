@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="mx-auto flex min-h-screen max-w-md flex-col bg-slate-200  dark:bg-zinc-900">
+      <body className="mx-auto flex min-h-screen max-w-md flex-col bg-slate-200  dark:bg-zinc-900 relative">
         <WalletProvider>
           <AuthProvider>
             <ModalProvider>

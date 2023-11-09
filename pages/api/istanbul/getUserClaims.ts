@@ -10,7 +10,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const value = `did:ethr:${address.toLowerCase()}`;
   let field = "vc.credentialSubject.person2";
   if (type === "claimant") field = "vc.credentialSubject.person1";
-  console.log("value", value);
   const response = await fetch(`https://api.disco.xyz/v1/credentials/search`, {
     method: "POST",
     headers: {
@@ -61,7 +60,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
   const hasNextPage = !!(await nextPage.json()).length;
   const credentials = await response.json();
-  console.log("credentials", credentials);
   const addresses = credentials.map((vcDoc: any) => ({
     address:
       type == "owner"
@@ -69,7 +67,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         : vcDoc.vc.credentialSubject.person2.replace("did:ethr:", ""),
     time: vcDoc.vc.issuanceDate,
   }));
-  if (credentials.length > 10) console.log("CREDS", addresses);
 
   res.status(200).send({
     data: addresses, // trim last from array

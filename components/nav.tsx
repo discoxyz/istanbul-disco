@@ -6,8 +6,12 @@ import { Button2 } from "./button";
 import { useAuth } from "../contexts/authProvider";
 import { Spinner } from "./spinner";
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export const Nav: FC = () => {
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { authenticate, authenticated, logout, loading } = useAuth();
   return (
     <nav className="mb-6 flex w-full flex-wrap items-center justify-between py-0 text-lg">
@@ -25,6 +29,14 @@ export const Nav: FC = () => {
           sizeClassName="h-6 w-6"
           fillClassName="fill-zinc-800 dark:fill-grey-200"
         />
+      ) : !authenticated && !isConnected ? (
+        <Button2
+          onClick={() => openConnectModal && openConnectModal()}
+          className="ml-auto"
+          variant={"primary"}
+        >
+          Connect Wallet
+        </Button2>
       ) : (
         <Button2
           onClick={authenticated ? () => logout() : () => authenticate()}
@@ -34,7 +46,6 @@ export const Nav: FC = () => {
           {authenticated ? "Log out" : "Sign in"}
         </Button2>
       )}
-      {/* <ConnectButton /> */}
     </nav>
   );
 };

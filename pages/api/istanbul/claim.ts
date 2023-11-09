@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getClaimStatus } from "./getClaimStatus";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
@@ -10,10 +11,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const claimant = `did:ethr:${_claimant.toLowerCase()}`;
 
   try {
-    const result = await Promise.all(
+    const status = await getClaimStatus({ owner: _owner, claimant: _claimant });
+    if (status.claimed) {
+      res.status(500).send({ success: false });
+    }
+    await Promise.all(
       [owner, claimant].map(async (did) => {
-        console.log("issue to ", did);
-        const result = await fetch("https://api.disco.xyz/v1/credential", {
+        await fetch("https://api.disco.xyz/v1/credential", {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -31,12 +35,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             expirationDate: "",
           }),
         });
-        const parsed = await result.json();
-        console.log(parsed);
-        return parsed;
       }),
     );
-    console.log(result);
     res.status(200).send({ success: true });
   } catch (error) {
     res.status(500).send({ success: false });

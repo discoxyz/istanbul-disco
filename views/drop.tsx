@@ -1,12 +1,8 @@
 "use client";
-import {
-  useParams,
-  useRouter,
-  usePathname,
-} from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Address } from "wagmi";
+import { Address, useAccount } from "wagmi";
 import { useAuth } from "../contexts/authProvider";
 import { Button2 } from "../components/button";
 import { Card } from "../components/card";
@@ -14,10 +10,14 @@ import { Credential } from "../components/credCard";
 import { useShareModal } from "../contexts/modalProvider";
 import { truncateAddress } from "../lib/truncateAddress";
 import { compare } from "../lib/compare";
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 
 export const DropView = () => {
-  // const { address } = useAccount();
-  const { authenticated, authenticate, address, loading } = useAuth();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { authenticated, authenticate, address, loading, awaitingAuth } =
+    useAuth();
   const { open } = useShareModal();
   const pathname = usePathname();
   if (!pathname) throw new Error("Page must have a pathname");
@@ -46,7 +46,7 @@ export const DropView = () => {
         claimed: false,
         loading: true,
       });
-      console.log("CHECK IF CLAIMED");
+
       const response = await fetch("/api/istanbul/getClaimStatus", {
         method: "POST",
         headers: {
@@ -69,10 +69,8 @@ export const DropView = () => {
 
   const claim = useCallback(
     async (args?: { address: string }) => {
-      console.log("claim");
       const handler = async () => {
         const claimant = args?.address || address;
-        console.log(claimant, parsedPath);
         if (!claimant || !parsedPath) return;
         setHasClaimed({
           claimed: false,
@@ -101,11 +99,16 @@ export const DropView = () => {
   );
 
   const handleSignInClaim = useCallback(() => {
-    console.log("handle sign in claim");
     authenticate({
       onSuccess: async ({ address }) => claim({ address }),
     });
   }, [authenticate, claim]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!hasClaimed.loading && !loading) setIsLoading(false);
+  }, [hasClaimed.loading, loading]);
 
   return (
     <div>
@@ -135,11 +138,7 @@ export const DropView = () => {
             </Button2>
           </Card>
         ) : !hasClaimed.claimed || !authenticated ? (
-          <Card
-            className={`mb-2 grid grid-cols-1 gap-4 ${
-              loading ? " animate-pulse" : ""
-            }`}
-          >
+          <Card className={`mb-2 grid grid-cols-1 gap-4`}>
             <h1 className="text-xl font-medium text-black dark:text-white">
               Claim their credential
             </h1>
@@ -147,20 +146,58 @@ export const DropView = () => {
               Claim your credential and share your own to participate in the
               enso leaderboard
             </p>
-            <Button2
-              variant="primary"
-              disabled={hasClaimed.loading || hasClaimed.claiming || loading}
-              loading={hasClaimed.loading || hasClaimed.claiming || loading}
-              onClick={authenticated ? () => claim() : handleSignInClaim}
-            >
-              {hasClaimed.claiming
-                ? "Claiming"
-                : hasClaimed.loading || loading
-                ? "Loading"
-                : authenticated
-                ? "Claim"
-                : "Sign in & claim"}
-            </Button2>
+            {isLoading ? (
+              <Button2
+                variant="primary"
+                disabled
+                loading
+                onClick={() => claim()}
+                className="w-full"
+              >
+                Loading
+              </Button2>
+            ) : authenticated ? (
+              <Button2
+                variant="primary"
+                onClick={() => claim()}
+                className="w-full"
+                loading={hasClaimed.claiming}
+                disabled={hasClaimed.claiming}
+              >
+                {hasClaimed.claiming
+                  ? "Claiming"
+                  : hasClaimed.loading || loading
+                  ? "Loading"
+                  : authenticated && "Claim"}
+              </Button2>
+            ) : !isConnected && !authenticated ? (
+              <Button2
+                onClick={() => openConnectModal && openConnectModal()}
+                className="ml-auto w-full"
+                variant={"primary"}
+              >
+                Connect Wallet
+              </Button2>
+            ) : (
+              <>
+                <Button2
+                  onClick={() => openAccountModal && openAccountModal()}
+                  className="w-full opacity-60"
+                  disabled
+                  variant={"secondary"}
+                >
+                  Wallet connected
+                </Button2>
+                <Button2
+                  className="w-full"
+                  onClick={handleSignInClaim}
+                  loading={awaitingAuth}
+                  disabled={awaitingAuth}
+                >
+                  {awaitingAuth ? "Awaiting Signature" : "Sign in"}
+                </Button2>
+              </>
+            )}
           </Card>
         ) : (
           <Card className="mb-2 grid grid-cols-1 gap-4">

@@ -11,7 +11,6 @@ export const ironOptions = {
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log('API HIT')
   const { method } = req;
   switch (method) {
     case "GET":

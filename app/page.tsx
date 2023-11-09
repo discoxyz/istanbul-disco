@@ -15,6 +15,7 @@ import Link from "next/link";
 import { truncateAddress } from "../lib/truncateAddress";
 import { Spinner } from "../components/spinner";
 import { ClaimsProvider, useClaims } from "../contexts/claimsProvider";
+import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 
 // Create formatter (English).
 TimeAgo.addDefaultLocale(en);
@@ -123,7 +124,9 @@ const ResultsTab: FC<{
 function Profile() {
   const { open } = useShareModal();
   const { isConnected } = useAccount();
-  const { authenticated, authenticate, loading } = useAuth();
+  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
+  const { authenticated, authenticate, loading, awaitingAuth } = useAuth();
 
   if (loading) {
     return (
@@ -154,9 +157,34 @@ function Profile() {
           <p className="text-xl text-black dark:text-white/80">
             Share your link and participate in the enso leaderboard
           </p>
-          <Button2 className="w-fit" onClick={() => authenticate()}>
-            {isConnected ? "Sign in" : "Connect & sign in"}
-          </Button2>
+          {!isConnected && !authenticated ? (
+            <Button2
+              onClick={() => openConnectModal && openConnectModal()}
+              className="ml-auto w-full"
+              variant={"primary"}
+            >
+              Connect Wallet
+            </Button2>
+          ) : (
+            <>
+              <Button2
+                onClick={() => openAccountModal && openAccountModal()}
+                className="w-full opacity-60"
+                disabled
+                variant={"secondary"}
+              >
+                Wallet connected
+              </Button2>
+              <Button2
+                className="w-full"
+                onClick={() => authenticate()}
+                loading={awaitingAuth}
+                disabled={awaitingAuth}
+              >
+                {awaitingAuth ? "Awaiting Signature" : "Sign in"}
+              </Button2>
+            </>
+          )}
         </Card>
       )}
 

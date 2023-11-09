@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { owner, claimant }: { owner: string; claimant: string } = req.body;
-  const person1 = `did:ethr:${owner.toLowerCase()}`;
-  const person2 = `did:ethr:${claimant.toLowerCase()}`;
+export async function getClaimStatus(args: {
+  owner: string;
+  claimant: string;
+}): Promise<{ claimed: boolean }> {
+  const person1 = `did:ethr:${args.owner.toLowerCase()}`;
+  const person2 = `did:ethr:${args.claimant.toLowerCase()}`;
 
   const response = await fetch(`https://api.disco.xyz/v1/credentials/search`, {
     method: "POST",
@@ -26,16 +28,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       ],
       page: 1,
-      count: 1,
+      size: 1,
     }),
   });
-  
-  const credentials = await response.json();
-  console.log("CREDS", credentials);
 
-  res.status(200).send({
+  const credentials = await response.json();
+
+  return {
     claimed: !!credentials.length,
-  });
+  };
+}
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { owner, claimant }: { owner: string; claimant: string } = req.body;
+  res.status(200).send(await getClaimStatus({ owner, claimant }));
 
   return;
 };

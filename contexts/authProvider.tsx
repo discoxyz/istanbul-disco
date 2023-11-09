@@ -12,9 +12,7 @@ import { getEnsName } from "viem/ens";
 import {
   Address,
   useAccount,
-  useChainId,
-  useConnect,
-  useEnsName,
+  useDisconnect,
   useNetwork,
   usePublicClient,
   useSignMessage,
@@ -59,13 +57,14 @@ const authProviderContext = createContext(initContext);
 export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const { signMessageAsync } = useSignMessage();
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const publicClient = usePublicClient();
   const { chain } = useNetwork();
-  const { data, isLoading } = useEnsName();
   const { openConnectModal } = useConnectModal();
 
   const [state, setState] = useState<{
     address?: Address;
+    name?: string;
     authenticated?: boolean;
     loading?: boolean;
     nonce?: string;
@@ -80,7 +79,6 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
   // Fetch user when:
   useEffect(() => {
-    console.log("onload");
     refreshUser();
     return;
 
@@ -93,7 +91,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     try {
       const nonceRes = await fetch("/api/istanbul/auth/nonce");
       const nonce = await nonceRes.text();
-      setState((x) => ({ ...x, nonce }));
+      setState((x) => ({ ...x, loading: false, nonce }));
       return nonce;
     } catch (error) {
       setState((x) => ({ ...x, error: error as Error }));
@@ -108,7 +106,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   // Callback for when the wallet connection is complete
   // Should only be set via authenticate({onSuccess, onError})
   useEffect(() => {
-    if (!awaitingConnection || !isConnected || !address) return;
+    if (!awaitingConnection || !isConnected || !address) {
+      return;
+    }
     const { onSuccess, onError } = callback;
     authenticate({
       onSuccess,
@@ -119,7 +119,6 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   }, [awaitingConnection, isConnected, address, callback]);
 
   useEffect(() => {
-    console.log(address, state.address);
     if (!address || !state.address) return;
     if (address !== state.address) logout();
   }, [address]);
@@ -137,7 +136,8 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
         const chainId = chain?.id;
         if (!address || !chainId) return;
 
-        setState((x) => ({ ...x, loading: true }));
+        setState({ nonce: state.nonce, loading: true });
+        setAwaitingAuth(true);
         // Create SIWE message with pre-fetched nonce and sign with wallet
         const message = new SiweMessage({
           domain: window.location.host,
@@ -163,33 +163,36 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
         if (!verifyRes.ok) throw new Error("Error verifying message");
         const ens = await getEnsName(publicClient, { address });
-        setState((x) => ({
-          ...x,
-          name: ens || truncateAddress(address),
+        setAwaitingAuth(false);
+        setState({
+          nonce: state.nonce,
+          authenticated: true,
+          address: address,
+          name: ens || truncateAddress(address) || undefined,
           loading: false,
-        }));
-        args?.onSuccess && console.log("start onSuccess");
-        // !onSuccess && console.log("No callback");
+        });
         args?.onSuccess && args.onSuccess({ address });
       } catch (error) {
+        setAwaitingAuth(false);
         setState((x) => ({ ...x, loading: false, nonce: undefined }));
         args?.onError && args.onError({ error: error as Error });
         _fetchNonce();
       }
     },
-    [openConnectModal, state.authenticated, awaitingAuth],
+    [openConnectModal, state.authenticated, awaitingAuth, state.nonce],
   );
 
   const logout = async () => {
     try {
       await fetch("/api/istanbul/auth/logout");
+      disconnect();
       setState({});
     } catch (err) {
       setState((x) => ({}));
     }
   };
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       setState((x) => ({
         ...x,
@@ -201,13 +204,13 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
         const ens = await getEnsName(publicClient, {
           address: json.siwe.data.address,
         });
-        setState((x) => ({
-          ...x,
-          name: ens || truncateAddress(json.siwe.data.address),
+        setState({
+          ...state,
+          name: ens || truncateAddress(json.siwe.data.address) || undefined,
           loading: false,
           authenticated: true,
           address: json.siwe.data.address,
-        }));
+        });
       } else {
         // Log out
         setState({
@@ -216,12 +219,13 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
         });
       }
     } catch (_error) {
-      console.log(_error);
+      console.error(_error);
     }
-  };
+  }, [state]);
 
   const value = {
     ...state,
+    awaitingAuth: awaitingAuth,
     authenticate,
     logout,
     refreshUser,
