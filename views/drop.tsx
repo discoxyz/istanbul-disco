@@ -1,170 +1,185 @@
 "use client";
-import { Prisma } from "@prisma/client";
 import {
   useParams,
-  useSearchParams,
   useRouter,
   usePathname,
 } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useSignMessage } from "wagmi";
-import { getDrops } from "../app/services/getDrops";
-import { parseClaimStatus } from "../lib/parseClaimStatus";
-import Link from "next/link";
-import { DropRow } from "../components/v2/dropRow";
-import { ClaimArea } from "../components/v2/claimArea";
-import { ToastError, ToastLoading, ToastSuccess } from "../components/v2/toast";
-import va from "@vercel/analytics";
+import { Address } from "wagmi";
+import { useAuth } from "../contexts/authProvider";
+import { Button2 } from "../components/button";
+import { Card } from "../components/card";
+import { Credential } from "../components/credCard";
+import { useShareModal } from "../contexts/modalProvider";
+import { truncateAddress } from "../lib/truncateAddress";
+import { compare } from "../lib/compare";
 
 export const DropView = () => {
-  const params = useParams();
-  const router = useRouter();
+  // const { address } = useAccount();
+  const { authenticated, authenticate, address, loading } = useAuth();
+  const { open } = useShareModal();
   const pathname = usePathname();
-  const { signMessageAsync } = useSignMessage();
-  const { address, isConnected } = useAccount();
-  const path = params?.path as string;
-  const [drop, setDrop] =
-    useState<Prisma.DropGetPayload<{ include: { claims?: true } }>>();
-  const [eligible, setEligible] = useState<boolean | undefined>();
-  const [claimed, setClaimed] = useState<boolean | undefined>();
-  const [loaded, setLoaded] = useState<boolean>(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [claiming, setClaiming] = useState<boolean>(false);
-  const [justClaimed, setJustClaimed] = useState<boolean>(false);
+  if (!pathname) throw new Error("Page must have a pathname");
+  const parsedPath = (
+    typeof pathname === "string" ? pathname : pathname[0]
+  ).replaceAll("/", "");
+
+  const [hasClaimed, setHasClaimed] = useState({
+    claiming: false,
+    loading: true,
+    claimed: false,
+  });
 
   useEffect(() => {
-    if (path) {
-      const fetchDrops = async () => {
-        setLoaded(false);
-        const drops = await getDrops({
-          path,
-          address: address || undefined,
-          withClaims: !!address || undefined,
-          withClaimsBy: address || undefined,
-          includeDisabled: true,
-          includeHidden: true,
+    const handler = async () => {
+      if (!address || !parsedPath) {
+        setHasClaimed({
+          claiming: false,
+          claimed: false,
+          loading: false,
         });
-        setDrop(drops[0] || []);
-        setLoaded(true);
+        return;
+      }
+      setHasClaimed({
+        claiming: false,
+        claimed: false,
+        loading: true,
+      });
+      console.log("CHECK IF CLAIMED");
+      const response = await fetch("/api/istanbul/getClaimStatus", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          owner: parsedPath,
+          claimant: address,
+        }),
+      });
+      const res = await response.json();
+      setHasClaimed({
+        claiming: false,
+        loading: false,
+        claimed: res.claimed,
+      });
+    };
+    handler();
+  }, [parsedPath, address]);
+
+  const claim = useCallback(
+    async (args?: { address: string }) => {
+      console.log("claim");
+      const handler = async () => {
+        const claimant = args?.address || address;
+        console.log(claimant, parsedPath);
+        if (!claimant || !parsedPath) return;
+        setHasClaimed({
+          claimed: false,
+          claiming: true,
+          loading: false,
+        });
+        await fetch("/api/istanbul/claim", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            owner: parsedPath,
+            claimant,
+          }),
+        });
+        setHasClaimed({
+          claimed: true,
+          claiming: false,
+          loading: false,
+        });
       };
-      fetchDrops();
-    }
-  }, [path, address]);
+      handler();
+    },
+    [parsedPath, address],
+  );
 
-  useEffect(() => {
-    // const claim = drop.claims?.filter((c) => c.address == address)[0];
-    if (drop) {
-      console.log('hellooo', drop)
-      const { claimed, eligible } = parseClaimStatus(drop, address);
-      setClaimed(claimed);
-      setEligible(eligible);
-    } else {
-      setClaimed(undefined);
-      setEligible(undefined);
-    }
-  }, [drop, address]);
-
-  const claim = useCallback(async () => {
-    if (!drop?.id || !address) return
-    setClaiming(true);
-    const message = `I am claiming my credential`;
-    const signature = await signMessageAsync({ message: message });
-
-    const claim = await fetch(`/api/v2/claims/claimDrop/${drop?.id}`, {
-      method: "POST",
-      body: JSON.stringify({
-        claimingAddress: address,
-        signature,
-        message,
-        dropId: drop?.id,
-      }),
+  const handleSignInClaim = useCallback(() => {
+    console.log("handle sign in claim");
+    authenticate({
+      onSuccess: async ({ address }) => claim({ address }),
     });
-
-    const res = await claim.json();
-    if (!claim.ok) {
-      va.track("Claim", { success: false, dropId: drop.id, did: address as string });
-      setClaiming(false);
-      setError(res.message || "Something went wrong when claiming");
-      return;
-    }
-    va.track("Claim", { success: true, dropId: drop.id, did: address as string });
-    setClaiming(false);
-    setClaimed(true);
-    setJustClaimed(true);
-  }, [signMessageAsync, drop, address]);
-
-  const [created, setCreated] = useState(false);
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    setCreated(!!searchParams?.get("created"));
-  }, [searchParams]);
-
-  const [mine, setMine] = useState(false);
-  useEffect(() => {
-    if (pathname?.includes("my-drops")) {
-      setMine(true);
-      return;
-    }
-    setMine(false);
-  }, [pathname]);
+  }, [authenticate, claim]);
 
   return (
     <div>
-      <main className="mx-auto mb-auto w-full max-w-4xl px-6">
-        <nav className="mb-6 flex h-16 w-full items-center px-6 text-base text-white/60 md:text-lg lg:text-2xl">
-          <Link href={mine ? "/my-drops" : "/"} className="mr-2 lg:mr-5">
-            {mine ? "My Drops" : "Active Drops"}
-          </Link>
-          <span className="mx-2 mr-2 opacity-60 lg:mr-5">/</span>
-          <span className="mr-auto opacity-60">{drop?.name}</span>
-          {drop && isConnected && address === drop?.createdByAddress && (
-            <Link
-              href={`/my-drops/${path}`}
-              className="ml-auto mr-0 underline opacity-60"
+      <main className="mx-auto mb-auto w-full">
+        <Credential
+          image={undefined}
+          title={"We met IRL"}
+          textColor={undefined}
+          data={JSON.parse("{}")}
+          className="col-span-5 mb-6 sm:col-span-3 md:col-span-2"
+          createdByAddress={parsedPath}
+        />
+        {address && compare(address, parsedPath) ? (
+          <Card className="mb-2 grid grid-cols-1 gap-4">
+            <h1 className="text-xl font-medium text-black dark:text-white">
+              Share your link
+            </h1>
+            <p className="text-xl text-black dark:text-white/80">
+              Invite others to claim that they met you using your link:
+            </p>
+            <Button2
+              variant="primary"
+              loading={hasClaimed.loading}
+              onClick={open}
             >
-              Manage
-            </Link>
-          )}
-        </nav>
-        {drop && loaded && (
-          <DropRow drop={drop} className="pointer-events-none mb-4" />
+              {"Share your claim link"}
+            </Button2>
+          </Card>
+        ) : !hasClaimed.claimed || !authenticated ? (
+          <Card
+            className={`mb-2 grid grid-cols-1 gap-4 ${
+              loading ? " animate-pulse" : ""
+            }`}
+          >
+            <h1 className="text-xl font-medium text-black dark:text-white">
+              Claim their credential
+            </h1>
+            <p className="text-xl text-black dark:text-white/80">
+              Claim your credential and share your own to participate in the
+              enso leaderboard
+            </p>
+            <Button2
+              variant="primary"
+              disabled={hasClaimed.loading || hasClaimed.claiming || loading}
+              loading={hasClaimed.loading || hasClaimed.claiming || loading}
+              onClick={authenticated ? () => claim() : handleSignInClaim}
+            >
+              {hasClaimed.claiming
+                ? "Claiming"
+                : hasClaimed.loading || loading
+                ? "Loading"
+                : authenticated
+                ? "Claim"
+                : "Sign in & claim"}
+            </Button2>
+          </Card>
+        ) : (
+          <Card className="mb-2 grid grid-cols-1 gap-4">
+            <h1 className="text-xl font-medium text-black dark:text-white">
+              You met {truncateAddress(parsedPath as Address)}
+            </h1>
+            <p className="text-xl text-black dark:text-white/80">
+              Invite them and others to claim that they met you using your link:
+            </p>
+            <Button2
+              variant="primary"
+              loading={hasClaimed.loading}
+              onClick={open}
+            >
+              {"Share your own claim link"}
+            </Button2>
+          </Card>
         )}
-        {drop && (
-          <ClaimArea
-            className="mb-2 rounded-3xl bg-stone-950 p-6"
-            claimed={!!claimed}
-            eligible={!!eligible}
-            claim={claim}
-            loading={!loaded}
-            claiming={claiming}
-            disabled={drop.disabled}
-            drop={drop}
-          />
-        )}
-        {/* <div className="rounded-3xl bg-stone-950 p-6">{ClaimArea}</div> */}
       </main>
-      <div className="fixed bottom-0 flex w-full flex-col items-center">
-        {error && (
-          <ToastError text={error} onDismiss={() => setError(undefined)} />
-        )}
-        {claiming && <ToastLoading text="Claiming drop" />}
-        {justClaimed && (
-          <ToastSuccess
-            text="Drop claimed"
-            onDismiss={() => setClaiming(false)}
-          />
-        )}
-        {created && (
-          <ToastSuccess
-            text="Drop created"
-            onDismiss={() => {
-              router.replace(`/${path}`);
-              setCreated(false);
-            }}
-          />
-        )}
-      </div>
     </div>
   );
 };
