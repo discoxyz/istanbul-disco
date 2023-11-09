@@ -1,7 +1,7 @@
 "use client";
 
 import { Address, useAccount } from "wagmi";
-import { FC, useEffect} from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useAuth } from "../contexts/authProvider";
 import { Card } from "../components/card";
 import { Button2 } from "../components/button";
@@ -32,14 +32,21 @@ const ResultsTab: FC<{
     hasPrevPage,
   } = useClaims();
 
+  const handleGetMyClaims = useCallback(() => {
+    getMyClaims();
+  }, [getMyClaims]);
+
+  const handleGetClaimedMine = useCallback(() => {
+    getClaimedMine();
+  }, [getClaimedMine]);
+
   useEffect(() => {
-    console.log("type", type);
     if (type === "myClaims") {
-      getMyClaims();
+      handleGetMyClaims();
     } else {
-      getClaimedMine();
+      handleGetClaimedMine();
     }
-  }, [type, getMyClaims, getClaimedMine]);
+  }, [type]);
 
   function getPage(page: number) {
     if (type === "myClaims") {
@@ -116,11 +123,7 @@ const ResultsTab: FC<{
 function Profile() {
   const { open } = useShareModal();
   const { isConnected } = useAccount();
-  const {
-    authenticated,
-    authenticate,
-    loading,
-  } = useAuth();
+  const { authenticated, authenticate, loading } = useAuth();
 
   if (loading) {
     return (
