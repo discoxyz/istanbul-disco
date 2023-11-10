@@ -19,11 +19,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="mx-auto flex min-h-screen max-w-md flex-col bg-slate-200  dark:bg-zinc-900 relative">
+      <body className="relative mx-auto flex min-h-screen max-w-md flex-col  bg-slate-200 dark:bg-zinc-900">
         <WalletProvider>
           <AuthProvider>
             <ModalProvider>
-              <div className="flex min-h-screen flex-col px-5 py-6">
+              <div className="flex min-h-screen flex-col px-4 py-6">
                 <Nav />
                 {children}
                 <Footer />
