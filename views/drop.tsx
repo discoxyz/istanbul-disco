@@ -152,7 +152,14 @@ export const DropView = () => {
 
   const handleSignInClaim = useCallback(() => {
     authenticate({
-      onSuccess: async ({ address }) => claim({ address }),
+      onSuccess: async ({ address }) => {
+        claim({ address });
+        setHasClaimed({
+          claimed: true,
+          claiming: false,
+          loading: false,
+        });
+      },
     });
   }, [authenticate, claim]);
 
@@ -245,7 +252,7 @@ export const DropView = () => {
                   loading={awaitingAuth}
                   disabled={awaitingAuth}
                 >
-                  {awaitingAuth ? "Awaiting Signature" : "Sign in"}
+                  {awaitingAuth ? "Awaiting Signature" : "Sign in to claim"}
                 </Button2>
               </>
             )}
@@ -272,7 +279,7 @@ export const DropView = () => {
                   className="w-full"
                   // loading={hasClaimed.loading}
                 >
-                 View my rolodex (size matters)
+                  View my rolodex (size matters)
                 </Button2>
               </Link>
             )}
