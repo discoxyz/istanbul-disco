@@ -1,12 +1,14 @@
 import { FC } from "react";
 import { Card } from "./card";
 import Link from "next/link";
+import { useAuth } from "../contexts/authProvider";
 
 export const EnsoPopover: FC = () => {
+  const { address } = useAuth();
   return (
     <Card className="fixed bottom-3 left-3 right-3 flex items-center shadow-2xl drop-shadow-lg dark:bg-blue-700">
       <Link
-        href="https://testflight.apple.com/join/toyR2Y9I"
+        href={`https://lnk.ensocollective.xyz/nail${address ? "address=" + address : ""}`}
         className="w-56"
         rel="noopener noreferrer"
         target="_blank"
