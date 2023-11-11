@@ -168,7 +168,7 @@ function Profile() {
               <Button2
                 onClick={() => openAccountModal && openAccountModal()}
                 className="w-full opacity-60"
-                disabled
+                // disabled
                 variant={"secondary"}
               >
                 Wallet connected
