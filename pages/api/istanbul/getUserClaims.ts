@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const {
     address,
@@ -19,6 +18,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     body: JSON.stringify({
       conjunction: "and",
       criteria: [
+        {
+          field: "issuer",
+          operator: "=",
+          value: process.env.ISSUER_DID,
+        },
         {
           field,
           operator: "=",
@@ -44,6 +48,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       conjunction: "and",
       criteria: [
         {
+          field: "issuer",
+          operator: "=",
+          value: process.env.ISSUER_DID,
+        },
+        {
           field,
           operator: "=",
           value,
@@ -58,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       page: (page || 1) * 10 + 1,
     }),
   });
-  const nextP = await nextPage.json()
+  const nextP = await nextPage.json();
   //@ts-ignore
   const hasNextPage = !!nextP.length;
   const credentials = await response.json();

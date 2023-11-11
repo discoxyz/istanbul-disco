@@ -17,6 +17,11 @@ export async function getClaimStatus(args: {
       conjunction: "and",
       criteria: [
         {
+          field: "issuer",
+          operator: "=",
+          value: process.env.ISSUER_DID,
+        },
+        {
           field: "vc.credentialSubject.person1",
           operator: "=",
           value: person1,
