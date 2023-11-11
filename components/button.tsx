@@ -22,7 +22,7 @@ export const Button2: FC<
   ...rest
 }) => {
   // let classes =
-  //   "rounded-2xl py-3 text-xl font-medium flex items-center justify-center relative ";
+  //   "rounded-2xl py-3 text-lg font-medium flex items-center justify-center relative ";
   // if (variant == "primary")
   //   classes +=
   //     "px-6 bg-black text-white dark:bg-white text-white dark:text-black ";
@@ -45,8 +45,8 @@ export const Button2: FC<
   };
 
   const sizeClasses: { [key in Size]?: any } = { // eslint-disable-line no-unused-vars
-    small: "px-3 py-2 text-lg",
-    default: "px-6 py-3 text-xl",
+    small: "px-3 py-1 text-lg",
+    default: "px-6 py-2 text-lg",
   };
 
   const classes = [base, classes2[variant], sizeClasses[size], className].join(

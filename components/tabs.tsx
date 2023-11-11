@@ -12,7 +12,7 @@ export const Tabs: FC<{ tabs: TabProps[] }> = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState<TabProps>(tabs[0]);
   return (
     <>
-      <nav className="mb-4 flex">
+      <nav className="mb-3 flex">
         {tabs.map((tab, key) => (
           <Button2
             key={key}

@@ -12,6 +12,7 @@ import { truncateAddress } from "../lib/truncateAddress";
 import { compare } from "../lib/compare";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { getEnsAddress, getEnsName } from "viem/ens";
+import Link from "next/link";
 
 export const DropView = () => {
   const { isConnected } = useAccount();
@@ -151,7 +152,14 @@ export const DropView = () => {
 
   const handleSignInClaim = useCallback(() => {
     authenticate({
-      onSuccess: async ({ address }) => claim({ address }),
+      onSuccess: async ({ address }) => {
+        claim({ address });
+        setHasClaimed({
+          claimed: true,
+          claiming: false,
+          loading: false,
+        });
+      },
     });
   }, [authenticate, claim]);
 
@@ -173,11 +181,11 @@ export const DropView = () => {
           createdByAddress={profile.name || undefined}
         />
         {address && profile.address && compare(address, profile.address) ? (
-          <Card className="mb-2 grid grid-cols-1 gap-4">
-            <h1 className="text-xl font-medium text-black dark:text-white">
+          <Card className="mb-2 grid grid-cols-1 gap-3">
+            <h1 className="text-lg font-medium text-black dark:text-white">
               Share your link
             </h1>
-            <p className="text-xl text-black dark:text-white/80">
+            <p className="text-lg text-black dark:text-white/80">
               Invite others to claim that they met you using your link:
             </p>
             <Button2
@@ -189,14 +197,13 @@ export const DropView = () => {
             </Button2>
           </Card>
         ) : !hasClaimed.claimed || !authenticated ? (
-          <Card className={`mb-2 grid grid-cols-1 gap-4`}>
-            <h1 className="text-xl font-medium text-black dark:text-white">
-              Claim their credential
+          <Card className={`mb-2 grid grid-cols-1 gap-3`}>
+            <h1 className="text-lg font-medium text-black dark:text-white">
+              Claim that you met {profile.name}
             </h1>
-            <p className="text-xl text-black dark:text-white/80">
-              Claim your credential and share your own to participate in the
-              enso leaderboard
-            </p>
+            {/* <p className="text-lg text-black dark:text-white/80">
+              Did you meet? Claim your credential and ask them to claim yours.
+            </p> */}
             {isLoading ? (
               <Button2
                 variant="primary"
@@ -245,26 +252,37 @@ export const DropView = () => {
                   loading={awaitingAuth}
                   disabled={awaitingAuth}
                 >
-                  {awaitingAuth ? "Awaiting Signature" : "Sign in"}
+                  {awaitingAuth ? "Awaiting Signature" : "Sign in to claim"}
                 </Button2>
               </>
             )}
           </Card>
         ) : (
-          <Card className="mb-2 grid grid-cols-1 gap-4">
-            <h1 className="text-xl font-medium text-black dark:text-white">
+          <Card className="mb-2 grid grid-cols-1 gap-3">
+            <h1 className="text-lg font-medium text-black dark:text-white">
               You met {profile.name}
             </h1>
-            <p className="text-xl text-black dark:text-white/80">
-              Invite them and others to claim that they met you using your link:
-            </p>
+            {/* <p className="text-lg text-black dark:text-white/80">
+              
+            </p> */}
             <Button2
               variant="primary"
               loading={hasClaimed.loading}
               onClick={open}
             >
-              {"Share your own claim link"}
+              Make things mutual
             </Button2>
+            {!hasClaimed.loading && (
+              <Link href="/" className="w-full">
+                <Button2
+                  variant="secondary"
+                  className="w-full"
+                  // loading={hasClaimed.loading}
+                >
+                  View my rolodex (size matters)
+                </Button2>
+              </Link>
+            )}
           </Card>
         )}
       </main>

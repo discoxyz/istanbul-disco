@@ -148,11 +148,11 @@ function Profile() {
       )}
 
       {!authenticated && (
-        <Card className="mb-6 grid grid-cols-1 gap-4">
-          <h1 className="text-xl font-medium text-black dark:text-white">
+        <Card className="mb-6 grid grid-cols-1 gap-3">
+          <h1 className="text-lg font-medium text-black dark:text-white">
             Get your met IRL link
           </h1>
-          <p className="text-xl text-black dark:text-white/80">
+          <p className="text-lg text-black dark:text-white/80">
             Share your link and participate in the enso leaderboard
           </p>
           {!isConnected && !authenticated ? (
@@ -188,11 +188,11 @@ function Profile() {
 
       {authenticated && (
         <>
-          <Card className="mb-6 grid grid-cols-1 gap-4">
-            <h1 className="text-xl font-medium text-black dark:text-white">
+          <Card className="mb-6 grid grid-cols-1 gap-3">
+            <h1 className="text-lg font-medium text-black dark:text-white">
               Your met IRL link
             </h1>
-            <p className="text-xl text-black dark:text-white/80">
+            <p className="text-lg text-black dark:text-white/80">
               Share your link and participate in the enso leaderboard
             </p>
             <Button2 onClick={open} className="w-fit">
