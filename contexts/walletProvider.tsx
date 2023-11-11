@@ -16,7 +16,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Disco @ eiffel",
+  appName: "Met IRL with Disco",
   projectId: process.env.NEXT_PUBLIC_WC_KEY as string,
   chains,
 });
@@ -31,10 +31,7 @@ const wagmiConfig = createConfig({
 export const WalletProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        
-        {children}
-      </RainbowKitProvider>
+      <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
     </WagmiConfig>
   );
 };
