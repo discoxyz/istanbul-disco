@@ -8,9 +8,7 @@ export const EnsoPopover: FC = () => {
   return (
     <Card className="fixed bottom-3 left-3 right-3 flex items-center shadow-2xl drop-shadow-lg dark:bg-blue-700">
       <Link
-        href={`https://lnk.ensocollective.xyz/nail${
-          address ? "?address=" + address : ""
-        }`}
+        href="https://streaklinks.com/Bu6rayef3-dPs_08Nw1DzHyC/https%3A%2F%2Ftestflight.apple.com%2Fjoin%2FoujIujmH"
         className="w-56"
         rel="noopener noreferrer"
         target="_blank"
