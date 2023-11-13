@@ -1,18 +1,24 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 const Page = () => {
   const [graphData, setGraphData] = useState<any>();
   const [graph, setGraph] = useState<ReactNode>();
   useEffect(() => {
     const handler = async () => {
-      const { ForceGraph2D } = await import("react-force-graph");
+      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const { ForceGraph3D } = await import("react-force-graph");
       const resData = await fetch("/api/istanbul/getGraph", {
         method: "GET",
       });
       const data = await resData.json();
       setGraphData(data.data);
-      setGraph(<ForceGraph2D graphData={data.data} />);
+      if (darkModeMediaQuery.matches) { 
+        setGraph(<ForceGraph3D graphData={data.data} nodeColor={'#FFF'} linkColor='rgba(255,255,255,0.8'/>)
+        return 
+      }
+
+      setGraph(<ForceGraph3D graphData={data.data} nodeColor={'#000'} linkColor='rgba(0,0,0,0.8'/>);
     };
     handler();
   }, []);
