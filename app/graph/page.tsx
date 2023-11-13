@@ -12,9 +12,10 @@ const Page = () => {
         const colorScheme = event.matches ? "dark" : "light";
         setMode(colorScheme);
       });
-  }, [window]);
+  }, []);
 
   useEffect(() => {
+    if (!mode) return
     const handler = async () => {
       const { ForceGraph3D } = await import("react-force-graph");
       const resData = await fetch("/api/istanbul/getGraph", {
