@@ -3,26 +3,18 @@ import { ReactNode, useEffect, useState } from "react";
 
 const Page = () => {
   const [graph, setGraph] = useState<ReactNode>();
-  const [mode, setMode] = useState<"dark" | "light">();
 
   useEffect(() => {
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
-        const colorScheme = event.matches ? "dark" : "light";
-        setMode(colorScheme);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!mode) return
     const handler = async () => {
       const { ForceGraph3D } = await import("react-force-graph");
       const resData = await fetch("/api/istanbul/getGraph", {
         method: "GET",
       });
       const data = await resData.json();
-      if (mode == "dark") {
+      const dark =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (dark) {
         setGraph(
           <ForceGraph3D
             graphData={data.data}
@@ -44,12 +36,10 @@ const Page = () => {
       );
     };
     handler();
-  }, [mode]);
+  }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 top-0">
-      {graph && graph}
-    </div>
+    <div className="fixed bottom-0 left-0 right-0 top-0">{graph && graph}</div>
   );
 };
 
