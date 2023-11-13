@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: { esmExternals: 'loose' },
   webpack: (config) => {
     // Prevent errors caused by walletconnect
     config.externals.push("pino-pretty", "lokijs", "encoding");
