@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const EnsoPopover: FC = () => {
   return (
-    <Card className="fixed bottom-3 left-3 right-3 flex items-center shadow-2xl drop-shadow-lg dark:bg-blue-700">
+    <Card className="fixed bottom-3 left-3 right-3 flex items-center shadow-2xl drop-shadow-lg dark:bg-blue-700 z-10">
       <Link
         href="https://streaklinks.com/Bu6rayef3-dPs_08Nw1DzHyC/https%3A%2F%2Ftestflight.apple.com%2Fjoin%2FoujIujmH"
         className="w-56"

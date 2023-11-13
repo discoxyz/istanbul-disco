@@ -42,7 +42,7 @@ export const ShareModal: FC = () => {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 top-0 h-full w-full transition-all ${
+      className={`fixed bottom-0 left-0 right-0 top-0 h-full w-full transition-all z-50 ${
         isOpen || isOpening
           ? "bg-indigo-900/10 backdrop-blur-xl"
           : "bg-transparent"
