@@ -1,24 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ForceGraph2D } from "react-force-graph";
+import { ReactNode, useEffect, useState } from "react";
 
 const Page = () => {
   const [graphData, setGraphData] = useState<any>();
+  const [graph, setGraph] = useState<ReactNode>();
   useEffect(() => {
     const handler = async () => {
+      const { ForceGraph2D } = await import("react-force-graph");
       const resData = await fetch("/api/istanbul/getGraph", {
         method: "GET",
       });
       const data = await resData.json();
       setGraphData(data.data);
+      setGraph(<ForceGraph2D graphData={data.data} />);
     };
-    handler()
+    handler();
   }, []);
 
   return (
     <div>
       {!graphData && "Loading"}
-      {graphData && <ForceGraph2D graphData={graphData} />}
+      {graph && graph}
     </div>
   );
 };
