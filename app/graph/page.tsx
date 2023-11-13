@@ -18,7 +18,7 @@ const Page = () => {
   }, []);
 
   return (
-    <div>
+    <div className='fixed left-0 right-0 top-24 bottom-0 w-full h-screen'>
       {!graphData && "Loading"}
       {graph && graph}
     </div>
