@@ -14,7 +14,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const status = await getClaimStatus({ owner: _owner, claimant: _claimant });
     if (status.claimed) {
       res.status(500).send({ success: false });
+      return;
     }
+    
     await Promise.all(
       [owner, claimant].map(async (did) => {
         await fetch("https://api.disco.xyz/v1/credential", {
