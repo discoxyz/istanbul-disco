@@ -86,7 +86,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     nodes: Object.keys(nodes).map((k) => nodes[k]),
     links,
   };
-  console.log(output);
 
   res.status(200).send({
     data: output, // trim last from array

@@ -10,7 +10,6 @@ const Page = () => {
         method: "GET",
       });
       const data = await resData.json();
-      console.log(data)
       setGraphData(data.data);
     };
     handler()
