@@ -30,9 +30,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const data = await resData.json();
 
-  // const addresses = {owner: string, claimant: string}[]
-  const ids: { [key: string]: string } = {};
-
   const parsed = data
     .map((d: any) => ({
       owner: d.vc.credentialSubject.person1,
