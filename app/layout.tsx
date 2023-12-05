@@ -1,16 +1,8 @@
-"use client";
 import React from "react";
 import "../styles/globals.scss";
 import "@rainbow-me/rainbowkit/styles.css";
-import { WalletProvider } from "../contexts/walletProvider";
-// import { Analytics } from "@vercel/analytics/react";
-import { AuthProvider } from "../contexts/authProvider";
-import { Footer } from "../components/footer";
-import { Nav } from "../components/nav";
-import { ModalProvider } from "../contexts/modalProvider";
-import { EnsoPopover } from "../components/ensoPopover";
-import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Metadata } from "next";
+import { BaseLayout } from "../views/baseLayout";
 
 export const metadata: Metadata = {
   title: "Disco",
@@ -27,21 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="relative mx-auto flex min-h-screen max-w-md flex-col  bg-slate-200 dark:bg-zinc-900">
-        <UserProvider profileUrl="/api/auth/me" loginUrl="/api/auth/login">
-          <WalletProvider>
-            <AuthProvider>
-              <ModalProvider>
-                <div className="flex min-h-screen flex-col px-4 py-6">
-                  <Nav />
-                  {children}
-                  <Footer />
-                </div>
-                <EnsoPopover />
-              </ModalProvider>
-            </AuthProvider>
-          </WalletProvider>
-          {/* <Analytics /> */}
-        </UserProvider>
+        <BaseLayout>{children}</BaseLayout>
       </body>
     </html>
   );
