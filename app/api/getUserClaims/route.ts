@@ -1,12 +1,16 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
+import { parseId } from "../../../lib/validation";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+export const POST = async (req: NextRequest) => {
   const {
     address,
     type,
     page,
-  }: { address: string; type: "owner" | "claimant"; page?: number } = req.body;
-  const value = `did:ethr:${address.toLowerCase()}`;
+  }: { address: string; type: "owner" | "claimant"; page?: number } =
+    await req.json();
+
+  const value = parseId(address)
+
   let field = "vc.credentialSubject.person2";
   if (type === "claimant") field = "vc.credentialSubject.person1";
   const response = await fetch(`https://api.disco.xyz/v1/credentials/search`, {
@@ -79,14 +83,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     time: vcDoc.vc.issuanceDate,
   }));
 
-  res.status(200).send({
+  return NextResponse.json({
     data: addresses, // trim last from array
     page: page || 1,
     hasNextPage: hasNextPage,
     hasPrevPage: (page || 1) > 1,
   });
-
-  return;
 };
-
-export default handler;

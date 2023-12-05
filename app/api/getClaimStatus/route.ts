@@ -1,11 +1,12 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
+import { parseId } from "../../../lib/validation";
 
 export async function getClaimStatus(args: {
   owner: string;
   claimant: string;
 }): Promise<{ claimed: boolean }> {
-  const person1 = `did:ethr:${args.owner.toLowerCase()}`;
-  const person2 = `did:ethr:${args.claimant.toLowerCase()}`;
+  const person1 = parseId(args.owner);
+  const person2 = parseId(args.claimant);
 
   const response = await fetch(`https://api.disco.xyz/v1/credentials/search`, {
     method: "POST",
@@ -36,19 +37,15 @@ export async function getClaimStatus(args: {
       size: 1,
     }),
   });
-
   const credentials = await response.json();
-
   return {
     claimed: !!credentials.length,
   };
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { owner, claimant }: { owner: string; claimant: string } = req.body;
-  res.status(200).send(await getClaimStatus({ owner, claimant }));
-
-  return;
+export const POST = async (req: NextRequest) => {
+  const body = await req.json();
+  const { owner, claimant }: { owner: string; claimant: string } = body;
+  const claimStatus = await getClaimStatus({ owner, claimant });
+  return NextResponse.json(claimStatus);
 };
-
-export default handler;

@@ -9,6 +9,7 @@ import { ShareModal } from "../components/shareModal";
 import { useAuth } from "./authProvider";
 import { Address, fetchEnsName } from "@wagmi/core";
 import { truncateAddress } from "../lib/truncateAddress";
+import { ethAddressRegex } from "../lib/validation";
 
 interface ClaimsContextInterface {
   getMyClaims: (page?: number) => void;
@@ -54,7 +55,7 @@ export const ClaimsProvider: FC<PropsWithChildren> = ({
     setClaims({
       loading: true,
     });
-    const claimed = await fetch("/api/istanbul/getUserClaims", {
+    const claimed = await fetch("/api/getUserClaims", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +70,10 @@ export const ClaimsProvider: FC<PropsWithChildren> = ({
     const data = await Promise.all(
       result.data.map(
         async ({ address, time }: { address: string; time: string }) => {
-          const name = await fetchEnsName({ address: address as Address });
+          let name: string = address;
+          if (ethAddressRegex.test(name)) {
+            name = (await fetchEnsName({ address: address as Address })) || truncateAddress(address as Address) || address;
+          }
           return {
             address,
             time,

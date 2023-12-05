@@ -7,33 +7,38 @@ import { useAuth } from "../contexts/authProvider";
 import { Button2 } from "../components/button";
 import { Card } from "../components/card";
 import { Credential } from "../components/credCard";
-import { useShareModal } from "../contexts/modalProvider";
+import { useLoginModal, useShareModal } from "../contexts/modalProvider";
 import { truncateAddress } from "../lib/truncateAddress";
 import { compare } from "../lib/compare";
 import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
-import { getEnsAddress, getEnsName } from "viem/ens";
+import { getEnsAddress } from "viem/ens";
 import Link from "next/link";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 export const DropView = () => {
-  const { isConnected } = useAccount();
-  const router = useRouter();
   const publicClient = usePublicClient();
-  const { openConnectModal } = useConnectModal();
-  const { openAccountModal } = useAccountModal();
-  const { authenticated, authenticate, address, loading, awaitingAuth } =
-    useAuth();
-  const { open } = useShareModal();
+  const { authenticated, loading, address } = useAuth();
+  const { open: openShare } = useShareModal();
+  const { open: openLogin, isOpen } = useLoginModal();
   const pathname = usePathname();
 
   const ethAddressRegex = new RegExp(/^0x[A-Fa-f0-9]{40}$/);
   const ensRegex = new RegExp(
     /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/,
   );
+  const emailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
 
   // if (!_ethAddr && !ensAddr) {
   //   router.push("/");
   //   return;
   // }
+
+  useEffect(() => {
+    if (!isOpen) {
+      localStorage.removeItem("irl_callback");
+    }
+  }, [isOpen]);
+
   const [profile, setProfile] = useState<{
     loading: boolean;
     name?: string;
@@ -52,6 +57,8 @@ export const DropView = () => {
 
       const _ethAddr = ethAddressRegex.exec(parsedPath);
       const ensAddr = ensRegex.exec(parsedPath);
+      const email = emailRegex.exec(parsedPath);
+
       if (_ethAddr) {
         setProfile({
           loading: false,
@@ -59,6 +66,14 @@ export const DropView = () => {
           address: _ethAddr[0],
         });
         return;
+      }
+
+      if (email) {
+        setProfile({
+          loading: false,
+          name: email[0],
+          address: email[0],
+        });
       }
 
       if (ensAddr) {
@@ -99,7 +114,7 @@ export const DropView = () => {
         loading: true,
       });
 
-      const response = await fetch("/api/istanbul/getClaimStatus", {
+      const response = await fetch("/api/getClaimStatus", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +144,7 @@ export const DropView = () => {
           claiming: true,
           loading: false,
         });
-        await fetch("/api/istanbul/claim", {
+        await fetch("/api/claim", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -150,18 +165,18 @@ export const DropView = () => {
     [profile, address],
   );
 
-  const handleSignInClaim = useCallback(() => {
-    authenticate({
-      onSuccess: async ({ address }) => {
-        claim({ address });
-        setHasClaimed({
-          claimed: true,
-          claiming: false,
-          loading: false,
-        });
-      },
-    });
-  }, [authenticate, claim]);
+  // const handleSignInClaim = useCallback(() => {
+  //   authenticate({
+  //     onSuccess: async ({ address }) => {
+  //       claim({ address });
+  //       setHasClaimed({
+  //         claimed: true,
+  //         claiming: false,
+  //         loading: false,
+  //       });
+  //     },
+  //   });
+  // }, [authenticate, claim]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -191,7 +206,7 @@ export const DropView = () => {
             <Button2
               variant="primary"
               loading={hasClaimed.loading}
-              onClick={open}
+              onClick={openShare}
             >
               {"Share your claim link"}
             </Button2>
@@ -204,57 +219,36 @@ export const DropView = () => {
             {/* <p className="text-lg text-black dark:text-white/80">
               Did you meet? Claim your credential and ask them to claim yours.
             </p> */}
-            {isLoading ? (
+            {!authenticated ? (
+              // <Button2
+              //   onClick={() => openConnectModal && openConnectModal()}
+              //   className="ml-auto"
+              //   variant={"primary"}
+              // >
+              //   Connect Wallet
+              // </Button2>
               <Button2
-                variant="primary"
-                disabled
-                loading
-                onClick={() => claim()}
+                onClick={() => {
+                  openLogin();
+                  if (profile.address) {
+                    localStorage.setItem("irl_callback", profile.address);
+                  }
+                }}
                 className="w-full"
-              >
-                Loading
-              </Button2>
-            ) : authenticated ? (
-              <Button2
-                variant="primary"
-                onClick={() => claim()}
-                className="w-full"
-                loading={hasClaimed.claiming}
-                disabled={hasClaimed.claiming}
-              >
-                {hasClaimed.claiming
-                  ? "Claiming"
-                  : hasClaimed.loading || loading
-                  ? "Loading"
-                  : authenticated && "Claim"}
-              </Button2>
-            ) : !isConnected && !authenticated ? (
-              <Button2
-                onClick={() => openConnectModal && openConnectModal()}
-                className="ml-auto w-full"
                 variant={"primary"}
               >
-                Connect Wallet
+                Log In
               </Button2>
             ) : (
-              <>
-                <Button2
-                  onClick={() => openAccountModal && openAccountModal()}
-                  className="w-full opacity-60"
-                  disabled
-                  variant={"secondary"}
-                >
-                  Wallet connected
-                </Button2>
-                <Button2
-                  className="w-full"
-                  onClick={handleSignInClaim}
-                  loading={awaitingAuth}
-                  disabled={awaitingAuth}
-                >
-                  {awaitingAuth ? "Awaiting Signature" : "Sign in to claim"}
-                </Button2>
-              </>
+              <Button2
+                variant="primary"
+                disabled={isLoading}
+                loading={isLoading}
+                onClick={() => address && claim({ address })}
+                className="w-full"
+              >
+                {isLoading ? "Loading" : "Claim"}
+              </Button2>
             )}
           </Card>
         ) : (
@@ -267,8 +261,9 @@ export const DropView = () => {
             </p> */}
             <Button2
               variant="primary"
+              className="w-full"
               loading={hasClaimed.loading}
-              onClick={open}
+              onClick={openLogin}
             >
               Make things mutual
             </Button2>

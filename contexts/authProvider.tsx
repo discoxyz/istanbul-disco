@@ -19,6 +19,7 @@ import {
 } from "wagmi";
 import { truncateAddress } from "../lib/truncateAddress";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface AuthenticateArgs {
   onSuccess?: (args: { address: string }) => Promise<void>;
@@ -26,7 +27,7 @@ interface AuthenticateArgs {
 }
 
 interface AuthProviderContext {
-  address?: Address;
+  address?: string;
   name?: string;
   awaitingAuth?: boolean;
   authenticated?: boolean;
@@ -55,15 +56,21 @@ const initContext: AuthProviderContext = {
 const authProviderContext = createContext(initContext);
 
 export const AuthProvider: FC<PropsWithChildren> = (props) => {
+  //auth0
+  const { user, error, isLoading } = useUser();
+
+  // Wallet
   const { signMessageAsync } = useSignMessage();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const publicClient = usePublicClient();
   const { chain } = useNetwork();
+
+  // Modal
   const { openConnectModal } = useConnectModal();
 
   const [state, setState] = useState<{
-    address?: Address;
+    address?: string;
     name?: string;
     authenticated?: boolean;
     loading?: boolean;
@@ -87,16 +94,16 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     // return () => window.removeEventListener("focus", handler);
   }, []);
 
-  const _fetchNonce = async () => {
-    try {
-      const nonceRes = await fetch("/api/istanbul/auth/nonce");
-      const nonce = await nonceRes.text();
-      setState((x) => ({ ...x, loading: false, nonce }));
-      return nonce;
-    } catch (error) {
-      setState((x) => ({ ...x, error: error as Error }));
-    }
-  };
+  // const _fetchNonce = async () => {
+  //   try {
+  //     const nonceRes = await fetch("/api/auth/me");
+  //     const nonce = await nonceRes.text();
+  //     setState((x) => ({ ...x, loading: false, nonce }));
+  //     return nonce;
+  //   } catch (error) {
+  //     setState((x) => ({ ...x, error: error as Error }));
+  //   }
+  // };
   const [awaitingConnection, setIsAwaitingConnection] = useState(false);
   const [callback, setCallback] = useState<AuthenticateArgs>({
     onSuccess: async () => {},
@@ -146,14 +153,14 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
           uri: window.location.origin,
           version: "1",
           chainId,
-          nonce: await _fetchNonce(),
+          nonce: state.nonce,
         });
         const signature = await signMessageAsync({
           message: message.prepareMessage(),
         });
 
         // Verify signature
-        const verifyRes = await fetch("/api/istanbul/auth/verify", {
+        const verifyRes = await fetch("/api/authWeb3", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -176,7 +183,6 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
         setAwaitingAuth(false);
         setState((x) => ({ ...x, loading: false, nonce: undefined }));
         args?.onError && args.onError({ error: error as Error });
-        _fetchNonce();
       }
     },
     [openConnectModal, state.authenticated, awaitingAuth, state.nonce],
@@ -184,7 +190,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
   const logout = async () => {
     try {
-      await fetch("/api/istanbul/auth/logout");
+      // log out web3 and auth0
+      await fetch("/api/authWeb3", { method: "DELETE" });
+      // disconnect wallet
       disconnect();
       setState({});
     } catch (err) {
@@ -198,7 +206,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
         ...x,
         loading: true,
       }));
-      const res = await fetch("/api/istanbul/auth/me");
+      const res = await fetch("/api/authWeb3");
       const json = await res.json();
       if (json?.siwe?.data?.address) {
         const ens = await getEnsName(publicClient, {
@@ -211,9 +219,10 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
           authenticated: true,
           address: json.siwe.data.address,
         });
-      } else {
+      } else if (json.nonce) {
         // Log out
         setState({
+          nonce: json.nonce,
           authenticated: false,
           loading: false,
         });
@@ -223,9 +232,16 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     }
   }, [state]);
 
+  const walletOrAuth0 = {
+    address: user?.email ? user.email : state.address,
+    name: user?.name ? user.name : state.name,
+    authenticated: !!user?.name || state.authenticated,
+    loading: isLoading || state.loading,
+    nonce: state.nonce,
+  };
+
   const value = {
-    ...state,
-    awaitingAuth: awaitingAuth,
+    ...walletOrAuth0,
     authenticate,
     logout,
     refreshUser,

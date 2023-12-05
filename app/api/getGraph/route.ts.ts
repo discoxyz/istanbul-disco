@@ -1,8 +1,8 @@
 import { randomBytes } from "crypto";
 import { uuidV4 } from "ethers";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+export const GET = async () => {
   const resData = await fetch(`https://api.disco.xyz/v1/credentials/search`, {
     method: "POST",
     headers: {
@@ -82,13 +82,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const output = {
     nodes: Object.keys(nodes).map((k) => nodes[k]),
     links,
-  };
+  }; 
 
-  res.status(200).send({
-    data: output, // trim last from array
-  });
-
-  return;
+  return NextResponse.json({
+    data: output
+  })
 };
-
-export default handler;

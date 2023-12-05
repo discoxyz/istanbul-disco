@@ -1,6 +1,5 @@
 "use client";
 
-import { useAccount } from "wagmi";
 import { FC, useCallback, useEffect } from "react";
 import { useAuth } from "../contexts/authProvider";
 import { Card } from "../components/card";
@@ -10,11 +9,11 @@ import en from "javascript-time-ago/locale/en.json";
 
 import { Tabs } from "../components/tabs";
 import Image from "next/image";
-import { useShareModal } from "../contexts/modalProvider";
+import { useLoginModal, useShareModal } from "../contexts/modalProvider";
 import Link from "next/link";
 import { Spinner } from "../components/spinner";
 import { ClaimsProvider, useClaims } from "../contexts/claimsProvider";
-import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { useRouter } from "next/navigation";
 
 // Create formatter (English).
 TimeAgo.addDefaultLocale(en);
@@ -23,6 +22,7 @@ const timeAgo = new TimeAgo("en-US");
 const ResultsTab: FC<{
   type: "myClaims" | "claimedMine";
 }> = ({ type }) => {
+  const router = useRouter();
   const {
     getMyClaims,
     getClaimedMine,
@@ -32,6 +32,15 @@ const ResultsTab: FC<{
     hasNextPage,
     hasPrevPage,
   } = useClaims();
+
+  useEffect(() => {
+    if (!window) return;
+    const irlCallback = localStorage.getItem("irl_callback");
+    if (irlCallback) {
+      router.push(`/${irlCallback}`);
+    }
+    return;
+  }, [window]);
 
   const handleGetMyClaims = useCallback(() => {
     getMyClaims();
@@ -120,11 +129,9 @@ const ResultsTab: FC<{
 };
 
 function Profile() {
-  const { open } = useShareModal();
-  const { isConnected } = useAccount();
-  const { openConnectModal } = useConnectModal();
-  const { openAccountModal } = useAccountModal();
-  const { authenticated, authenticate, loading, awaitingAuth } = useAuth();
+  const { open: openShare } = useShareModal();
+  const { open: openLogin } = useLoginModal();
+  const { authenticated, loading  } = useAuth();
 
   if (loading) {
     return (
@@ -155,34 +162,13 @@ function Profile() {
           <p className="text-lg text-black dark:text-white/80">
             Share your link and participate in the enso leaderboard
           </p>
-          {!isConnected && !authenticated ? (
-            <Button2
-              onClick={() => openConnectModal && openConnectModal()}
-              className="ml-auto w-full"
-              variant={"primary"}
-            >
-              Connect Wallet
-            </Button2>
-          ) : (
-            <>
-              <Button2
-                onClick={() => openAccountModal && openAccountModal()}
-                className="w-full opacity-60"
-                // disabled
-                variant={"secondary"}
-              >
-                Wallet connected
-              </Button2>
-              <Button2
-                className="w-full"
-                onClick={() => authenticate()}
-                loading={awaitingAuth}
-                disabled={awaitingAuth}
-              >
-                {awaitingAuth ? "Awaiting Signature" : "Sign in"}
-              </Button2>
-            </>
-          )}
+          <Button2
+            onClick={openLogin}
+            className="ml-auto w-full"
+            variant={"primary"}
+          >
+            Log in
+          </Button2>
         </Card>
       )}
 
@@ -195,7 +181,7 @@ function Profile() {
             <p className="text-lg text-black dark:text-white/80">
               Share your link and participate in the enso leaderboard
             </p>
-            <Button2 onClick={open} className="w-fit">
+            <Button2 onClick={openShare} className="w-fit">
               Share link
             </Button2>
           </Card>
