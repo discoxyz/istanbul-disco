@@ -25,7 +25,7 @@ export const LoginModal: FC = () => {
       } ${!isOpen && !isOpening && "invisible"}`}
     >
       <Card
-        className="fixed bottom-4 left-4 right-4 max-w-lg shadow-lg"
+        className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto shadow-lg"
         style={{
           transition: "all ease-in-out 0.4s",
           transform: `translateY(${
@@ -53,7 +53,7 @@ export const LoginModal: FC = () => {
                 </Button2>
               ) : (
                 <a href="/api/auth/logout">
-                  <Button2 className='w-full'>Log out</Button2>
+                  <Button2 className="w-full">Log out</Button2>
                 </a>
               )
             ) : !isConnected ? (
@@ -77,7 +77,9 @@ export const LoginModal: FC = () => {
                 >
                   Disconnect
                 </Button2>
-                <Button2 onClick={() => authenticate()}>Sign message</Button2>
+                <Button2 onClick={() => authenticate()} className="w-full">
+                  Sign message
+                </Button2>
               </>
             )}
           </div>
