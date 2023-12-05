@@ -4,7 +4,6 @@ import { WalletProvider } from "../contexts/walletProvider";
 import { AuthProvider } from "../contexts/authProvider";
 import { Footer } from "../components/footer";
 import { Nav } from "../components/nav";
-import { EnsoPopover } from "../components/ensoPopover";
 import { FC, PropsWithChildren } from "react";
 import { ModalProvider } from "../contexts/modalProvider";
 
@@ -19,11 +18,9 @@ export const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
               {children}
               <Footer />
             </div>
-            <EnsoPopover />
           </ModalProvider>
         </AuthProvider>
       </WalletProvider>
-      {/* <Analytics /> */}
     </UserProvider>
   );
 };
