@@ -10,6 +10,13 @@ import { Nav } from "../components/nav";
 import { ModalProvider } from "../contexts/modalProvider";
 import { EnsoPopover } from "../components/ensoPopover";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Disco",
+  description: "Your social graph",
+};
+
 export default function RootLayout({
   // Layouts must accept a children prop.
   // This will be populated with nested layouts or pages
