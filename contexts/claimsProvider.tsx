@@ -72,7 +72,10 @@ export const ClaimsProvider: FC<PropsWithChildren> = ({
         async ({ address, time }: { address: string; time: string }) => {
           let name: string = address;
           if (ethAddressRegex.test(name)) {
-            name = (await fetchEnsName({ address: address as Address })) || truncateAddress(address as Address) || address;
+            name =
+              (await fetchEnsName({ address: address as Address })) ||
+              truncateAddress(address as Address) ||
+              address;
           }
           return {
             address,
