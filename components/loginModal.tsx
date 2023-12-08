@@ -78,7 +78,7 @@ export const LoginModal: FC = () => {
                   Disconnect
                 </Button2>
                 <Button2 onClick={() => authenticate()} className="w-full">
-                  Sign message
+                  Sign message to login
                 </Button2>
               </>
             )}
