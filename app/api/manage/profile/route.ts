@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../../lib/api/getUser";
-
+import { v4 } from "uuid";
 
 export interface ProfilePostReq {
   bio: string;
 }
+
+export const maxDuration = 60;
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -13,7 +15,6 @@ export const POST = async (req: NextRequest) => {
   const recipient = await getUser();
   if (!recipient) return new NextResponse("No active session", { status: 500 });
   if (!bio) return new NextResponse("No bio provided", { status: 400 });
-
   try {
     await fetch("https://api.disco.xyz/v1/credential", {
       method: "POST",
@@ -43,7 +44,13 @@ export const GET = async () => {
   if (!currentUserAddress) {
     return new NextResponse("No address provided", { status: 400 });
   }
-
+  const start = Date.now();
+  const id = v4();
+  console.log(`FETCH OWN ${currentUserAddress}`, {
+    status: "start",
+    id: id,
+    elapsed: (Date.now() - start) / 1000,
+  });
   try {
     const bioResponse = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
@@ -79,6 +86,12 @@ export const GET = async () => {
       },
     );
     const bio = await bioResponse.json();
+    console.log(`FETCH OWN ${currentUserAddress}`, {
+      status: "got bio, fetching links",
+      id: id,
+      elapsed: (Date.now() - start) / 1000,
+    });
+
     const linkResponse = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
       {
@@ -112,6 +125,11 @@ export const GET = async () => {
     );
 
     const links = await linkResponse.json();
+    console.log(`FETCH OWN ${currentUserAddress}`, {
+      status: "complete",
+      id: id,
+      elapsed: (Date.now() - start) / 1000,
+    });
     return NextResponse.json({
       bio: bio?.length ? bio[0].vc.credentialSubject.bio || "" : "",
       links: links.map((l: any) => ({

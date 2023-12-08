@@ -65,9 +65,9 @@ export const DropView = () => {
           error: true,
         };
       if (!pathname) throw new Error("Page must have a pathname");
-      const parsedPath = (
+      const parsedPath = decodeURIComponent((
         typeof pathname === "string" ? pathname : pathname[0]
-      ).replaceAll("/", "");
+      ).replaceAll("/", ""))
 
       const _ethAddr = ethAddressRegex.exec(parsedPath);
       const ensAddr = ensRegex.exec(parsedPath);

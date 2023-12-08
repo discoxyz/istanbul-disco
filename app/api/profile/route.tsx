@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../lib/api/getUser";
 import { parseId } from "../../../lib/validation";
+import { v4 as uuid} from 'uuid'
+
+
+export const maxDuration = 60;
 
 export const POST = async (req: NextRequest) => {
   const currentUserAddress = await getUser();
+  const id = uuid()
   let requestedAddress: string | undefined = undefined;
   try {
     const body = await req.json();
+    body
     if (body.address) requestedAddress = parseId(body.address);
   } catch {
     return new NextResponse("No address provided in body", { status: 400 });
@@ -16,11 +22,21 @@ export const POST = async (req: NextRequest) => {
     claimedYours: false,
     youClaimed: false,
   };
-
+  const start1 = Date.now();
+  console.log(`FETCH ${requestedAddress}`, {
+    status: 'start',
+    id: id,
+    elapsed: 0,
+  })
   // CHECK IF MUTUAL
   if (currentUserAddress && requestedAddress) {
     const person1 = requestedAddress;
     const person2 = currentUserAddress;
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'get mutual status 1/2',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
     const response1 = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
       {
@@ -53,6 +69,12 @@ export const POST = async (req: NextRequest) => {
         }),
       },
     );
+
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'get mutual status 2/2',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
 
     const response2 = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
@@ -90,9 +112,19 @@ export const POST = async (req: NextRequest) => {
       claimedYours: !!(await response2.json()).length,
       youClaimed: !!(await response1.json()).length,
     };
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'get mutual status complete',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
   }
   // END MUTUAL CHECK
   try {
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'get bio',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
     const bioResponse = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
       {
@@ -127,6 +159,11 @@ export const POST = async (req: NextRequest) => {
       },
     );
     const bio = await bioResponse.json();
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'get links',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
     const linkResponse = await fetch(
       `https://api.disco.xyz/v1/credentials/search`,
       {
@@ -168,6 +205,11 @@ export const POST = async (req: NextRequest) => {
     );
 
     const links = await linkResponse.json();
+    console.log(`FETCH ${requestedAddress}`, {
+      status: 'complete',
+      id: id,
+      elapsed: (Date.now() - start1) / 1000,
+    })
     return NextResponse.json({
       bio: bio.length ? bio[0].vc.credentialSubject.bio || "" : "",
       links: links.map((l: any) => ({
