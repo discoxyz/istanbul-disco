@@ -106,7 +106,7 @@ export const MyProfileModal: FC = () => {
       });
       return;
     }
-
+    
     try {
       const { username, type, valid } = parseAccountLink(
         newLink.value.type,

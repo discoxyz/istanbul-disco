@@ -3,6 +3,7 @@ export const parseAccountLink = (type: string, username: string) => {
   let handle = username;
   let valid = false;
 
+  handle = handle.trim()
   handle = handle.replace("https://", "");
   handle = handle.replace("http://", "");
   handle = handle.replace("www.", "");
@@ -32,10 +33,6 @@ export const parseAccountLink = (type: string, username: string) => {
     handle = handle.replace("instagram.com/", "");
     href = "https://instagram.com/" + handle;
     valid = true;
-  }
-
-  if (/^[a-z0-9]+$/i.test(username)) {
-    valid = false;
   }
 
   return {
