@@ -1,8 +1,8 @@
 "use client";
-import { useParams, useRouter, usePathname, redirect } from "next/navigation";
+import { usePathname } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Address, useAccount, usePublicClient } from "wagmi";
+import { Address, usePublicClient } from "wagmi";
 import { useAuth } from "../contexts/authProvider";
 import { Button2 } from "../components/button";
 import { Card } from "../components/card";
@@ -10,10 +10,8 @@ import { Credential } from "../components/credCard";
 import { useLoginModal, useShareModal } from "../contexts/modalProvider";
 import { truncateAddress } from "../lib/truncateAddress";
 import { compare } from "../lib/compare";
-import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { getEnsAddress } from "viem/ens";
 import Link from "next/link";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { parseAccountLink } from "../lib/parseAccountLink";
 import { Spinner } from "../components/spinner";
 
@@ -179,7 +177,7 @@ export const DropView = () => {
             />
           </Card>
         ) : address && profile.address && compare(address, profile.address) ? (
-          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn">
+          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn dark:text-white text-black">
             <h1 className="text-lg font-medium text-black dark:text-white">
               Share your link
             </h1>
@@ -201,7 +199,7 @@ export const DropView = () => {
             </h1>
           </Card>
         ) : !profile.status?.youClaimed || !authenticated ? (
-          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn`}>
+          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn dark:text-white text-black`}>
             <h1 className="text-lg font-medium text-black dark:text-white">
               {profile.status?.claimedYours
                 ? `${profile.name} said that they met you. Make it mutual?`
@@ -237,7 +235,7 @@ export const DropView = () => {
             )}
           </Card>
         ) : (
-          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn">
+          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn dark:text-white text-black">
             <h1 className="text-lg font-medium text-black dark:text-white">
               You met {profile.name}
             </h1>
@@ -248,7 +246,7 @@ export const DropView = () => {
               variant="primary"
               className="w-full"
               loading={isClaiming}
-              onClick={openLogin}
+              onClick={openShare}
             >
               Make things mutual
             </Button2>
@@ -266,7 +264,7 @@ export const DropView = () => {
           </Card>
         )}
         {!profile.loading ? (
-          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn`}>
+          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn dark:text-white text-black`}>
             <p className="text-lg opacity-80">{profile.bio || "No bio set"}</p>
             <div>
               {!profile?.links?.length ? (
@@ -282,10 +280,10 @@ export const DropView = () => {
                   if (!valid) return;
                   return (
                     <a
-                      key={i}
-                      className="border-1 mb-2 mr-2 inline-flex rounded-full border-black bg-white/10 px-4 py-2"
-                      href={href}
-                    >
+                    key={i}
+                    className="border-1 mb-2 mr-2 inline-flex items-center rounded-full  dark:bg-white/10 bg-black/10 px-4 py-2 dark:hover:bg-white/20 hover:bg-black/20"
+                    href={href}
+                  >
                       {username}
                       {/* {l.isPublic ? (
                     <EyeIcon className="ml-3 h-6 w-6 opacity-40" />
