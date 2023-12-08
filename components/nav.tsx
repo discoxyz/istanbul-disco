@@ -6,10 +6,11 @@ import { Button2 } from "./button";
 import { useAuth } from "../contexts/authProvider";
 import { Spinner } from "./spinner";
 import Image from "next/image";
-import { useLoginModal } from "../contexts/modalProvider";
+import { useLoginModal, useProfileModal } from "../contexts/modalProvider";
 
 export const Nav: FC = () => {
-  const { open } = useLoginModal();
+  const { open: openLogin } = useLoginModal();
+  const { open: openProfile } = useProfileModal()
   const { authenticated, loading, name } = useAuth();
   return (
     <nav className="z-10 mb-6 flex w-full flex-wrap items-center justify-between py-4 text-lg">
@@ -28,12 +29,12 @@ export const Nav: FC = () => {
           fillClassName="fill-zinc-800 dark:fill-grey-200"
         />
       ) : !authenticated ? (
-        <Button2 onClick={() => open()} className="ml-auto" variant={"primary"}>
+        <Button2 onClick={openLogin} className="ml-auto" variant={"primary"}>
           Log In
         </Button2>
       ) : (
         <>
-          <Button2 onClick={open} className="ml-auto" variant={"primary"}>
+          <Button2 onClick={openProfile} className="ml-auto" variant={"primary"}>
             {name}
           </Button2>
         </>

@@ -178,6 +178,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
           name: ens || truncateAddress(address) || undefined,
           loading: false,
         });
+
         args?.onSuccess && args.onSuccess({ address });
       } catch (error) {
         setAwaitingAuth(false);
@@ -191,7 +192,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const logout = async () => {
     try {
       // log out web3 and auth0
+      console.log("log out");
       await fetch("/api/authWeb3", { method: "DELETE" });
+      console.log("logged out");
       // disconnect wallet
       disconnect();
       setState({});
