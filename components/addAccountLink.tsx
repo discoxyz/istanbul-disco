@@ -1,3 +1,4 @@
+
 import { ChangeEvent, FC, useCallback, useState } from "react";
 
 const validLinks = ["twitter", "website", "instagram", "telegram"] as const;
@@ -8,12 +9,21 @@ export interface AccountLinkCreate {
   username?: string;
   valid?: boolean;
 }
-
 export const AddAccountLink: FC<{
-  callback: (args: AccountLinkCreate) => void;
+  // ESLint for some reason complaining about args being unused in function args definition
+  // eslint-disable-next-line
+  callback(args: AccountLinkCreate): void;
 }> = ({ callback: _callback }) => {
   const [type, setType] = useState<LinkType | undefined>();
   const [username, setUsername] = useState<string>("");
+
+  const callback = (args: { type?: string; username?: string }) => {
+    let valid = true;
+    if (!args?.type || !args.username?.length) {
+      valid = false;
+    }
+    _callback({ type: args.type, username: args.username, valid });
+  };
 
   const handleUsername = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,13 +41,6 @@ export const AddAccountLink: FC<{
     [username],
   );
 
-  const callback = (args: { type?: string; username?: string }) => {
-    let valid = true;
-    if (!args?.type || !args.username?.length) {
-      valid = false;
-    }
-    _callback({ type: args.type, username: args.username, valid });
-  };
 
   return (
     <div className="w-full">

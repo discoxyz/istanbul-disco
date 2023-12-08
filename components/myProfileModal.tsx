@@ -9,14 +9,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { useProfileModal } from "../contexts/modalProvider";
 import { AccountLinkCreate, AddAccountLink } from "./addAccountLink";
-import { MyProfileRes, ProfileRes } from "../lib/api/getUser";
+import { MyProfileRes } from "../lib/api/getUser";
 import { parseAccountLink } from "../lib/parseAccountLink";
 import Link from "next/link";
 import { Spinner } from "./spinner";
 
 export const MyProfileModal: FC = () => {
   const { authenticated, logout, address } = useAuth();
-  const { isOpen, isOpening, isClosing, close, open } = useProfileModal();
+  const { isOpen, isOpening, isClosing, close } = useProfileModal();
   // const [newAccountLink, setNewAccountLink] = useState<AccountLinkCreate>();
   const [profile, setProfile] = useState<MyProfileRes & { isLoading: boolean }>(
     {
@@ -108,7 +108,7 @@ export const MyProfileModal: FC = () => {
     }
 
     try {
-      const { href, username, type, valid } = parseAccountLink(
+      const { username, type, valid } = parseAccountLink(
         newLink.value.type,
         newLink.value.username,
       );
@@ -352,7 +352,7 @@ export const MyProfileModal: FC = () => {
                   </div>
                 ) : (
                   profile?.links.map((l, i) => {
-                    const { href, valid, username, type } = parseAccountLink(
+                    const { href, valid, username } = parseAccountLink(
                       l.type,
                       l.username,
                     );

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SupportedLink } from "../../../../lib/accountLinks";
 import { getUser } from "../../../../lib/api/getUser";
-import { parseId } from "../../../../lib/validation";
-import { request } from "http";
+
 
 export interface ProfilePostReq {
   bio: string;
@@ -40,7 +38,7 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
   const currentUserAddress = await getUser();
   if (!currentUserAddress) {
     return new NextResponse("No address provided", { status: 400 });
