@@ -3,14 +3,7 @@ import { cookies } from "next/headers";
 import { IronSessionData, getIronSession } from "iron-session";
 import { SiweMessage, generateNonce } from "siwe";
 import { NextRequest, NextResponse } from "next/server";
-
-const ironOptions = {
-  cookieName: "siwe",
-  password: process.env.AUTH0_CLIENT_SECRET as string,
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-  },
-};
+import { ironOptions } from "../../../lib/api/ironOptions";
 
 // login
 // send siwe in payload

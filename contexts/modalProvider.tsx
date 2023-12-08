@@ -9,8 +9,10 @@ import {
 } from "react";
 import { ShareModal } from "../components/shareModal";
 import { LoginModal } from "../components/loginModal";
+import { MyProfileModal } from "../components/myProfileModal";
+import { useAuth } from "./authProvider";
 
-const modalNames = ["share", "login"] as const;
+const modalNames = ["share", "login", "myprofile"] as const;
 type ModalName = (typeof modalNames)[number];
 
 type ModalContextInterface = {
@@ -25,6 +27,17 @@ type ModalContextInterface = {
 
 const base: ModalContextInterface = {
   share: {
+    isOpen: false,
+    isOpening: false,
+    isClosing: false,
+    open: async () => {
+      throw new Error("Modal not ready");
+    },
+    close: async () => {
+      throw new Error("Modal not ready");
+    },
+  },
+  myprofile: {
     isOpen: false,
     isOpening: false,
     isClosing: false,
@@ -50,18 +63,8 @@ const base: ModalContextInterface = {
 
 const modalContext = createContext<ModalContextInterface>(base);
 
-const modals: { name: ModalName; Component: FC }[] = [
-  {
-    name: "share",
-    Component: ShareModal,
-  },
-  {
-    name: "login",
-    Component: LoginModal,
-  },
-];
-
 export const ModalProvider: FC<PropsWithChildren> = ({ children, ...rest }) => {
+  const { authenticated } = useAuth();
   const [state, setState] = useState({
     share: {
       isOpen: false,
@@ -69,6 +72,11 @@ export const ModalProvider: FC<PropsWithChildren> = ({ children, ...rest }) => {
       isClosing: false,
     },
     login: {
+      isOpen: false,
+      isOpening: false,
+      isClosing: false,
+    },
+    myprofile: {
       isOpen: false,
       isOpening: false,
       isClosing: false,
@@ -146,6 +154,15 @@ export const ModalProvider: FC<PropsWithChildren> = ({ children, ...rest }) => {
       open: () => open("share"),
       close: () => close("share"),
     },
+    myprofile: {
+      ...state.myprofile,
+      open: authenticated
+        ? () => open("myprofile")
+        : () => {
+            throw new Error("Profile not authenticated");
+          },
+      close: () => close("myprofile"),
+    },
   };
 
   return (
@@ -153,9 +170,11 @@ export const ModalProvider: FC<PropsWithChildren> = ({ children, ...rest }) => {
       {children}
       <LoginModal />
       <ShareModal />
+      <MyProfileModal />
     </modalContext.Provider>
   );
 };
 
 export const useShareModal = () => useContext(modalContext).share;
 export const useLoginModal = () => useContext(modalContext).login;
+export const useProfileModal = () => useContext(modalContext).myprofile;

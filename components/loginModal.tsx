@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Card } from "./card";
 import { Button2 } from "./button";
 import { useAuth } from "../contexts/authProvider";
@@ -15,6 +15,12 @@ export const LoginModal: FC = () => {
   const { user } = useUser();
   const { authenticate, authenticated, logout } = useAuth();
   const { isOpen, isOpening, isClosing, close } = useLoginModal();
+
+  useEffect(() => {
+    if (authenticated && isOpen) {
+      close()
+    }
+  }, [authenticated, isOpen])
 
   return (
     <div

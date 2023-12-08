@@ -14,6 +14,8 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { getEnsAddress } from "viem/ens";
 import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { parseAccountLink } from "../lib/parseAccountLink";
+import { Spinner } from "../components/spinner";
 
 export const DropView = () => {
   const publicClient = usePublicClient();
@@ -28,11 +30,6 @@ export const DropView = () => {
   );
   const emailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
 
-  // if (!_ethAddr && !ensAddr) {
-  //   router.push("/");
-  //   return;
-  // }
-
   useEffect(() => {
     if (!isOpen) {
       localStorage.removeItem("irl_callback");
@@ -43,13 +40,32 @@ export const DropView = () => {
     loading: boolean;
     name?: string;
     address?: string;
+    bio?: string;
+    status?: {
+      claimedYours: boolean;
+      youClaimed: boolean;
+    };
+    links?: {
+      username: string;
+      type: string;
+      isPublic: boolean;
+    }[];
   }>({
     loading: true,
   });
 
   useEffect(() => {
-    const handler = async () => {
-      if (!publicClient) return;
+    const handler = async (): Promise<{
+      name: string;
+      address: string;
+      error: boolean;
+    }> => {
+      if (!publicClient)
+        return {
+          name: "",
+          address: "",
+          error: true,
+        };
       if (!pathname) throw new Error("Page must have a pathname");
       const parsedPath = (
         typeof pathname === "string" ? pathname : pathname[0]
@@ -58,92 +74,68 @@ export const DropView = () => {
       const _ethAddr = ethAddressRegex.exec(parsedPath);
       const ensAddr = ensRegex.exec(parsedPath);
       const email = emailRegex.exec(parsedPath);
-
+      let name = parsedPath;
+      let address = parsedPath;
       if (_ethAddr) {
-        setProfile({
-          loading: false,
-          name: truncateAddress(_ethAddr[0] as Address) as string,
-          address: _ethAddr[0],
-        });
-        return;
-      }
-
-      if (email) {
-        setProfile({
-          loading: false,
-          name: email[0],
-          address: email[0],
-        });
-      }
-
-      if (ensAddr) {
+        name = truncateAddress(_ethAddr[0] as Address) as string;
+        address = _ethAddr[0];
+      } else if (email) {
+        name = email[0];
+        address = email[0];
+      } else if (ensAddr) {
         const ens = await getEnsAddress(publicClient, { name: ensAddr[0] });
         if (ens) {
-          setProfile({
-            loading: false,
-            name: ensAddr[0],
-            address: ens,
-          });
-          return;
+          name = ensAddr[0];
+          address = ens;
         }
+      } else {
+        return {
+          name,
+          address,
+          error: true,
+        };
       }
-      // router.push("/");
+      return {
+        name,
+        address,
+        error: false,
+      };
     };
-    handler();
-  }, [publicClient, pathname]);
 
-  const [hasClaimed, setHasClaimed] = useState({
-    claiming: false,
-    loading: true,
-    claimed: false,
-  });
-
-  useEffect(() => {
-    const handler = async () => {
-      if (!profile.address || !address) {
-        setHasClaimed({
-          claiming: false,
-          claimed: false,
-          loading: false,
-        });
-        return;
-      }
-      setHasClaimed({
-        claiming: false,
-        claimed: false,
-        loading: true,
-      });
-
-      const response = await fetch("/api/getClaimStatus", {
+    const fetchProfile = async () => {
+      const { name, address } = await handler();
+      const result = await fetch("/api/profile/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
-          owner: profile.address,
-          claimant: address,
+          address: address,
         }),
       });
-      const res = await response.json();
-      setHasClaimed({
-        claiming: false,
+      const profile = await result.json();
+      setProfile({
         loading: false,
-        claimed: res.claimed,
+        name: name,
+        address: address,
+        bio: profile.bio || "",
+        links: profile.links,
+        status: profile.status,
       });
     };
-    handler();
-  }, [profile.address, address]);
+    fetchProfile();
+  }, [publicClient, pathname]);
+
+  const [isClaiming, setIsClaiming] = useState(false);
 
   const claim = useCallback(
     async (args?: { address: string }) => {
       const handler = async () => {
         const claimant = args?.address || address;
         if (!claimant || !profile.address) return;
-        setHasClaimed({
-          claimed: false,
-          claiming: true,
-          loading: false,
-        });
+        setIsClaiming(true);
+        // setHasClaimed({
+        //   claimed: false,
+        //   claiming: true,
+        //   loading: false,
+        // });
         await fetch("/api/claim", {
           method: "POST",
           headers: {
@@ -154,35 +146,19 @@ export const DropView = () => {
             claimant,
           }),
         });
-        setHasClaimed({
-          claimed: true,
-          claiming: false,
-          loading: false,
+        setIsClaiming(false);
+        setProfile({
+          ...profile,
+          status: {
+            claimedYours: profile.status?.claimedYours || false,
+            youClaimed: true,
+          },
         });
       };
       handler();
     },
     [profile, address],
   );
-
-  // const handleSignInClaim = useCallback(() => {
-  //   authenticate({
-  //     onSuccess: async ({ address }) => {
-  //       claim({ address });
-  //       setHasClaimed({
-  //         claimed: true,
-  //         claiming: false,
-  //         loading: false,
-  //       });
-  //     },
-  //   });
-  // }, [authenticate, claim]);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!hasClaimed.loading && !loading) setIsLoading(false);
-  }, [hasClaimed.loading, loading]);
 
   return (
     <div>
@@ -195,8 +171,15 @@ export const DropView = () => {
           className="col-span-5 mb-6 sm:col-span-3 md:col-span-2"
           createdByAddress={profile.name || undefined}
         />
-        {address && profile.address && compare(address, profile.address) ? (
-          <Card className="mb-2 grid grid-cols-1 gap-3">
+        {profile.loading ? (
+          <Card className="mb-2 flex aspect-video items-center justify-center animate-fadeIn">
+            <Spinner
+              sizeClassName="h-6 w-6"
+              fillClassName="fill-zinc-800 dark:fill-grey-200"
+            />
+          </Card>
+        ) : address && profile.address && compare(address, profile.address) ? (
+          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn">
             <h1 className="text-lg font-medium text-black dark:text-white">
               Share your link
             </h1>
@@ -205,28 +188,26 @@ export const DropView = () => {
             </p>
             <Button2
               variant="primary"
-              loading={hasClaimed.loading}
+              loading={profile.loading}
               onClick={openShare}
             >
               {"Share your claim link"}
             </Button2>
           </Card>
-        ) : !hasClaimed.claimed || !authenticated ? (
-          <Card className={`mb-2 grid grid-cols-1 gap-3`}>
+        ) : profile.status?.youClaimed && profile.status.claimedYours ? (
+          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn`}>
             <h1 className="text-lg font-medium text-black dark:text-white">
-              Claim that you met {profile.name}
+              It's mutal with {profile.name} 🤝
             </h1>
-            {/* <p className="text-lg text-black dark:text-white/80">
-              Did you meet? Claim your credential and ask them to claim yours.
-            </p> */}
+          </Card>
+        ) : !profile.status?.youClaimed || !authenticated ? (
+          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn`}>
+            <h1 className="text-lg font-medium text-black dark:text-white">
+              {profile.status?.claimedYours
+                ? `${profile.name} said that they met you. Make it mutual?`
+                : `Claim that you met ${profile.name}`}
+            </h1>
             {!authenticated ? (
-              // <Button2
-              //   onClick={() => openConnectModal && openConnectModal()}
-              //   className="ml-auto"
-              //   variant={"primary"}
-              // >
-              //   Connect Wallet
-              // </Button2>
               <Button2
                 onClick={() => {
                   openLogin();
@@ -242,17 +223,21 @@ export const DropView = () => {
             ) : (
               <Button2
                 variant="primary"
-                disabled={isLoading}
-                loading={isLoading}
+                disabled={profile.loading || isClaiming}
+                loading={profile.loading || isClaiming}
                 onClick={() => address && claim({ address })}
                 className="w-full"
               >
-                {isLoading ? "Loading" : "Claim"}
+                {isClaiming
+                  ? "Claiming"
+                  : profile.loading
+                  ? "Loading"
+                  : "Claim"}
               </Button2>
             )}
           </Card>
         ) : (
-          <Card className="mb-2 grid grid-cols-1 gap-3">
+          <Card className="mb-2 grid grid-cols-1 gap-3 animate-fadeIn">
             <h1 className="text-lg font-medium text-black dark:text-white">
               You met {profile.name}
             </h1>
@@ -262,12 +247,12 @@ export const DropView = () => {
             <Button2
               variant="primary"
               className="w-full"
-              loading={hasClaimed.loading}
+              loading={isClaiming}
               onClick={openLogin}
             >
               Make things mutual
             </Button2>
-            {!hasClaimed.loading && (
+            {!isClaiming && (
               <Link href="/" className="w-full">
                 <Button2
                   variant="secondary"
@@ -279,6 +264,42 @@ export const DropView = () => {
               </Link>
             )}
           </Card>
+        )}
+        {!profile.loading ? (
+          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn`}>
+            <p className="text-lg opacity-80">{profile.bio || "No bio set"}</p>
+            <div>
+              {!profile?.links?.length ? (
+                <span className="border-1 mb-2 mr-2 inline-flex rounded-full border-black bg-white/10 px-4 py-2 italic">
+                  No links set
+                </span>
+              ) : (
+                profile?.links?.map((l, i) => {
+                  const { href, valid, username, type } = parseAccountLink(
+                    l.type,
+                    l.username,
+                  );
+                  if (!valid) return;
+                  return (
+                    <a
+                      key={i}
+                      className="border-1 mb-2 mr-2 inline-flex rounded-full border-black bg-white/10 px-4 py-2"
+                      href={href}
+                    >
+                      {username}
+                      {/* {l.isPublic ? (
+                    <EyeIcon className="ml-3 h-6 w-6 opacity-40" />
+                  ) : (
+                    <EyeSlashIcon className="ml-3 h-6 w-6 opacity-40" />
+                  )} */}
+                    </a>
+                  );
+                })
+              )}
+            </div>
+          </Card>
+        ) : (
+          <></>
         )}
       </main>
     </div>
