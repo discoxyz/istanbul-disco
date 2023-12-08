@@ -264,11 +264,13 @@ export const DropView = () => {
           </Card>
         )}
         {!profile.loading ? (
-          <Card className={`mb-2 grid grid-cols-1 gap-3 animate-fadeIn dark:text-white text-black`}>
-            <p className="text-lg opacity-80">{profile.bio || "No bio set"}</p>
+          <Card className={`mb-2 grid grid-cols-1 gap-1 animate-fadeIn dark:text-white text-black`}>
+            <h2 className="mt-2 text-lg opacity-60">Bio</h2>
+            <p className="text-lg opacity-80 mb-3">{profile.bio || "No bio set"}</p>
+            <h2 className="text-lg opacity-60">Account Links</h2>
             <div>
               {!profile?.links?.length ? (
-                <span className="border-1 mb-2 mr-2 inline-flex rounded-full border-black bg-white/10 px-4 py-2 italic">
+                <span className="border-1 mb-2 mr-2 inline-flex rounded-full bg-black/10 dark:bg-white/10 px-4 py-2 italic">
                   No links set
                 </span>
               ) : (
@@ -285,11 +287,6 @@ export const DropView = () => {
                     href={href}
                   >
                       {username}
-                      {/* {l.isPublic ? (
-                    <EyeIcon className="ml-3 h-6 w-6 opacity-40" />
-                  ) : (
-                    <EyeSlashIcon className="ml-3 h-6 w-6 opacity-40" />
-                  )} */}
                     </a>
                   );
                 })
