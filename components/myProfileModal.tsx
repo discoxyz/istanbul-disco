@@ -227,7 +227,7 @@ export const MyProfileModal: FC = () => {
       } ${!isOpen && !isOpening && "invisible"}`}
     >
       <Card
-        className="fixed bottom-4 left-4 right-4 mx-auto max-w-lg shadow-lg"
+        className="fixed bottom-4 left-4 right-4 mx-auto max-w-lg shadow-lg text-black dark:text-white"
         style={{
           transition: "all ease-in-out 0.4s",
           transform: `translateY(${
@@ -306,7 +306,7 @@ export const MyProfileModal: FC = () => {
               <p className="mt-2 opacity-40">Links loading</p>
             </div>
           ) : (
-            <div className="mb-4 w-full rounded-xl border border-indigo-900/20 p-6 dark:border-white/20 ">
+            <div className="mb-4 w-full rounded-xl border border-indigo-900/20 p-6 dark:border-white/20 text-black dark:text-white">
               <div>
                 <div className="mb-2 flex w-full justify-between text-lg">
                   <h2 className="mt-2 text-lg opacity-60">My Account Links</h2>
@@ -360,7 +360,7 @@ export const MyProfileModal: FC = () => {
                     return (
                       <a
                         key={i}
-                        className="border-1 mb-2 mr-2 inline-flex items-center rounded-full border-black bg-white/10 px-4 py-0.5 pr-0.5 hover:bg-white/20"
+                        className="border-1 mb-2 mr-2 inline-flex items-center rounded-full  dark:bg-white/10 bg-black/5 px-4 py-0.5 pr-0.5 dark:hover:bg-white/20 hover:bg-black/10"
                         href={href}
                       >
                         {username}
@@ -371,7 +371,7 @@ export const MyProfileModal: FC = () => {
                           />
                         ) : (
                           <button
-                            className="group ml-3 rounded-full bg-white/10 p-1.5 hover:bg-white/20"
+                            className="group ml-3 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black dark:hover:bg-white p-1.5"
                             onClick={(e) => {
                               changeVisibility(l.id, !l.isPublic);
                               e.stopPropagation();
@@ -379,9 +379,9 @@ export const MyProfileModal: FC = () => {
                             }}
                           >
                             {l.isPublic ? (
-                              <EyeIcon className="h-6 w-6 opacity-40 group-hover:fill-purple-700 group-hover:opacity-100" />
+                              <EyeIcon className="h-6 w-6 opacity-40 stroke-black dark:stroke-white group-hover:stroke-white dark:group-hover:stroke-black group-hover:opacity-100" />
                             ) : (
-                              <EyeSlashIcon className="h-6 w-6 opacity-40 group-hover:fill-purple-700 group-hover:opacity-100" />
+                              <EyeSlashIcon className="h-6 w-6 opacity-40 stroke-black dark:stroke-white group-hover:stroke-white dark:group-hover:stroke-black group-hover:opacity-100" />
                             )}
                           </button>
                         )}
