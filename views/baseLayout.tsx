@@ -6,6 +6,7 @@ import { Footer } from "../components/footer";
 import { Nav } from "../components/nav";
 import { FC, PropsWithChildren } from "react";
 import { ModalProvider } from "../contexts/modalProvider";
+import { KikiBanner } from "../components/kiki";
 
 export const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -16,6 +17,7 @@ export const BaseLayout: FC<PropsWithChildren> = ({ children }) => {
             <div className="flex min-h-screen flex-col px-4 py-6">
               <Nav />
               {children}
+              <KikiBanner />
               <Footer />
             </div>
           </ModalProvider>
