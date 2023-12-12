@@ -160,7 +160,7 @@ function Profile() {
             Get your met IRL link
           </h1>
           <p className="text-lg text-black dark:text-white/80">
-            Share your link and participate in the enso leaderboard
+            Share your link and build your social graph
           </p>
           <Button2
             onClick={openLogin}
@@ -179,7 +179,7 @@ function Profile() {
               Your met IRL link
             </h1>
             <p className="text-lg text-black dark:text-white/80">
-              Share your link and participate in the enso leaderboard
+              Share your link and build your social graph
             </p>
             <Button2 onClick={openShare} className="w-fit">
               Share link
