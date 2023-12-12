@@ -131,7 +131,7 @@ const ResultsTab: FC<{
 function Profile() {
   const { open: openShare } = useShareModal();
   const { open: openLogin } = useLoginModal();
-  const { authenticated, loading  } = useAuth();
+  const { authenticated, loading } = useAuth();
 
   if (loading) {
     return (
@@ -144,7 +144,7 @@ function Profile() {
     );
   }
   return (
-    <div className="mx-auto max-w-screen-xl">
+    <div className="mx-auto w-full max-w-screen-xl">
       {!authenticated && (
         <Image
           width={600}
@@ -205,19 +205,6 @@ function Profile() {
           </ClaimsProvider>
         </>
       )}
-
-      {/* {!isConnected ? (
-        <ConnectButton />
-      ) : authAddress ? (
-        <div>
-          <div>Signed in as {authAddress}</div>
-          <button onClick={logout}>Sign Out</button>
-        </div>
-      ) : (
-        <Button onClick={authenticate} className="w-fit">
-          Sign in
-        </Button>
-      )} */}
     </div>
   );
 }

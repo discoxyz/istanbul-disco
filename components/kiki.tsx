@@ -8,6 +8,7 @@ export const KikiBanner: FC = () => {
       href="https://www.kiki.world/v/chipped"
       rel="noopener noreferrer"
       target="_blank"
+      className="mt-auto"
     >
       <Card className="group mb-6 mt-auto transition-all hover:border-purple-500">
         <svg
