@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Disco",
   description: "Your social graph",
 };
-
+console.log(process.env)
 export default function RootLayout({
   // Layouts must accept a children prop.
   // This will be populated with nested layouts or pages
