@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClaimStatus } from "../getClaimStatus/route";
+import { getClaimStatus } from "../../../lib/api/getClaimStatus";
 import { parseId } from "../../../lib/validation";
 // import { IronSessionData, getIronSession } from "iron-session";
 // import { cookies } from "next/headers";
