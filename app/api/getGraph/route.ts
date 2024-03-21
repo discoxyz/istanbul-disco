@@ -25,7 +25,7 @@ export const GET = async () => {
             value: process.env.ISSUER_DID,
           },
         ],
-        size: 2000,
+        size: 100,
       }),
     });
 
