@@ -39,9 +39,11 @@ export const MyProfileModal: FC = () => {
   useEffect(() => {
     (async () => {
       if (isOpen || isOpening) return;
-      await getProfile();
+      if (address) {
+        await getProfile();
+      }
     })();
-  }, [isOpen, isOpening]);
+  }, [isOpen, isOpening, address]);
 
   useEffect(() => {
     if (!authenticated && isOpen) {
