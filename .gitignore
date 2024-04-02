@@ -37,6 +37,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 .env
+.env.local
 
 certificates
 .env*.local
