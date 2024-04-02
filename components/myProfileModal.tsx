@@ -40,7 +40,7 @@ export const MyProfileModal: FC = () => {
     (async () => {
       if (isOpen || isOpening) return;
       if (address) {
-        await getProfile();
+        getProfile();
       }
     })();
   }, [isOpen, isOpening, address]);
